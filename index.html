@@ -3,276 +3,1656 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>터틀봇 스택 코딩 (Turtle STACK Web)</title>
+  <title>터틀봇 엔트리 코딩 (TurtleBot Entry Edition)</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { background: #1e1e24; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-    
-    /* Top Bar */
-    header {
-      background: #2b2d42; height: 56px; display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px; border-bottom: 2px solid #3d405b; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 100;
+    :root {
+      --entry-bg: #edf2f7;
+      --entry-header: #2b2d42;
+      --entry-palette-bg: #ffffff;
+      --entry-workspace-bg: #f8fafc;
+      --border-color: #e2e8f0;
+      
+      /* Entry Category Colors */
+      --cat-start: #00b894;      /* 시작 (Mint Green) */
+      --cat-flow: #ff7675;       /* 흐름 (Coral Red) */
+      --cat-motion: #0984e3;     /* 움직임 (Entry Blue) */
+      --cat-looks: #a29bfe;      /* 생김새 / LED (Purple) */
+      --cat-sound: #e84393;      /* 소리 (Pink) */
+      --cat-sensor: #00cec9;     /* 판단 / 센서 (Teal) */
+      --cat-data: #ffbe76;       /* 계산 / 자료 (Orange) */
     }
-    .brand { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.15rem; color: #48cae4; }
-    .brand img, .brand .icon { font-size: 1.6rem; }
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-    
+
+    * {
+      box-sizing: border-box; margin: 0; padding: 0;
+      user-select: none; -webkit-user-select: none;
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", "Nanum Gothic", sans-serif;
+    }
+
+    html, body {
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+      background: var(--entry-bg);
+      color: #2d3748;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      touch-action: none;
+    }
+
+    /* ── Top Header Navigation ── */
+    header {
+      background: #2b2d42;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.3px;
+    }
+    .brand .logo-icon {
+      font-size: 1.6rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+    .brand-sub {
+      font-size: 0.78rem;
+      background: #00b894;
+      color: #fff;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .status-pill {
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: #3a3f58;
+      color: #cbd5e0;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.3s;
+    }
+    .status-pill.online {
+      background: #00b894;
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 184, 148, 0.5);
+    }
+    .status-pill .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #94a3b8;
+    }
+    .status-pill.online .dot {
+      background: #fff;
+      box-shadow: 0 0 6px #fff;
+    }
+
+    .header-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .btn {
-      padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer;
-      display: flex; align-items: center; gap: 6px; border: none; transition: all 0.2s; outline: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
     }
     .btn:active { transform: scale(0.96); }
-    .btn-ble { background: #0077b6; color: #fff; }
-    .btn-ble.connected { background: #2ec4b6; color: #011627; }
-    .btn-run { background: #2a9d8f; color: #fff; }
-    .btn-stop { background: #e63946; color: #fff; }
-    .status-badge { font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #3d405b; color: #cbd5e1; }
-    .status-badge.online { background: #06d6a0; color: #000; font-weight: bold; }
+    .btn-ble { background: #0984e3; color: #fff; }
+    .btn-ble.connected { background: #00b894; color: #fff; }
+    .btn-run { background: #00b894; color: #fff; font-size: 0.98rem; padding: 8px 18px; box-shadow: 0 2px 6px rgba(0,184,148,0.4); }
+    .btn-stop { background: #d63031; color: #fff; }
+    .btn-ctrl { background: #6c5ce7; color: #fff; }
+    .btn-reset { background: #4a5568; color: #fff; }
 
-    /* Main Container */
-    .main-container { display: flex; flex: 1; height: calc(100vh - 56px); }
-
-    /* Sidebar - Categories */
-    .categories {
-      width: 90px; background: #24252f; display: flex; flex-direction: column; border-right: 1px solid #333544;
-    }
-    .cat-btn {
-      padding: 16px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 6px; font-size: 0.78rem; font-weight: bold; color: #94a3b8; background: none; border: none;
-      cursor: pointer; transition: all 0.2s;
-    }
-    .cat-btn.active { color: #fff; background: #2d2f3d; }
-    .cat-btn .cat-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-    .cat-motion .cat-icon { background: #4361ee; color: #fff; }
-    .cat-looks .cat-icon { background: #7209b7; color: #fff; }
-    .cat-sound .cat-icon { background: #f72585; color: #fff; }
-    .cat-control .cat-icon { background: #f8961e; color: #fff; }
-
-    /* Block Palette */
-    .palette {
-      width: 250px; background: #1a1a20; padding: 16px 12px; overflow-y: auto; border-right: 2px solid #2b2d42;
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .palette-title { font-size: 0.85rem; color: #64748b; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
-
-    /* Workspace */
-    .workspace-area { flex: 1; position: relative; background: #16161a; overflow: auto; display: flex; flex-direction: column; }
-    .workspace-canvas {
-      flex: 1; min-height: 1000px; min-width: 1000px; padding: 40px; position: relative;
-      background-image: radial-gradient(#2b2d42 1.5px, transparent 1.5px); background-size: 24px 24px;
+    /* ── Main App Layout ── */
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 56px);
+      position: relative;
     }
 
-    /* Blocks */
+    /* ── Category Sidebar (Entry Style 7 Tabs) ── */
+    .sidebar-categories {
+      width: 90px;
+      background: #232738;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #1a1d2b;
+      overflow-y: auto;
+      z-index: 10;
+    }
+    .cat-item {
+      padding: 12px 2px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-left: 4px solid transparent;
+    }
+    .cat-item.active {
+      color: #fff;
+      background: #2c3147;
+      border-left-color: currentColor;
+    }
+    .cat-icon-badge {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    }
+    .cat-start .cat-icon-badge { background: var(--cat-start); }
+    .cat-flow .cat-icon-badge { background: var(--cat-flow); }
+    .cat-motion .cat-icon-badge { background: var(--cat-motion); }
+    .cat-looks .cat-icon-badge { background: var(--cat-looks); }
+    .cat-sound .cat-icon-badge { background: var(--cat-sound); }
+    .cat-sensor .cat-icon-badge { background: var(--cat-sensor); }
+    .cat-data .cat-icon-badge { background: var(--cat-data); }
+
+    .cat-start { color: var(--cat-start); }
+    .cat-flow { color: var(--cat-flow); }
+    .cat-motion { color: var(--cat-motion); }
+    .cat-looks { color: var(--cat-looks); }
+    .cat-sound { color: var(--cat-sound); }
+    .cat-sensor { color: var(--cat-sensor); }
+    .cat-data { color: var(--cat-data); }
+
+    /* ── Palette Drawer ── */
+    .palette-drawer {
+      width: 310px;
+      min-width: 270px;
+      background: var(--entry-palette-bg);
+      padding: 12px 10px;
+      overflow-y: auto;
+      overflow-x: auto;
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* CRITICAL: Never stretch blocks to force wrapping! */
+      gap: 10px;
+      box-shadow: 2px 0 6px rgba(0,0,0,0.03);
+      z-index: 5;
+      flex-shrink: 0;
+    }
+    .palette-title {
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #718096;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #edf2f7;
+      width: 100%;
+      white-space: nowrap;
+    }
+    .palette-hint {
+      font-size: 0.7rem;
+      color: #a0aec0;
+      margin-top: -6px;
+      margin-bottom: 2px;
+      width: 100%;
+      white-space: nowrap;
+    }
+
+    /* ── Workspace Pane ── */
+    .workspace-pane {
+      flex: 1;
+      position: relative;
+      background: var(--entry-workspace-bg);
+      overflow: auto;
+      touch-action: pan-x pan-y;
+    }
+    .workspace-board {
+      min-width: 2400px;
+      min-height: 2400px;
+      position: relative;
+      padding: 50px;
+      background-image: 
+        linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+        linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* ── Entry Block Styles (Strict Nowrap for iPad & Mobile) ── */
+    .code-stack {
+      position: absolute;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      cursor: grab;
+      touch-action: none;
+      z-index: 10;
+    }
+    .code-stack:active { cursor: grabbing; }
+
     .block {
-      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px;
-      font-size: 0.95rem; font-weight: bold; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-      cursor: grab; touch-action: none; position: relative; border-left: 5px solid rgba(0,0,0,0.25);
+      display: inline-flex !important;
+      align-items: center !important;
+      white-space: nowrap !important;
+      flex-wrap: nowrap !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      flex-shrink: 0 !important;
+      box-sizing: border-box !important;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #fff;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.16);
+      position: relative;
+      cursor: grab;
+      touch-action: none;
+      margin-bottom: 0px;
+      border: 1px solid rgba(0,0,0,0.1);
+      transition: filter 0.15s, transform 0.1s;
     }
     .block:active { cursor: grabbing; }
-    .block-start { background: #ffb703; color: #000; border-radius: 20px 20px 8px 8px; border-left: none; }
-    .block-motion { background: #4361ee; }
-    .block-looks { background: #7209b7; }
-    .block-sound { background: #f72585; }
-    .block-control { background: #f8961e; }
+
+    .block span, .block-c-header span {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      display: inline-block !important;
+    }
+
+    /* Entry Puzzle Notch Simulation */
+    .block::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: 18px;
+      width: 16px;
+      height: 4px;
+      background: inherit;
+      border-radius: 2px 2px 0 0;
+      filter: brightness(0.9);
+    }
+    .block::after {
+      content: "";
+      position: absolute;
+      bottom: -4px;
+      left: 18px;
+      width: 16px;
+      height: 4px;
+      background: inherit;
+      border-radius: 0 0 2px 2px;
+      z-index: 2;
+      filter: brightness(0.9);
+    }
+
+    /* Hat Blocks (시작 블록) - Top Dome with no notch */
+    .block-hat {
+      border-radius: 22px 22px 6px 6px;
+      padding-top: 10px;
+      padding-bottom: 9px;
+      border-top: 3px solid rgba(255,255,255,0.4);
+    }
+    .block-hat::before { display: none; }
+
+    /* Category Block Backgrounds */
+    .block-cat-start { background: var(--cat-start); }
+    .block-cat-flow { background: var(--cat-flow); }
+    .block-cat-motion { background: var(--cat-motion); }
+    .block-cat-looks { background: var(--cat-looks); }
+    .block-cat-sound { background: var(--cat-sound); }
+    .block-cat-sensor { background: var(--cat-sensor); }
+    .block-cat-data { background: var(--cat-data); }
+
+    /* Input & Select fields inside blocks (Tailored for iPad Touch & Nowrap) */
+    .block input, .block select, .block-c-header input {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      background: rgba(255, 255, 255, 0.95);
+      color: #2d3748;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      height: 27px;
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-weight: 800;
+      font-size: 0.84rem;
+      text-align: center;
+      outline: none;
+      cursor: pointer;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+    .block input[type="number"], .block-c-header input[type="number"] {
+      width: 50px;
+    }
+    .block select {
+      -webkit-appearance: none !important;
+      appearance: none !important;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232d3748'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e") !important;
+      background-repeat: no-repeat !important;
+      background-position: right 4px center !important;
+      background-size: 13px 13px !important;
+      padding-right: 20px !important;
+      max-width: 155px;
+    }
+
+    /* Delete button on block */
+    .block-btn-del {
+      margin-left: 6px;
+      background: rgba(0,0,0,0.22);
+      border: none;
+      color: #fff;
+      border-radius: 50%;
+      width: 19px;
+      height: 19px;
+      font-size: 11px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+    .block-btn-del:hover { background: #e53e3e; }
+
+    /* C-Shape Nested Block (Loops & If Conditions) */
+    .block-c-container {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      position: relative;
+      margin-bottom: 0px;
+    }
+    .block-c-header {
+      border-radius: 6px 6px 0 0;
+      padding: 7px 12px;
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.88rem;
+      display: inline-flex !important;
+      align-items: center !important;
+      white-space: nowrap !important;
+      flex-wrap: nowrap !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      flex-shrink: 0 !important;
+      gap: 6px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+      position: relative;
+      box-sizing: border-box;
+    }
+    .block-c-header::before {
+      content: ""; position: absolute; top: -4px; left: 18px; width: 16px; height: 4px; background: inherit; border-radius: 2px 2px 0 0; filter: brightness(0.9);
+    }
+    .block-c-body {
+      display: flex !important;
+      flex-direction: row !important;
+      width: 100% !important;
+      align-items: stretch;
+    }
+    .block-c-bar {
+      width: 16px;
+      background: inherit;
+      filter: brightness(0.95);
+      flex-shrink: 0;
+    }
+    .block-c-slot {
+      flex: 1;
+      min-height: 38px;
+      min-width: 180px;
+      width: max-content;
+      background: rgba(255, 255, 255, 0.45);
+      border: 2px dashed rgba(0,0,0,0.18);
+      border-radius: 0 6px 6px 0;
+      margin: 2px 0 2px 0;
+      padding: 6px 6px 6px 10px;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 2px;
+    }
+    .block-c-slot.slot-hover {
+      background: rgba(0, 184, 148, 0.25);
+      border-color: #00b894;
+    }
+    .block-c-footer {
+      width: 100% !important;
+      height: 13px;
+      border-radius: 0 0 6px 6px;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .block-c-footer::after {
+      content: ""; position: absolute; bottom: -4px; left: 18px; width: 16px; height: 4px; background: inherit; border-radius: 0 0 2px 2px; filter: brightness(0.9);
+    }
+
+    /* Execution Highlighting (Neon Cyan Glow) */
+    .running-highlight {
+      outline: 4px solid #00cec9 !important;
+      box-shadow: 0 0 16px #00cec9 !important;
+      z-index: 50;
+      transform: scale(1.02);
+    }
+
+    /* ── Drag & Drop Indicator & Ghost ── */
+    .drop-indicator {
+      height: 6px;
+      background: #00cec9;
+      border-radius: 3px;
+      width: 100%;
+      box-shadow: 0 0 8px #00cec9;
+      margin: 3px 0;
+      pointer-events: none;
+      animation: pulseIndicator 0.8s infinite alternate;
+    }
+    @keyframes pulseIndicator {
+      from { opacity: 0.6; transform: scaleY(0.8); }
+      to { opacity: 1.0; transform: scaleY(1.3); }
+    }
+
+    .drag-ghost {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.9;
+      transform: scale(1.05) translate(-10px, -10px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+
+    /* ── Live Simulation & Robot View ── */
+    .sim-dock {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      width: 250px;
+      height: 250px;
+      background: #2b2d42;
+      border-radius: 14px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 90;
+      border: 2px solid #3d405b;
+    }
+    .sim-dock-head {
+      background: #1e202f;
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: #cbd5e0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .sim-field {
+      flex: 1;
+      position: relative;
+      background: #171822;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .sim-grid {
+      position: absolute; width: 100%; height: 100%;
+      background-image: 
+        linear-gradient(#252738 1px, transparent 1px),
+        linear-gradient(90deg, #252738 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .sim-turtle {
+      width: 36px;
+      height: 36px;
+      background: #00b894;
+      border-radius: 50%;
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) rotate(0deg);
+      transition: all 0.25s linear;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 0 12px rgba(0, 184, 148, 0.7);
+    }
+    .sim-turtle-eye {
+      position: absolute;
+      top: -3px;
+      width: 9px;
+      height: 9px;
+      background: #e63946;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #e63946;
+      transition: background 0.2s;
+    }
+    .sim-turtle-tag {
+      position: absolute;
+      bottom: -16px;
+      font-size: 9px;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 1px 4px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .trail-dot {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(0, 206, 201, 0.45);
+    }
+
+    /* ── iPad On-Screen Virtual Controller (가상 조종기) ── */
+    .virtual-controller-modal {
+      position: fixed;
+      right: 20px;
+      top: 75px;
+      background: rgba(33, 37, 54, 0.95);
+      backdrop-filter: blur(8px);
+      border: 2px solid #4a5568;
+      border-radius: 16px;
+      padding: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      z-index: 150;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      width: 220px;
+    }
+    .virtual-controller-modal.show { display: flex; }
+    .ctrl-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .d-pad-box {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 6px;
+      margin: 4px auto;
+      width: 150px;
+      height: 150px;
+    }
+    .pad-btn {
+      background: #3b4259;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .pad-btn:active { background: #00b894; transform: scale(0.94); }
+    .pad-up { grid-column: 2; grid-row: 1; }
+    .pad-left { grid-column: 1; grid-row: 2; }
+    .pad-center { grid-column: 2; grid-row: 2; background: #2a2f42; font-size: 0.7rem; color: #a0aec0; }
+    .pad-right { grid-column: 3; grid-row: 2; }
+    .pad-down { grid-column: 2; grid-row: 3; }
     
-    .block input, .block select {
-      background: rgba(255, 255, 255, 0.25); color: #fff; border: 1px solid rgba(255, 255, 255, 0.4);
-      padding: 3px 6px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; text-align: center; outline: none;
+    .action-btn-row {
+      display: flex;
+      gap: 8px;
+      justify-content: space-between;
     }
-    .block input { width: 44px; }
-    .block select { cursor: pointer; }
-    .block select option { background: #222; color: #fff; }
+    .act-btn {
+      flex: 1;
+      padding: 10px 4px;
+      background: #e84393;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    }
+    .act-btn:active { transform: scale(0.94); filter: brightness(1.2); }
+    .act-btn.btn-space { background: #6c5ce7; }
 
-    /* Script Stack in Workspace */
-    .script-stack { display: flex; flex-direction: column; gap: 3px; position: absolute; }
-    .script-stack .block.running {
-      outline: 3px solid #00f5d4; box-shadow: 0 0 15px #00f5d4; transform: scale(1.02); transition: all 0.15s;
+    /* Score / Variables Overlay */
+    .variable-hud {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(255, 255, 255, 0.96);
+      border: 2px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #2d3748;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: none;
+      z-index: 20;
+      white-space: nowrap;
     }
-    .block-del-btn {
-      margin-left: 6px; background: rgba(0,0,0,0.25); border: none; color: #fff; border-radius: 50%;
-      width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    .variable-hud.show { display: block; }
+
+    /* ── Responsive Tablet & iPad Screen Adaptations ── */
+    @media (max-width: 1024px) {
+      .sidebar-categories { width: 75px; }
+      .cat-item { padding: 8px 2px; font-size: 0.68rem; gap: 3px; }
+      .cat-icon-badge { width: 28px; height: 28px; font-size: 1rem; }
+      .palette-drawer { width: 285px; min-width: 260px; padding: 10px 8px; }
+      .block, .block-c-header { font-size: 0.82rem !important; padding: 6px 9px !important; gap: 4px !important; }
+      .block input, .block select, .block-c-header input { font-size: 0.8rem !important; height: 25px !important; }
+      .btn { padding: 6px 10px; font-size: 0.82rem; }
+      .brand { font-size: 1.02rem; }
+      .sim-dock { width: 200px; height: 200px; right: 12px; bottom: 12px; }
     }
 
-    /* Simulation Preview Panel */
-    .sim-panel {
-      position: absolute; right: 20px; bottom: 20px; width: 220px; height: 220px; background: #24252f;
-      border: 2px solid #3d405b; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
-      display: flex; flex-direction: column; overflow: hidden;
-    }
-    .sim-header { background: #1e1e24; padding: 6px 10px; font-size: 0.75rem; font-weight: bold; color: #94a3b8; display: flex; justify-content: space-between; }
-    .sim-canvas { flex: 1; position: relative; background: #121216; overflow: hidden; }
-    .virtual-turtle {
-      width: 28px; height: 28px; background: #06d6a0; border-radius: 50%; position: absolute;
-      top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.3s ease-out;
-      display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 8px #06d6a0;
-    }
-    .virtual-turtle::after {
-      content: ''; position: absolute; top: -4px; width: 6px; height: 6px; background: #e63946; border-radius: 50%;
+    @media (max-width: 768px) {
+      .sidebar-categories { width: 68px; }
+      .cat-item { font-size: 0.65rem; }
+      .palette-drawer { width: 250px; min-width: 230px; }
+      .block, .block-c-header { font-size: 0.78rem !important; padding: 5px 8px !important; }
+      .sim-dock { width: 175px; height: 175px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Top Header -->
+  <!-- Top Toolbar Navigation -->
   <header>
     <div class="brand">
-      <span class="icon">🐢</span>
-      <span>터틀 스택 (STACK)</span>
-      <span id="bleStatus" class="status-badge">미연결 (시뮬레이터 모드)</span>
+      <span class="logo-icon">🐢</span>
+      <span>터틀 엔트리</span>
+      <span class="brand-sub">Entry BLE</span>
+      <div id="bleStatusPill" class="status-pill">
+        <span class="dot"></span>
+        <span id="bleStatusText">로봇 미연결 (가상 시뮬레이터)</span>
+      </div>
     </div>
-    <div class="header-actions">
+    <div class="header-btns">
       <button id="btnConnect" class="btn btn-ble" onclick="connectTurtle()">
         <span>📡 로봇 연결 (Bluetooth)</span>
       </button>
-      <button class="btn btn-run" onclick="runScript()">
-        <span>▶ 실행</span>
+      <button class="btn btn-run" onclick="triggerStartEvent('start_click')">
+        <span>▶ 시작하기</span>
       </button>
-      <button class="btn btn-stop" onclick="stopScript()">
-        <span>■ 정지</span>
+      <button class="btn btn-stop" onclick="stopAllExecution()">
+        <span>■ 정지하기</span>
+      </button>
+      <button class="btn btn-ctrl" onclick="toggleController()">
+        <span>🎮 조종기</span>
+      </button>
+      <button class="btn btn-reset" onclick="resetWorkspace()">
+        <span>↺ 초기화</span>
       </button>
     </div>
   </header>
 
-  <div class="main-container">
-    <!-- Category Selector -->
-    <div class="categories">
-      <button class="cat-btn active cat-motion" onclick="switchCategory('motion', this)">
-        <div class="cat-icon">🚀</div>
-        <span>동작</span>
+  <div class="app-body">
+    <!-- Category Sidebar (Entry Style 7 Tabs) -->
+    <div class="sidebar-categories">
+      <button class="cat-item active cat-start" onclick="selectCat('start', this)">
+        <div class="cat-icon-badge">🚩</div>
+        <span>시작</span>
       </button>
-      <button class="cat-btn cat-looks" onclick="switchCategory('looks', this)">
-        <div class="cat-icon">💡</div>
-        <span>LED</span>
+      <button class="cat-item cat-flow" onclick="selectCat('flow', this)">
+        <div class="cat-icon-badge">⏱</div>
+        <span>흐름</span>
       </button>
-      <button class="cat-btn cat-sound" onclick="switchCategory('sound', this)">
-        <div class="cat-icon">🔔</div>
+      <button class="cat-item cat-motion" onclick="selectCat('motion', this)">
+        <div class="cat-icon-badge">🚗</div>
+        <span>움직임</span>
+      </button>
+      <button class="cat-item cat-looks" onclick="selectCat('looks', this)">
+        <div class="cat-icon-badge">💡</div>
+        <span>생김새</span>
+      </button>
+      <button class="cat-item cat-sound" onclick="selectCat('sound', this)">
+        <div class="cat-icon-badge">🎵</div>
         <span>소리</span>
       </button>
-      <button class="cat-btn cat-control" onclick="switchCategory('control', this)">
-        <div class="cat-icon">⏱</div>
-        <span>제어</span>
+      <button class="cat-item cat-sensor" onclick="selectCat('sensor', this)">
+        <div class="cat-icon-badge">🏁</div>
+        <span>센서/판단</span>
+      </button>
+      <button class="cat-item cat-data" onclick="selectCat('data', this)">
+        <div class="cat-icon-badge">📊</div>
+        <span>자료/계산</span>
       </button>
     </div>
 
-    <!-- Block Palette (Click to add) -->
-    <div class="palette" id="palette">
-      <!-- Generated by JS -->
+    <!-- Palette Drawer (Blocks Palette) -->
+    <div class="palette-drawer" id="paletteDrawer">
+      <!-- Rendered dynamically -->
     </div>
 
-    <!-- Workspace -->
-    <div class="workspace-area">
-      <div class="workspace-canvas" id="workspace">
-        <div class="script-stack" id="scriptStack" style="left: 60px; top: 40px;">
-          <!-- Default Start Block -->
-          <div class="block block-start" data-type="start">
-            <span>🏁 [시작] 버튼을 눌렀을 때</span>
+    <!-- Workspace Infinite Board -->
+    <div class="workspace-pane" id="workspacePane">
+      <div class="variable-hud" id="variableHud">
+        변수 [점수] : <span id="varScoreVal">0</span>
+      </div>
+
+      <div class="workspace-board" id="workspaceBoard">
+        <!-- Initial Entry Default Hat Stack -->
+        <div class="code-stack" id="defaultStack" style="left: 60px; top: 40px;">
+          <div class="block block-hat block-cat-start" data-cmd="hat_start_click" data-cat="start">
+            <span>🚩 [시작하기] 버튼을 클릭했을 때</span>
           </div>
         </div>
       </div>
 
-      <!-- Virtual Turtle Simulator Window -->
-      <div class="sim-panel">
-        <div class="sim-header">
-          <span>가상 터틀봇 시뮬레이터</span>
-          <span style="color:#06d6a0;">● ON</span>
+      <!-- Realtime Simulator Window -->
+      <div class="sim-dock">
+        <div class="sim-dock-head">
+          <span>🐢 가상 로봇 주행판</span>
+          <button style="background:none; border:none; color:#00cec9; font-size:11px; font-weight:bold; cursor:pointer;" onclick="resetSim()">원위치</button>
         </div>
-        <div class="sim-canvas" id="simArea">
-          <div class="virtual-turtle" id="vTurtle">🐢</div>
+        <div class="sim-field" id="simField" onclick="triggerStartEvent('click_robot')" title="터틀봇을 터치하면 [오브젝트를 클릭했을 때] 실행">
+          <div class="sim-grid"></div>
+          <div class="sim-turtle" id="simTurtle">
+            <div class="sim-turtle-eye"></div>
+            <span>🐢</span>
+            <div class="sim-turtle-tag">터치 가능</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <script>
-    // ── BLE UUIDs for Robomation Turtle ──
-    const TURTLE_SERVICE_UUID = '0000a000-9c80-11e3-a5e2-0800200c9a66';
-    const TURTLE_CHAR_WRITE_UUID = '0000a006-9c80-11e3-a5e2-0800200c9a66';
-    
-    let bleDevice = null;
-    let writeCharacteristic = null;
-    let isRunning = false;
+  <!-- iPad Floating Virtual Pad Modal -->
+  <div class="virtual-controller-modal" id="virtualControllerModal">
+    <div class="ctrl-title">
+      <span>🎮 아이패드 가상 키패드</span>
+      <button style="background:none; border:none; color:#cbd5e0; font-size:16px; cursor:pointer;" onclick="toggleController()">✕</button>
+    </div>
+    <div class="d-pad-box">
+      <button class="pad-btn pad-up" onpointerdown="pressVirtualKey('ArrowUp')">▲</button>
+      <button class="pad-btn pad-left" onpointerdown="pressVirtualKey('ArrowLeft')">◀</button>
+      <div class="pad-btn pad-center">방향키</div>
+      <button class="pad-btn pad-right" onpointerdown="pressVirtualKey('ArrowRight')">▶</button>
+      <button class="pad-btn pad-down" onpointerdown="pressVirtualKey('ArrowDown')">▼</button>
+    </div>
+    <div class="action-btn-row">
+      <button class="act-btn btn-space" onpointerdown="pressVirtualKey('Space')">␣ 스페이스</button>
+      <button class="act-btn" onpointerdown="pressVirtualKey('KeyA')">A</button>
+      <button class="act-btn" onpointerdown="pressVirtualKey('KeyB')">B</button>
+    </div>
+  </div>
 
-    // ── Block Definitions for Palette ──
-    const BLOCKS = {
-      motion: [
-        { type: 'forward', label: '앞으로', unit: '초 이동하기', defaultVal: 1, kind: 'number' },
-        { type: 'backward', label: '뒤로', unit: '초 이동하기', defaultVal: 1, kind: 'number' },
-        { type: 'turn_left', label: '왼쪽으로', unit: '도 회전하기', defaultVal: 90, kind: 'number' },
-        { type: 'turn_right', label: '오른쪽으로', unit: '도 회전하기', defaultVal: 90, kind: 'number' },
-        { type: 'stop_wheels', label: '로봇 바퀴 정지하기' }
-      ],
-      looks: [
-        { type: 'led_color', label: '머리 LED를', select: ['빨강', '초록', '파랑', '노랑', '보라', '하늘', '흰색'], unit: '색으로 켜기' },
-        { type: 'led_off', label: '머리 LED 끄기' }
-      ],
-      sound: [
-        { type: 'buzzer_beep', label: '버저 삑 소리내기' },
-        { type: 'buzzer_siren', label: '사이렌 소리내기' }
-      ],
-      control: [
-        { type: 'wait', label: '', unit: '초 기다리기', defaultVal: 1, kind: 'number' }
-      ]
+  <script>
+    // ── BLE UUID & Hardware Configuration ──
+    const TURTLE_SERVICE_UUID = '0000a000-9c80-11e3-a5e2-0800200c9a66';
+    const TURTLE_CHAR_WRITE = '0000a006-9c80-11e3-a5e2-0800200c9a66';
+
+    let bleDevice = null;
+    let writeChar = null;
+    let isExecuting = false;
+    let globalScore = 0;
+    let activeExecutionTokens = [];
+
+    // Web Audio Synthesizer (for simulator sounds on iPad/PC)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // ── Entry-style Comprehensive Block Definitions ──
+    const CATEGORIES = {
+      start: {
+        title: '시작 블록 (Events & Triggers)',
+        hint: '다양한 시작 조건 블록을 조립소로 끌어다 놓으세요.',
+        blocks: [
+          { cmd: 'hat_start_click', cat: 'start', isHat: true, label: '🚩 [시작하기] 버튼을 클릭했을 때', type: 'none' },
+          { cmd: 'hat_key_pressed', cat: 'start', isHat: true, label: '⌨', select: ['스페이스', '위쪽 화살표(↑)', '아래쪽 화살표(↓)', '왼쪽 화살표(←)', '오른쪽 화살표(→)', 'A 키', 'B 키'], unit: '키를 눌렀을 때', type: 'select' },
+          { cmd: 'hat_robot_clicked', cat: 'start', isHat: true, label: '🐢 [터틀봇]을 클릭했을 때', type: 'none' },
+          { cmd: 'hat_signal_received', cat: 'start', isHat: true, label: '📡', select: ['신호 1', '신호 2', '신호 3'], unit: '신호를 받았을 때', type: 'select' },
+          { cmd: 'send_signal', cat: 'start', label: '📢', select: ['신호 1', '신호 2', '신호 3'], unit: '신호 보내기', type: 'select' },
+          { cmd: 'send_signal_wait', cat: 'start', label: '⏳', select: ['신호 1', '신호 2', '신호 3'], unit: '신호 보내고 기다리기', type: 'select' }
+        ]
+      },
+      flow: {
+        title: '흐름 블록 (Control & Loops)',
+        hint: '반복문과 대기 블록으로 동작의 순서를 제어합니다.',
+        blocks: [
+          { cmd: 'wait_sec', cat: 'flow', label: '⏱', param: 1, unit: '초 기다리기', type: 'num' },
+          { cmd: 'repeat_n', cat: 'flow', label: '🔁', param: 4, unit: '번 반복하기', type: 'repeat' },
+          { cmd: 'repeat_forever', cat: 'flow', label: '🔄 계속 반복하기', type: 'repeat_forever' },
+          { cmd: 'if_obstacle', cat: 'flow', label: '❓ 만약 < 앞쪽에 장애물이 있으면 > 이라면', type: 'c_slot' },
+          { cmd: 'if_line', cat: 'flow', label: '❓ 만약 < 검은색 선 감지되면 > 이라면', type: 'c_slot' },
+          { cmd: 'stop_all', cat: 'flow', label: '🛑 모든 코드 멈추기', type: 'none' }
+        ]
+      },
+      motion: {
+        title: '움직임 블록 (Motion)',
+        hint: '터틀봇의 바퀴 모터를 정밀하게 구동합니다.',
+        blocks: [
+          { cmd: 'move_forward_sec', cat: 'motion', label: '앞으로', param: 1, unit: '초 이동하기', type: 'num' },
+          { cmd: 'move_forward_cm', cat: 'motion', label: '앞으로', param: 5, unit: 'cm 이동하기', type: 'num' },
+          { cmd: 'move_backward_sec', cat: 'motion', label: '뒤로', param: 1, unit: '초 이동하기', type: 'num' },
+          { cmd: 'move_backward_cm', cat: 'motion', label: '뒤로', param: 5, unit: 'cm 이동하기', type: 'num' },
+          { cmd: 'turn_left_deg', cat: 'motion', label: '왼쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
+          { cmd: 'turn_right_deg', cat: 'motion', label: '오른쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
+          { cmd: 'pivot_left', cat: 'motion', label: '왼쪽 바퀴 축으로 피벗 회전하기', type: 'none' },
+          { cmd: 'pivot_right', cat: 'motion', label: '오른쪽 바퀴 축으로 피벗 회전하기', type: 'none' },
+          { cmd: 'set_wheels', cat: 'motion', label: '왼쪽', param1: 50, label2: '% 오른쪽', param2: 50, unit: '% 바퀴 속도 정하기', type: 'two_num' },
+          { cmd: 'stop_wheels', cat: 'motion', label: '바퀴 동작 멈추기', type: 'none' }
+        ]
+      },
+      looks: {
+        title: '생김새 / 머리 LED (Looks)',
+        hint: '터틀봇 머리의 풀컬러 RGB LED를 제어합니다.',
+        blocks: [
+          { cmd: 'set_led_color', cat: 'looks', label: '머리 LED를', select: ['빨간색', '초록색', '파란색', '노란색', '보라색', '하늘색', '흰색'], unit: '으로 켜기', type: 'select' },
+          { cmd: 'set_led_rgb', cat: 'looks', label: '머리 LED를 R:', param1: 255, label2: 'G:', param2: 0, label3: 'B:', param3: 0, unit: '으로 정하기', type: 'rgb' },
+          { cmd: 'blink_led', cat: 'looks', label: '머리 LED를', param: 3, unit: '번 깜빡이기', type: 'num' },
+          { cmd: 'clear_led', cat: 'looks', label: '머리 LED 끄기', type: 'none' }
+        ]
+      },
+      sound: {
+        title: '소리 / 음계 블록 (Sound & Music)',
+        hint: '버저 및 내장 멜로디 효과음을 재생합니다.',
+        blocks: [
+          { cmd: 'play_clip', cat: 'sound', label: '효과음', select: ['삐- 소리', '사이렌', '로봇 소리', '행진곡', '생일축하곡', '디비디비딥', '잘했어요'], unit: '재생하기', type: 'select' },
+          { cmd: 'play_note', cat: 'sound', label: '음계', select: ['4옥타브 도', '4옥타브 레', '4옥타브 미', '4옥타브 파', '4옥타브 솔', '4옥타브 라', '4옥타브 시', '5옥타브 도'], label2: '음을', param: 1, unit: '박자 연주하기', type: 'note' },
+          { cmd: 'buzzer_hertz', cat: 'sound', label: '버저를', param: 440, unit: 'Hz 주파수로 소리내기', type: 'num' },
+          { cmd: 'stop_sound', cat: 'sound', label: '모든 소리 멈추기', type: 'none' }
+        ]
+      },
+      sensor: {
+        title: '센서 / 라인트레이서 (Sensors)',
+        hint: '바닥 적외선 센서를 이용해 검은 선을 추적합니다.',
+        blocks: [
+          { cmd: 'follow_line', cat: 'sensor', label: '🏁 검은색 선을 따라가기 (라인트레이싱)', type: 'none' },
+          { cmd: 'cross_intersection', cat: 'sensor', label: '➕ 검은색 교차로 건너가기', type: 'none' },
+          { cmd: 'turn_intersection', cat: 'sensor', label: '교차로에서', select: ['왼쪽', '오른쪽', '유턴'], unit: '으로 돌기', type: 'select' },
+          { cmd: 'stop_tracer', cat: 'sensor', label: '라인 트레이서 멈추기', type: 'none' }
+        ]
+      },
+      data: {
+        title: '자료 / 계산 (Data & Variables)',
+        hint: '변수에 점수를 저장하거나 난수를 생성합니다.',
+        blocks: [
+          { cmd: 'var_add', cat: 'data', label: '변수 [점수] 에', param: 1, unit: '만큼 더하기', type: 'num' },
+          { cmd: 'var_set', cat: 'data', label: '변수 [점수] 를', param: 0, unit: '으로 정하기', type: 'num' },
+          { cmd: 'show_score', cat: 'data', label: '화면에 변수값 표시하기', type: 'none' },
+          { cmd: 'random_forward', cat: 'data', label: '1부터 5초 사이 무작위 이동하기', type: 'none' }
+        ]
+      }
     };
 
-    // ── Render Palette Blocks ──
-    function switchCategory(cat, btn) {
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderPalette(cat);
+    // ── Active Category Selection & Palette Rendering ──
+    let currentCat = 'start';
+    function selectCat(catName, btnEl) {
+      currentCat = catName;
+      document.querySelectorAll('.cat-item').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+      renderPalette(catName);
     }
 
-    function renderPalette(cat) {
-      const palette = document.getElementById('palette');
-      palette.innerHTML = `<div class="palette-title">${cat.toUpperCase()} 블록</div>`;
-      
-      BLOCKS[cat].forEach(b => {
-        const el = document.createElement('div');
-        el.className = `block block-${cat}`;
-        el.style.marginBottom = '6px';
-        el.innerHTML = `<span>+ ${b.label}</span>` + 
-                       (b.kind === 'number' ? ` <input type="number" value="${b.defaultVal}" onclick="event.stopPropagation()">` : '') +
-                       (b.select ? ` <select onclick="event.stopPropagation()">${b.select.map(s => `<option>${s}</option>`).join('')}</select>` : '') +
-                       (b.unit ? ` <span>${b.unit}</span>` : '');
-        
-        el.onclick = () => addBlockToStack(cat, b);
-        palette.appendChild(el);
+    function renderPalette(catName) {
+      const drawer = document.getElementById('paletteDrawer');
+      const data = CATEGORIES[catName];
+      drawer.innerHTML = `
+        <div class="palette-title">${data.title}</div>
+        <div class="palette-hint">${data.hint}</div>
+      `;
+
+      data.blocks.forEach(def => {
+        const item = createBlockDOM(def, true);
+        drawer.appendChild(item);
       });
     }
 
-    // ── Add Block to Main Script Stack ──
-    function addBlockToStack(cat, blockDef) {
-      const stack = document.getElementById('scriptStack');
-      const el = document.createElement('div');
-      el.className = `block block-${cat}`;
-      el.dataset.type = blockDef.type;
+    // ── Generate Block DOM Element ──
+    function createBlockDOM(def, isPalette = false) {
+      let el;
+      if (def.type === 'repeat' || def.type === 'repeat_forever' || def.type === 'c_slot') {
+        el = document.createElement('div');
+        el.className = `block-c-container block-cat-${def.cat}`;
+        el.dataset.cmd = def.cmd;
+        el.dataset.cat = def.cat;
 
-      let inner = `<span>${blockDef.label}</span>`;
-      if (blockDef.kind === 'number') {
-        inner += ` <input type="number" class="block-val" value="${blockDef.defaultVal}" min="0.1" step="0.5">`;
+        const isForever = (def.type === 'repeat_forever');
+        let headerText = def.label;
+        let headerHtml = `<span>${headerText}</span>`;
+        if (def.type === 'repeat') {
+          headerHtml += ` <input type="number" class="c-param" value="${def.param}" min="1" onclick="event.stopPropagation()"> <span>번</span>`;
+        }
+        if (!isPalette) {
+          headerHtml += `<button class="block-btn-del" onclick="deleteBlock(this)">✕</button>`;
+        }
+
+        el.innerHTML = `
+          <div class="block-c-header block-cat-${def.cat}">${headerHtml}</div>
+          <div class="block-c-body">
+            <div class="block-c-bar block-cat-${def.cat}"></div>
+            <div class="block-c-slot"></div>
+          </div>
+          <div class="block-c-footer block-cat-${def.cat}"></div>
+        `;
+
+        if (!isPalette) {
+          attachBlockDragEvents(el);
+        } else {
+          attachPaletteDragEvents(el, def);
+        }
+        return el;
       }
-      if (blockDef.select) {
-        inner += ` <select class="block-select">${blockDef.select.map(s => `<option>${s}</option>`).join('')}</select>`;
+
+      el = document.createElement('div');
+      el.className = `block block-cat-${def.cat} ${def.isHat ? 'block-hat' : ''}`;
+      el.dataset.cmd = def.cmd;
+      el.dataset.cat = def.cat;
+      if (def.isHat) el.dataset.isHat = 'true';
+
+      let inner = `<span>${def.label}</span>`;
+      if (def.type === 'num') {
+        inner += ` <input type="number" class="param-1" value="${def.param}" min="0.1" step="0.5" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+      } else if (def.type === 'two_num') {
+        inner += ` <input type="number" class="param-1" value="${def.param1}" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-2" value="${def.param2}" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+      } else if (def.type === 'rgb') {
+        inner += ` <input type="number" class="param-r" value="${def.param1}" style="width:42px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-g" value="${def.param2}" style="width:42px;" onclick="event.stopPropagation()"> <span>${def.label3}</span> <input type="number" class="param-b" value="${def.param3}" style="width:42px;" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+      } else if (def.type === 'select') {
+        inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+      } else if (def.type === 'note') {
+        inner += ` <select class="param-note" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-beats" value="${def.param}" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       }
-      if (blockDef.unit) {
-        inner += ` <span>${blockDef.unit}</span>`;
+
+      if (!isPalette) {
+        inner += `<button class="block-btn-del" onclick="deleteBlock(this)">✕</button>`;
       }
-      inner += `<button class="block-del-btn" onclick="this.parentElement.remove()">✕</button>`;
 
       el.innerHTML = inner;
-      stack.appendChild(el);
+
+      if (!isPalette) {
+        attachBlockDragEvents(el);
+      } else {
+        attachPaletteDragEvents(el, def);
+      }
+      return el;
+    }
+
+    function deleteBlock(btn) {
+      const block = btn.closest('.block, .block-c-container');
+      const stack = block.closest('.code-stack');
+      block.remove();
+      if (stack && stack.children.length === 0) {
+        stack.remove();
+      }
+    }
+
+    // ── High-Precision Drag & Drop Snapping System (Touch & Pointer) ──
+    let dragData = null; // { source: 'palette'|'workspace', el: HTMLElement, def: Object, startX, startY }
+    let ghostEl = null;
+    let currentDropIndicator = null;
+    let targetDropSlot = null;
+
+    function attachPaletteDragEvents(el, def) {
+      el.onpointerdown = (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        e.preventDefault();
+
+        dragData = {
+          source: 'palette',
+          def: def,
+          originEl: el,
+          startX: e.clientX,
+          startY: e.clientY
+        };
+
+        createDragGhost(el, e.clientX, e.clientY);
+        window.addEventListener('pointermove', onGlobalPointerMove);
+        window.addEventListener('pointerup', onGlobalPointerUp);
+      };
+
+      // Quick tap fallback: click to append to main/first stack
+      el.onclick = (e) => {
+        if (dragData && dragData.moved) return;
+        const board = document.getElementById('workspaceBoard');
+        const firstStack = board.querySelector('.code-stack');
+        const newBlock = createBlockDOM(def, false);
+        if (def.isHat || !firstStack) {
+          const newStack = document.createElement('div');
+          newStack.className = 'code-stack';
+          newStack.style.left = (80 + Math.random() * 80) + 'px';
+          newStack.style.top = (60 + Math.random() * 80) + 'px';
+          newStack.appendChild(newBlock);
+          board.appendChild(newStack);
+          attachStackDrag(newStack);
+        } else {
+          firstStack.appendChild(newBlock);
+        }
+      };
+    }
+
+    function attachBlockDragEvents(el) {
+      el.onpointerdown = (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.classList.contains('block-btn-del')) return;
+        e.stopPropagation();
+        e.preventDefault();
+
+        // If it's a Hat block, dragging it moves the entire stack!
+        if (el.dataset.isHat === 'true' && el.parentElement && el.parentElement.classList.contains('code-stack')) {
+          startStackDrag(el.parentElement, e);
+          return;
+        }
+
+        dragData = {
+          source: 'workspace',
+          blockEl: el,
+          originalParent: el.parentElement,
+          originalNextSibling: el.nextElementSibling,
+          startX: e.clientX,
+          startY: e.clientY
+        };
+
+        createDragGhost(el, e.clientX, e.clientY);
+        el.style.opacity = '0.3';
+
+        window.addEventListener('pointermove', onGlobalPointerMove);
+        window.addEventListener('pointerup', onGlobalPointerUp);
+      };
+    }
+
+    function createDragGhost(sourceEl, x, y) {
+      ghostEl = sourceEl.cloneNode(true);
+      ghostEl.classList.add('drag-ghost');
+      ghostEl.style.left = `${x}px`;
+      ghostEl.style.top = `${y}px`;
+      document.body.appendChild(ghostEl);
+    }
+
+    function onGlobalPointerMove(e) {
+      if (!dragData) return;
+      if (Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY) > 6) {
+        dragData.moved = true;
+      }
+      if (ghostEl) {
+        ghostEl.style.left = `${e.clientX}px`;
+        ghostEl.style.top = `${e.clientY}px`;
+      }
+
+      // Check drop target under pointer
+      findAndShowDropIndicator(e.clientX, e.clientY);
+    }
+
+    function findAndShowDropIndicator(clientX, clientY) {
+      removeDropIndicator();
+
+      // Temporarily hide ghost to raycast elementsFromPoint
+      if (ghostEl) ghostEl.style.display = 'none';
+      const elements = document.elementsFromPoint(clientX, clientY);
+      if (ghostEl) ghostEl.style.display = '';
+
+      const slot = elements.find(el => el.classList && el.classList.contains('block-c-slot'));
+      if (slot) {
+        targetDropSlot = slot;
+        slot.classList.add('slot-hover');
+        return;
+      }
+
+      const targetBlock = elements.find(el => (el.classList && (el.classList.contains('block') || el.classList.contains('block-c-container'))) && el !== ghostEl && (!dragData || el !== dragData.blockEl));
+      if (targetBlock) {
+        const rect = targetBlock.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        const indicator = document.createElement('div');
+        indicator.className = 'drop-indicator';
+
+        if (clientY < midY && targetBlock.dataset.isHat !== 'true') {
+          targetBlock.parentElement.insertBefore(indicator, targetBlock);
+        } else {
+          targetBlock.parentElement.insertBefore(indicator, targetBlock.nextSibling);
+        }
+        currentDropIndicator = indicator;
+      }
+    }
+
+    function removeDropIndicator() {
+      if (currentDropIndicator) {
+        currentDropIndicator.remove();
+        currentDropIndicator = null;
+      }
+      if (targetDropSlot) {
+        targetDropSlot.classList.remove('slot-hover');
+        targetDropSlot = null;
+      }
+    }
+
+    function onGlobalPointerUp(e) {
+      window.removeEventListener('pointermove', onGlobalPointerMove);
+      window.removeEventListener('pointerup', onGlobalPointerUp);
+
+      if (!dragData) return;
+
+      const board = document.getElementById('workspaceBoard');
+      const boardRect = board.getBoundingClientRect();
+
+      let targetEl = null;
+      if (dragData.source === 'palette') {
+        targetEl = createBlockDOM(dragData.def, false);
+      } else {
+        targetEl = dragData.blockEl;
+        targetEl.style.opacity = '1.0';
+      }
+
+      if (currentDropIndicator) {
+        // Insert at indicator position
+        currentDropIndicator.parentElement.insertBefore(targetEl, currentDropIndicator);
+      } else if (targetDropSlot) {
+        // Insert into C-slot
+        targetDropSlot.appendChild(targetEl);
+      } else {
+        // Dropped onto empty workspace: create new stack
+        if (dragData.source === 'palette' || dragData.source === 'workspace') {
+          // Calculate drop coordinates relative to board
+          const dropX = Math.max(30, e.clientX - boardRect.left - 20);
+          const dropY = Math.max(30, e.clientY - boardRect.top - 20);
+
+          const newStack = document.createElement('div');
+          newStack.className = 'code-stack';
+          newStack.style.left = `${dropX}px`;
+          newStack.style.top = `${dropY}px`;
+          newStack.appendChild(targetEl);
+          board.appendChild(newStack);
+          attachStackDrag(newStack);
+        }
+      }
+
+      removeDropIndicator();
+      if (ghostEl) {
+        ghostEl.remove();
+        ghostEl = null;
+      }
+
+      // Cleanup empty stacks
+      document.querySelectorAll('.code-stack').forEach(s => {
+        if (s.children.length === 0) s.remove();
+      });
+
+      dragData = null;
+    }
+
+    // ── Stack Moving Drag System (Whole Script Drag by Hat Block) ──
+    function attachStackDrag(stack) {
+      const hat = stack.querySelector('.block-hat');
+      if (hat) {
+        hat.onpointerdown = (e) => startStackDrag(stack, e);
+      }
+    }
+
+    function startStackDrag(stack, e) {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.classList.contains('block-btn-del')) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const initialLeft = parseFloat(stack.style.left) || 60;
+      const initialTop = parseFloat(stack.style.top) || 40;
+
+      function onMove(me) {
+        const dx = me.clientX - startX;
+        const dy = me.clientY - startY;
+        stack.style.left = `${Math.max(20, initialLeft + dx)}px`;
+        stack.style.top = `${Math.max(20, initialTop + dy)}px`;
+      }
+
+      function onUp() {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+      }
+
+      window.addEventListener('pointermove', onMove);
+      window.addEventListener('pointerup', onUp);
+    }
+
+    // Initialize existing default stack drag
+    document.querySelectorAll('.code-stack').forEach(attachStackDrag);
+
+    // ── Virtual Controller Modal & Key Binding ──
+    function toggleController() {
+      const modal = document.getElementById('virtualControllerModal');
+      modal.classList.toggle('show');
+    }
+
+    function pressVirtualKey(keyName) {
+      // Map keyName to Entry Korean labels
+      let matchedLabel = '';
+      if (keyName === 'ArrowUp') matchedLabel = '위쪽 화살표(↑)';
+      else if (keyName === 'ArrowDown') matchedLabel = '아래쪽 화살표(↓)';
+      else if (keyName === 'ArrowLeft') matchedLabel = '왼쪽 화살표(←)';
+      else if (keyName === 'ArrowRight') matchedLabel = '오른쪽 화살표(→)';
+      else if (keyName === 'Space') matchedLabel = '스페이스';
+      else if (keyName === 'KeyA') matchedLabel = 'A 키';
+      else if (keyName === 'KeyB') matchedLabel = 'B 키';
+
+      triggerStartEvent('key_press', matchedLabel);
+    }
+
+    // Physical Keyboard Listener
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.code === 'ArrowUp') pressVirtualKey('ArrowUp');
+      else if (e.code === 'ArrowDown') pressVirtualKey('ArrowDown');
+      else if (e.code === 'ArrowLeft') pressVirtualKey('ArrowLeft');
+      else if (e.code === 'ArrowRight') pressVirtualKey('ArrowRight');
+      else if (e.code === 'Space') pressVirtualKey('Space');
+      else if (e.code === 'KeyA') pressVirtualKey('KeyA');
+      else if (e.code === 'KeyB') pressVirtualKey('KeyB');
+    });
+
+    // ── Multi-Stack Concurrent Event Trigger Engine ──
+    async function triggerStartEvent(eventType, eventParam = null) {
+      const stacks = Array.from(document.querySelectorAll('.code-stack'));
+
+      for (const stack of stacks) {
+        const firstBlock = stack.children[0];
+        if (!firstBlock) continue;
+
+        let shouldRun = false;
+        if (eventType === 'start_click' && firstBlock.dataset.cmd === 'hat_start_click') {
+          shouldRun = true;
+        } else if (eventType === 'key_press' && firstBlock.dataset.cmd === 'hat_key_pressed') {
+          const sel = firstBlock.querySelector('.param-select').value;
+          if (sel === eventParam) shouldRun = true;
+        } else if (eventType === 'click_robot' && firstBlock.dataset.cmd === 'hat_robot_clicked') {
+          shouldRun = true;
+        } else if (eventType === 'signal' && firstBlock.dataset.cmd === 'hat_signal_received') {
+          const sel = firstBlock.querySelector('.param-select').value;
+          if (sel === eventParam) shouldRun = true;
+        }
+
+        if (shouldRun) {
+          executeStack(stack);
+        }
+      }
+    }
+
+    async function executeStack(stack) {
+      const executionToken = { cancelled: false };
+      activeExecutionTokens.push(executionToken);
+      isExecuting = true;
+
+      const blocks = Array.from(stack.children);
+      await executeElements(blocks, executionToken);
+
+      activeExecutionTokens = activeExecutionTokens.filter(t => t !== executionToken);
+      if (activeExecutionTokens.length === 0) {
+        isExecuting = false;
+        sendPacket(0, 0, [0,0,0], 0, 0, 0);
+      }
+    }
+
+    async function executeElements(elements, token) {
+      for (const el of elements) {
+        if (token.cancelled || !isExecuting) break;
+        if (el.dataset.isHat === 'true') continue;
+
+        // Nested Loop & Condition C-Block
+        if (el.classList.contains('block-c-container')) {
+          const cmd = el.dataset.cmd;
+          const slot = el.querySelector('.block-c-slot');
+          const childBlocks = Array.from(slot.children);
+
+          if (cmd === 'repeat_n') {
+            const count = parseInt(el.querySelector('.c-param').value) || 1;
+            for (let c = 0; c < count; c++) {
+              if (token.cancelled || !isExecuting) break;
+              await executeElements(childBlocks, token);
+            }
+          } else if (cmd === 'repeat_forever') {
+            while (!token.cancelled && isExecuting) {
+              await executeElements(childBlocks, token);
+              await sleep(15);
+            }
+          } else if (cmd === 'if_obstacle') {
+            // Simulated sensor condition
+            const hasObstacle = Math.random() > 0.4; // 60% chance detected
+            if (hasObstacle) {
+              await executeElements(childBlocks, token);
+            }
+          } else if (cmd === 'if_line') {
+            await executeElements(childBlocks, token);
+          }
+          continue;
+        }
+
+        // Standard Single Block Execution
+        el.classList.add('running-highlight');
+        await executeSingleBlock(el, token);
+        el.classList.remove('running-highlight');
+      }
+    }
+
+    async function executeSingleBlock(el, token) {
+      const cmd = el.dataset.cmd;
+
+      switch (cmd) {
+        // ── Motion Blocks ──
+        case 'move_forward_sec': {
+          const sec = parseFloat(el.querySelector('.param-1').value) || 1;
+          sendPacket(50, 50);
+          driveSim(28 * sec, 0);
+          await sleep(sec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'move_forward_cm': {
+          const cm = parseFloat(el.querySelector('.param-1').value) || 5;
+          const sec = cm / 10.0;
+          sendPacket(50, 50);
+          driveSim(cm * 4, 0);
+          await sleep(sec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'move_backward_sec': {
+          const sec = parseFloat(el.querySelector('.param-1').value) || 1;
+          sendPacket(-50, -50);
+          driveSim(-28 * sec, 0);
+          await sleep(sec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'move_backward_cm': {
+          const cm = parseFloat(el.querySelector('.param-1').value) || 5;
+          const sec = cm / 10.0;
+          sendPacket(-50, -50);
+          driveSim(-cm * 4, 0);
+          await sleep(sec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'turn_left_deg': {
+          const deg = parseFloat(el.querySelector('.param-1').value) || 90;
+          const sec = (deg / 90.0) * 0.78;
+          sendPacket(-45, 45);
+          driveSim(0, -deg);
+          await sleep(sec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'turn_right_deg': {
+          const deg = parseFloat(el.querySelector('.param-1').value) || 90;
+          const sec = (deg / 90.0) * 0.78;
+          sendPacket(45, -45);
+          driveSim(0, deg);
+          await sleep(sec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'pivot_left': {
+          sendPacket(0, 50);
+          driveSim(10, 45);
+          await sleep(800);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'pivot_right': {
+          sendPacket(50, 0);
+          driveSim(10, -45);
+          await sleep(800);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'set_wheels': {
+          const l = parseFloat(el.querySelector('.param-1').value) || 0;
+          const r = parseFloat(el.querySelector('.param-2').value) || 0;
+          sendPacket(l, r);
+          break;
+        }
+        case 'stop_wheels': {
+          sendPacket(0, 0);
+          break;
+        }
+
+        // ── Looks & LED Blocks ──
+        case 'set_led_color': {
+          const sel = el.querySelector('.param-select').value;
+          const colors = {
+            '빨간색': [255, 0, 0], '초록색': [0, 255, 0], '파란색': [0, 0, 255],
+            '노란색': [255, 255, 0], '보라색': [255, 0, 255], '하늘색': [0, 255, 255], '흰색': [255, 255, 255]
+          };
+          const rgb = colors[sel] || [255, 0, 0];
+          sendPacket(0, 0, rgb);
+          setSimLed(rgb);
+          break;
+        }
+        case 'set_led_rgb': {
+          const r = parseInt(el.querySelector('.param-r').value) || 0;
+          const g = parseInt(el.querySelector('.param-g').value) || 0;
+          const b = parseInt(el.querySelector('.param-b').value) || 0;
+          sendPacket(0, 0, [r, g, b]);
+          setSimLed([r, g, b]);
+          break;
+        }
+        case 'blink_led': {
+          const times = parseInt(el.querySelector('.param-1').value) || 3;
+          for (let i = 0; i < times; i++) {
+            if (token.cancelled) break;
+            sendPacket(0, 0, [255, 255, 0]);
+            setSimLed([255, 255, 0]);
+            await sleep(250);
+            sendPacket(0, 0, [0, 0, 0]);
+            setSimLed([0, 0, 0]);
+            await sleep(250);
+          }
+          break;
+        }
+        case 'clear_led': {
+          sendPacket(0, 0, [0, 0, 0]);
+          setSimLed([0, 0, 0]);
+          break;
+        }
+
+        // ── Sound & Music Blocks ──
+        case 'play_clip': {
+          const sel = el.querySelector('.param-select').value;
+          const clips = {
+            '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
+            '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
+          };
+          const clipId = clips[sel] || 1;
+          sendPacket(0, 0, [0,0,0], clipId);
+          playWebAudioClip(clipId);
+          await sleep(750);
+          break;
+        }
+        case 'play_note': {
+          const noteStr = el.querySelector('.param-note').value;
+          const beats = parseFloat(el.querySelector('.param-beats').value) || 1;
+          const notes = { '4옥타브 도': 60, '4옥타브 레': 62, '4옥타브 미': 64, '4옥타브 파': 65, '4옥타브 솔': 67, '4옥타브 라': 69, '4옥타브 시': 71, '5옥타브 도': 72 };
+          const freqs = { 60: 261.63, 62: 293.66, 64: 329.63, 65: 349.23, 67: 392.00, 69: 440.00, 71: 493.88, 72: 523.25 };
+          const noteCode = notes[noteStr] || 60;
+          sendPacket(0, 0, [0,0,0], 0, noteCode);
+          playWebAudioTone(freqs[noteCode] || 440, beats * 500);
+          await sleep(beats * 500);
+          sendPacket(0, 0, [0,0,0], 0, 0);
+          break;
+        }
+        case 'buzzer_hertz': {
+          const hz = parseFloat(el.querySelector('.param-1').value) || 440;
+          sendPacket(0, 0, [0,0,0], 0, 0, hz);
+          playWebAudioTone(hz, 500);
+          await sleep(500);
+          sendPacket(0, 0, [0,0,0], 0, 0, 0);
+          break;
+        }
+        case 'stop_sound': {
+          sendPacket(0, 0, [0,0,0], 0, 0, 0);
+          break;
+        }
+
+        // ── Sensors & Tracer ──
+        case 'follow_line': {
+          sendPacket(35, 35);
+          driveSim(40, 0);
+          await sleep(2000);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'cross_intersection': {
+          sendPacket(45, 45);
+          driveSim(20, 0);
+          await sleep(600);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'turn_intersection': {
+          const dir = el.querySelector('.param-select').value;
+          if (dir === '왼쪽') {
+            sendPacket(-45, 45); driveSim(0, -90);
+          } else if (dir === '오른쪽') {
+            sendPacket(45, -45); driveSim(0, 90);
+          } else {
+            sendPacket(-45, 45); driveSim(0, 180);
+          }
+          await sleep(800);
+          sendPacket(0, 0);
+          break;
+        }
+        case 'stop_tracer': {
+          sendPacket(0, 0);
+          break;
+        }
+
+        // ── Flow & Signals ──
+        case 'wait_sec': {
+          const sec = parseFloat(el.querySelector('.param-1').value) || 1;
+          await sleep(sec * 1000);
+          break;
+        }
+        case 'send_signal': {
+          const sig = el.querySelector('.param-select').value;
+          triggerStartEvent('signal', sig);
+          break;
+        }
+        case 'send_signal_wait': {
+          const sig = el.querySelector('.param-select').value;
+          await triggerStartEvent('signal', sig);
+          await sleep(500);
+          break;
+        }
+        case 'stop_all': {
+          stopAllExecution();
+          break;
+        }
+
+        // ── Data & Variables ──
+        case 'var_add': {
+          const val = parseFloat(el.querySelector('.param-1').value) || 1;
+          globalScore += val;
+          document.getElementById('varScoreVal').innerText = globalScore;
+          document.getElementById('variableHud').classList.add('show');
+          break;
+        }
+        case 'var_set': {
+          const val = parseFloat(el.querySelector('.param-1').value) || 0;
+          globalScore = val;
+          document.getElementById('varScoreVal').innerText = globalScore;
+          document.getElementById('variableHud').classList.add('show');
+          break;
+        }
+        case 'show_score': {
+          document.getElementById('variableHud').classList.toggle('show');
+          break;
+        }
+        case 'random_forward': {
+          const randSec = Math.floor(Math.random() * 4) + 1;
+          sendPacket(50, 50);
+          driveSim(28 * randSec, 0);
+          await sleep(randSec * 1000);
+          sendPacket(0, 0);
+          break;
+        }
+      }
+    }
+
+    function stopAllExecution() {
+      activeExecutionTokens.forEach(t => t.cancelled = true);
+      activeExecutionTokens = [];
+      isExecuting = false;
+      document.querySelectorAll('.running-highlight').forEach(el => el.classList.remove('running-highlight'));
+      sendPacket(0, 0, [0,0,0], 0, 0, 0);
+    }
+
+    function sleep(ms) {
+      return new Promise(res => setTimeout(res, ms));
+    }
+
+    // ── Web Audio Simulator Synthesis ──
+    function playWebAudioTone(freq, durMs) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durMs / 1000);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + durMs / 1000);
+      } catch(e) {}
+    }
+
+    function playWebAudioClip(clipId) {
+      // Fun simulated chime/beeps
+      playWebAudioTone(523.25, 120);
+      setTimeout(() => playWebAudioTone(659.25, 120), 120);
+      setTimeout(() => playWebAudioTone(783.99, 200), 240);
     }
 
     // ── Web Bluetooth Connection via Bluefy ──
     async function connectTurtle() {
       if (!navigator.bluetooth) {
-        alert('이 브라우저는 Web Bluetooth를 지원하지 않습니다.\n아이패드의 [Bluefy] 브라우저를 이용해 접속해 주세요!');
+        alert('Web Bluetooth를 지원하지 않는 브라우저입니다.\n아이패드의 [Bluefy] 브라우저로 접속해 주세요!');
         return;
       }
 
       try {
-        document.getElementById('bleStatus').innerText = '연결 검색 중...';
-        
-        // Scan for Turtle or Roboid BLE
+        updateStatus('연결 검색 중...', false);
+
         bleDevice = await navigator.bluetooth.requestDevice({
           filters: [
             { namePrefix: 'Turtle' },
@@ -285,199 +1665,154 @@
           ]
         });
 
-        document.getElementById('bleStatus').innerText = '서버 연결 중...';
+        updateStatus('GATT 통신 연결 중...', false);
         const server = await bleDevice.gatt.connect();
 
-        // Get Service & Characteristic
         let service;
         try {
           service = await server.getPrimaryService(TURTLE_SERVICE_UUID);
         } catch (e) {
-          const services = await server.getPrimaryServices();
-          service = services[0];
+          const svcs = await server.getPrimaryServices();
+          service = svcs[0];
         }
 
-        const characteristics = await service.getCharacteristics();
-        // Find writable characteristic
-        writeCharacteristic = characteristics.find(c => c.properties.write || c.properties.writeWithoutResponse);
-        if (!writeCharacteristic) writeCharacteristic = characteristics[0];
+        const chars = await service.getCharacteristics();
+        writeChar = chars.find(c => c.properties.write || c.properties.writeWithoutResponse) || chars[0];
 
-        // Connection Success UI
-        const badge = document.getElementById('bleStatus');
-        badge.innerText = `● 연결됨 (${bleDevice.name || '터틀봇'})`;
-        badge.className = 'status-badge online';
-        document.getElementById('btnConnect').classList.add('connected');
-        document.getElementById('btnConnect').innerHTML = `<span>✔ ${bleDevice.name || '터틀봇'} 연결완료</span>`;
+        updateStatus(`연결됨 (${bleDevice.name || '터틀봇'})`, true);
+        const btn = document.getElementById('btnConnect');
+        btn.classList.add('connected');
+        btn.innerHTML = `<span>✔ ${bleDevice.name || '터틀봇'} 연결완료</span>`;
 
-        // Send Welcome Blink
-        sendTurtleCommand(0, 0, [0, 255, 0], 1);
-        setTimeout(() => sendTurtleCommand(0, 0, [0, 0, 0], 0), 500);
+        // Welcome Flash: Green LED for 0.4s + Beep
+        sendPacket(0, 0, [0, 255, 0], 1);
+        playWebAudioClip(1);
+        setTimeout(() => sendPacket(0, 0, [0, 0, 0], 0), 400);
+
+        bleDevice.addEventListener('gattserverdisconnected', onDisconnected);
 
       } catch (err) {
-        console.error('BLE Connect Error:', err);
-        document.getElementById('bleStatus').innerText = '연결 실패 (시뮬레이터 모드)';
-        document.getElementById('bleStatus').className = 'status-badge';
-        alert('블루투스 연결에 실패했거나 취소되었습니다.\n(등 버튼을 누른 채 터틀봇을 켜 파란 불이 깜빡이는지 확인해주세요)');
+        console.warn('BLE Connection cancelled/failed:', err);
+        updateStatus('로봇 미연결 (가상 시뮬레이터)', false);
       }
     }
 
-    // ── Build & Send BLE Command Packet to Turtle ──
-    function sendTurtleCommand(leftSpeed, rightSpeed, rgbLed = [0,0,0], buzzerSound = 0) {
-      if (!writeCharacteristic) return;
+    function onDisconnected() {
+      updateStatus('연결 끊김 (가상 시뮬레이터)', false);
+      const btn = document.getElementById('btnConnect');
+      btn.classList.remove('connected');
+      btn.innerHTML = `<span>📡 로봇 연결 (Bluetooth)</span>`;
+      writeChar = null;
+    }
 
-      // Roboid BLE 20-byte Motoring Packet
+    function updateStatus(text, isOnline) {
+      document.getElementById('bleStatusText').innerText = text;
+      const pill = document.getElementById('bleStatusPill');
+      if (isOnline) pill.classList.add('online');
+      else pill.classList.remove('online');
+    }
+
+    // ── 18-Byte Roboid Motoring Packet Sender ──
+    function sendPacket(leftSpeed, rightSpeed, rgbLed = [0,0,0], soundClip = 0, noteVal = 0, buzzerFreq = 0) {
+      if (!writeChar) return;
+
       const buffer = new Uint8Array(18);
-      buffer[0] = 0x10; // Header Motoring
+      buffer[0] = 0x10; // Header
 
-      // Left wheel (-100 to 100) -> 16-bit signed
-      const l = Math.max(-100, Math.min(100, leftSpeed)) * 10;
+      const l = Math.max(-100, Math.min(100, Math.round(leftSpeed))) * 10;
       buffer[1] = (l >> 8) & 0xff;
       buffer[2] = l & 0xff;
 
-      // Right wheel (-100 to 100) -> 16-bit signed
-      const r = Math.max(-100, Math.min(100, rightSpeed)) * 10;
+      const r = Math.max(-100, Math.min(100, Math.round(rightSpeed))) * 10;
       buffer[3] = (r >> 8) & 0xff;
       buffer[4] = r & 0xff;
 
-      // RGB Head LED
-      buffer[8] = rgbLed[0]; // Red
-      buffer[9] = rgbLed[1]; // Green
-      buffer[10] = rgbLed[2]; // Blue
+      buffer[8] = rgbLed[0];
+      buffer[9] = rgbLed[1];
+      buffer[10] = rgbLed[2];
 
-      // Buzzer Clip
-      if (buzzerSound > 0) {
-        buffer[14] = 0x80 | buzzerSound;
+      if (soundClip > 0) {
+        buffer[14] = 0x80 | (soundClip & 0x7f);
+      } else if (noteVal > 0) {
+        buffer[13] = noteVal & 0xff;
+      } else if (buzzerFreq > 0) {
+        const b = Math.round(buzzerFreq * 100);
+        buffer[11] = (b >> 16) & 0xff;
+        buffer[12] = (b >> 8) & 0xff;
+        buffer[13] = b & 0xff;
       }
 
       try {
-        if (writeCharacteristic.writeValueWithoutResponse) {
-          writeCharacteristic.writeValueWithoutResponse(buffer);
+        if (writeChar.writeValueWithoutResponse) {
+          writeChar.writeValueWithoutResponse(buffer);
         } else {
-          writeCharacteristic.writeValue(buffer);
+          writeChar.writeValue(buffer);
         }
       } catch (e) {
-        console.warn('Packet send error:', e);
+        console.warn('Packet send err:', e);
       }
     }
 
-    // ── Virtual Simulator State ──
-    let simX = 0, simY = 0, simAngle = 0;
-    function updateSim(dx, dy, dAngle) {
-      simAngle += dAngle;
-      simX += dx * Math.cos(simAngle * Math.PI / 180);
-      simY += dx * Math.sin(simAngle * Math.PI / 180);
-      
-      const v = document.getElementById('vTurtle');
-      v.style.transform = `translate(calc(-50% + ${simX}px), calc(-50% + ${simY}px)) rotate(${simAngle}deg)`;
+    // ── Virtual Simulator Graphics ──
+    let simX = 0, simY = 0, simHeading = 0;
+    function driveSim(dist, turnDeg) {
+      simHeading += turnDeg;
+      const rad = simHeading * Math.PI / 180;
+      simX += dist * Math.sin(rad);
+      simY -= dist * Math.cos(rad);
+
+      simX = Math.max(-100, Math.min(100, simX));
+      simY = Math.max(-100, Math.min(100, simY));
+
+      const t = document.getElementById('simTurtle');
+      t.style.transform = `translate(calc(-50% + ${simX}px), calc(-50% + ${simY}px)) rotate(${simHeading}deg)`;
+
+      const dot = document.createElement('div');
+      dot.className = 'trail-dot';
+      dot.style.left = `calc(50% + ${simX}px)`;
+      dot.style.top = `calc(50% + ${simY}px)`;
+      document.getElementById('simField').appendChild(dot);
     }
 
-    // ── Block Execution Engine ──
-    async function runScript() {
-      if (isRunning) return;
-      isRunning = true;
-
-      const blocks = Array.from(document.getElementById('scriptStack').children);
-      
-      for (let i = 0; i < blocks.length; i++) {
-        if (!isRunning) break;
-        const b = blocks[i];
-        if (b.dataset.type === 'start') continue;
-
-        // Highlight active block
-        b.classList.add('running');
-
-        const type = b.dataset.type;
-        const valInput = b.querySelector('.block-val');
-        const selectBox = b.querySelector('.block-select');
-        const val = valInput ? parseFloat(valInput.value) || 1 : 1;
-        const sel = selectBox ? selectBox.value : '';
-
-        // Execute action
-        await executeBlock(type, val, sel);
-
-        b.classList.remove('running');
-      }
-
-      stopScript();
-    }
-
-    async function executeBlock(type, val, sel) {
-      switch (type) {
-        case 'forward':
-          sendTurtleCommand(50, 50);
-          updateSim(25 * val, 0, 0);
-          await sleep(val * 1000);
-          sendTurtleCommand(0, 0);
-          break;
-
-        case 'backward':
-          sendTurtleCommand(-50, -50);
-          updateSim(-25 * val, 0, 0);
-          await sleep(val * 1000);
-          sendTurtleCommand(0, 0);
-          break;
-
-        case 'turn_left':
-          sendTurtleCommand(-40, 40);
-          updateSim(0, 0, -val);
-          await sleep((val / 90) * 800);
-          sendTurtleCommand(0, 0);
-          break;
-
-        case 'turn_right':
-          sendTurtleCommand(40, -40);
-          updateSim(0, 0, val);
-          await sleep((val / 90) * 800);
-          sendTurtleCommand(0, 0);
-          break;
-
-        case 'stop_wheels':
-          sendTurtleCommand(0, 0);
-          break;
-
-        case 'led_color':
-          const colors = {
-            '빨강': [255, 0, 0], '초록': [0, 255, 0], '파랑': [0, 0, 255],
-            '노랑': [255, 255, 0], '보라': [255, 0, 255], '하늘': [0, 255, 255], '흰색': [255, 255, 255]
-          };
-          const rgb = colors[sel] || [255, 255, 255];
-          sendTurtleCommand(0, 0, rgb);
-          document.getElementById('vTurtle').style.boxShadow = `0 0 12px rgb(${rgb.join(',')})`;
-          break;
-
-        case 'led_off':
-          sendTurtleCommand(0, 0, [0, 0, 0]);
-          document.getElementById('vTurtle').style.boxShadow = 'none';
-          break;
-
-        case 'buzzer_beep':
-          sendTurtleCommand(0, 0, [0, 0, 0], 1); // beep clip 1
-          await sleep(300);
-          break;
-
-        case 'buzzer_siren':
-          sendTurtleCommand(0, 0, [0, 0, 0], 9); // siren clip 9
-          await sleep(800);
-          break;
-
-        case 'wait':
-          await sleep(val * 1000);
-          break;
+    function setSimLed(rgb) {
+      const eye = document.querySelector('.sim-turtle-eye');
+      if (rgb[0] === 0 && rgb[1] === 0 && rgb[2] === 0) {
+        eye.style.background = '#333';
+        eye.style.boxShadow = 'none';
+      } else {
+        eye.style.background = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+        eye.style.boxShadow = `0 0 10px rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
       }
     }
 
-    function stopScript() {
-      isRunning = false;
-      document.querySelectorAll('.block.running').forEach(b => b.classList.remove('running'));
-      sendTurtleCommand(0, 0, [0, 0, 0], 0);
+    function resetSim() {
+      simX = 0; simY = 0; simHeading = 0;
+      const t = document.getElementById('simTurtle');
+      t.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+      document.querySelectorAll('.trail-dot').forEach(d => d.remove());
+      setSimLed([0,0,0]);
     }
 
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+    function resetWorkspace() {
+      if (confirm('모든 블록을 초기화하시겠습니까?')) {
+        const board = document.getElementById('workspaceBoard');
+        board.innerHTML = `
+          <div class="code-stack" id="defaultStack" style="left: 60px; top: 40px;">
+            <div class="block block-hat block-cat-start" data-cmd="hat_start_click" data-cat="start">
+              <span>🚩 [시작하기] 버튼을 클릭했을 때</span>
+            </div>
+          </div>
+        `;
+        globalScore = 0;
+        document.getElementById('varScoreVal').innerText = '0';
+        document.getElementById('variableHud').classList.remove('show');
+        resetSim();
+        document.querySelectorAll('.code-stack').forEach(attachStackDrag);
+      }
     }
 
-    // Init with Motion Palette
-    renderPalette('motion');
+    // Initial Palette Render
+    renderPalette('start');
   </script>
 </body>
 </html>
