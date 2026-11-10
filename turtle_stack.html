@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>터틀봇 스택 코딩 (Turtle STACK Web)</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    body { background: #1e1e24; color: #fff; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Top Bar */
+    header {
+      background: #2b2d42; height: 56px; display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; border-bottom: 2px solid #3d405b; box-shadow: 0 2px 8px rgba(0,0,0,0.3); z-index: 100;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.15rem; color: #48cae4; }
+    .brand img, .brand .icon { font-size: 1.6rem; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    
+    .btn {
+      padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.95rem; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; border: none; transition: all 0.2s; outline: none;
+    }
+    .btn:active { transform: scale(0.96); }
+    .btn-ble { background: #0077b6; color: #fff; }
+    .btn-ble.connected { background: #2ec4b6; color: #011627; }
+    .btn-run { background: #2a9d8f; color: #fff; }
+    .btn-stop { background: #e63946; color: #fff; }
+    .status-badge { font-size: 0.8rem; padding: 4px 8px; border-radius: 4px; background: #3d405b; color: #cbd5e1; }
+    .status-badge.online { background: #06d6a0; color: #000; font-weight: bold; }
+
+    /* Main Container */
+    .main-container { display: flex; flex: 1; height: calc(100vh - 56px); }
+
+    /* Sidebar - Categories */
+    .categories {
+      width: 90px; background: #24252f; display: flex; flex-direction: column; border-right: 1px solid #333544;
+    }
+    .cat-btn {
+      padding: 16px 4px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; font-size: 0.78rem; font-weight: bold; color: #94a3b8; background: none; border: none;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .cat-btn.active { color: #fff; background: #2d2f3d; }
+    .cat-btn .cat-icon { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .cat-motion .cat-icon { background: #4361ee; color: #fff; }
+    .cat-looks .cat-icon { background: #7209b7; color: #fff; }
+    .cat-sound .cat-icon { background: #f72585; color: #fff; }
+    .cat-control .cat-icon { background: #f8961e; color: #fff; }
+
+    /* Block Palette */
+    .palette {
+      width: 250px; background: #1a1a20; padding: 16px 12px; overflow-y: auto; border-right: 2px solid #2b2d42;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .palette-title { font-size: 0.85rem; color: #64748b; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; }
+
+    /* Workspace */
+    .workspace-area { flex: 1; position: relative; background: #16161a; overflow: auto; display: flex; flex-direction: column; }
+    .workspace-canvas {
+      flex: 1; min-height: 1000px; min-width: 1000px; padding: 40px; position: relative;
+      background-image: radial-gradient(#2b2d42 1.5px, transparent 1.5px); background-size: 24px 24px;
+    }
+
+    /* Blocks */
+    .block {
+      display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px;
+      font-size: 0.95rem; font-weight: bold; color: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      cursor: grab; touch-action: none; position: relative; border-left: 5px solid rgba(0,0,0,0.25);
+    }
+    .block:active { cursor: grabbing; }
+    .block-start { background: #ffb703; color: #000; border-radius: 20px 20px 8px 8px; border-left: none; }
+    .block-motion { background: #4361ee; }
+    .block-looks { background: #7209b7; }
+    .block-sound { background: #f72585; }
+    .block-control { background: #f8961e; }
+    
+    .block input, .block select {
+      background: rgba(255, 255, 255, 0.25); color: #fff; border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 3px 6px; border-radius: 6px; font-weight: bold; font-size: 0.9rem; text-align: center; outline: none;
+    }
+    .block input { width: 44px; }
+    .block select { cursor: pointer; }
+    .block select option { background: #222; color: #fff; }
+
+    /* Script Stack in Workspace */
+    .script-stack { display: flex; flex-direction: column; gap: 3px; position: absolute; }
+    .script-stack .block.running {
+      outline: 3px solid #00f5d4; box-shadow: 0 0 15px #00f5d4; transform: scale(1.02); transition: all 0.15s;
+    }
+    .block-del-btn {
+      margin-left: 6px; background: rgba(0,0,0,0.25); border: none; color: #fff; border-radius: 50%;
+      width: 20px; height: 20px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Simulation Preview Panel */
+    .sim-panel {
+      position: absolute; right: 20px; bottom: 20px; width: 220px; height: 220px; background: #24252f;
+      border: 2px solid #3d405b; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .sim-header { background: #1e1e24; padding: 6px 10px; font-size: 0.75rem; font-weight: bold; color: #94a3b8; display: flex; justify-content: space-between; }
+    .sim-canvas { flex: 1; position: relative; background: #121216; overflow: hidden; }
+    .virtual-turtle {
+      width: 28px; height: 28px; background: #06d6a0; border-radius: 50%; position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%); transition: all 0.3s ease-out;
+      display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 0 8px #06d6a0;
+    }
+    .virtual-turtle::after {
+      content: ''; position: absolute; top: -4px; width: 6px; height: 6px; background: #e63946; border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="brand">
+      <span class="icon">🐢</span>
+      <span>터틀 스택 (STACK)</span>
+      <span id="bleStatus" class="status-badge">미연결 (시뮬레이터 모드)</span>
+    </div>
+    <div class="header-actions">
+      <button id="btnConnect" class="btn btn-ble" onclick="connectTurtle()">
+        <span>📡 로봇 연결 (Bluetooth)</span>
+      </button>
+      <button class="btn btn-run" onclick="runScript()">
+        <span>▶ 실행</span>
+      </button>
+      <button class="btn btn-stop" onclick="stopScript()">
+        <span>■ 정지</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <!-- Category Selector -->
+    <div class="categories">
+      <button class="cat-btn active cat-motion" onclick="switchCategory('motion', this)">
+        <div class="cat-icon">🚀</div>
+        <span>동작</span>
+      </button>
+      <button class="cat-btn cat-looks" onclick="switchCategory('looks', this)">
+        <div class="cat-icon">💡</div>
+        <span>LED</span>
+      </button>
+      <button class="cat-btn cat-sound" onclick="switchCategory('sound', this)">
+        <div class="cat-icon">🔔</div>
+        <span>소리</span>
+      </button>
+      <button class="cat-btn cat-control" onclick="switchCategory('control', this)">
+        <div class="cat-icon">⏱</div>
+        <span>제어</span>
+      </button>
+    </div>
+
+    <!-- Block Palette (Click to add) -->
+    <div class="palette" id="palette">
+      <!-- Generated by JS -->
+    </div>
+
+    <!-- Workspace -->
+    <div class="workspace-area">
+      <div class="workspace-canvas" id="workspace">
+        <div class="script-stack" id="scriptStack" style="left: 60px; top: 40px;">
+          <!-- Default Start Block -->
+          <div class="block block-start" data-type="start">
+            <span>🏁 [시작] 버튼을 눌렀을 때</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Virtual Turtle Simulator Window -->
+      <div class="sim-panel">
+        <div class="sim-header">
+          <span>가상 터틀봇 시뮬레이터</span>
+          <span style="color:#06d6a0;">● ON</span>
+        </div>
+        <div class="sim-canvas" id="simArea">
+          <div class="virtual-turtle" id="vTurtle">🐢</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── BLE UUIDs for Robomation Turtle ──
+    const TURTLE_SERVICE_UUID = '0000a000-9c80-11e3-a5e2-0800200c9a66';
+    const TURTLE_CHAR_WRITE_UUID = '0000a006-9c80-11e3-a5e2-0800200c9a66';
+    
+    let bleDevice = null;
+    let writeCharacteristic = null;
+    let isRunning = false;
+
+    // ── Block Definitions for Palette ──
+    const BLOCKS = {
+      motion: [
+        { type: 'forward', label: '앞으로', unit: '초 이동하기', defaultVal: 1, kind: 'number' },
+        { type: 'backward', label: '뒤로', unit: '초 이동하기', defaultVal: 1, kind: 'number' },
+        { type: 'turn_left', label: '왼쪽으로', unit: '도 회전하기', defaultVal: 90, kind: 'number' },
+        { type: 'turn_right', label: '오른쪽으로', unit: '도 회전하기', defaultVal: 90, kind: 'number' },
+        { type: 'stop_wheels', label: '로봇 바퀴 정지하기' }
+      ],
+      looks: [
+        { type: 'led_color', label: '머리 LED를', select: ['빨강', '초록', '파랑', '노랑', '보라', '하늘', '흰색'], unit: '색으로 켜기' },
+        { type: 'led_off', label: '머리 LED 끄기' }
+      ],
+      sound: [
+        { type: 'buzzer_beep', label: '버저 삑 소리내기' },
+        { type: 'buzzer_siren', label: '사이렌 소리내기' }
+      ],
+      control: [
+        { type: 'wait', label: '', unit: '초 기다리기', defaultVal: 1, kind: 'number' }
+      ]
+    };
+
+    // ── Render Palette Blocks ──
+    function switchCategory(cat, btn) {
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderPalette(cat);
+    }
+
+    function renderPalette(cat) {
+      const palette = document.getElementById('palette');
+      palette.innerHTML = `<div class="palette-title">${cat.toUpperCase()} 블록</div>`;
+      
+      BLOCKS[cat].forEach(b => {
+        const el = document.createElement('div');
+        el.className = `block block-${cat}`;
+        el.style.marginBottom = '6px';
+        el.innerHTML = `<span>+ ${b.label}</span>` + 
+                       (b.kind === 'number' ? ` <input type="number" value="${b.defaultVal}" onclick="event.stopPropagation()">` : '') +
+                       (b.select ? ` <select onclick="event.stopPropagation()">${b.select.map(s => `<option>${s}</option>`).join('')}</select>` : '') +
+                       (b.unit ? ` <span>${b.unit}</span>` : '');
+        
+        el.onclick = () => addBlockToStack(cat, b);
+        palette.appendChild(el);
+      });
+    }
+
+    // ── Add Block to Main Script Stack ──
+    function addBlockToStack(cat, blockDef) {
+      const stack = document.getElementById('scriptStack');
+      const el = document.createElement('div');
+      el.className = `block block-${cat}`;
+      el.dataset.type = blockDef.type;
+
+      let inner = `<span>${blockDef.label}</span>`;
+      if (blockDef.kind === 'number') {
+        inner += ` <input type="number" class="block-val" value="${blockDef.defaultVal}" min="0.1" step="0.5">`;
+      }
+      if (blockDef.select) {
+        inner += ` <select class="block-select">${blockDef.select.map(s => `<option>${s}</option>`).join('')}</select>`;
+      }
+      if (blockDef.unit) {
+        inner += ` <span>${blockDef.unit}</span>`;
+      }
+      inner += `<button class="block-del-btn" onclick="this.parentElement.remove()">✕</button>`;
+
+      el.innerHTML = inner;
+      stack.appendChild(el);
+    }
+
+    // ── Web Bluetooth Connection via Bluefy ──
+    async function connectTurtle() {
+      if (!navigator.bluetooth) {
+        alert('이 브라우저는 Web Bluetooth를 지원하지 않습니다.\n아이패드의 [Bluefy] 브라우저를 이용해 접속해 주세요!');
+        return;
+      }
+
+      try {
+        document.getElementById('bleStatus').innerText = '연결 검색 중...';
+        
+        // Scan for Turtle or Roboid BLE
+        bleDevice = await navigator.bluetooth.requestDevice({
+          filters: [
+            { namePrefix: 'Turtle' },
+            { namePrefix: 'Roboid' },
+            { namePrefix: 'Hamster' }
+          ],
+          optionalServices: [
+            TURTLE_SERVICE_UUID,
+            '00009001-9c80-11e3-a5e2-0800200c9a66'
+          ]
+        });
+
+        document.getElementById('bleStatus').innerText = '서버 연결 중...';
+        const server = await bleDevice.gatt.connect();
+
+        // Get Service & Characteristic
+        let service;
+        try {
+          service = await server.getPrimaryService(TURTLE_SERVICE_UUID);
+        } catch (e) {
+          const services = await server.getPrimaryServices();
+          service = services[0];
+        }
+
+        const characteristics = await service.getCharacteristics();
+        // Find writable characteristic
+        writeCharacteristic = characteristics.find(c => c.properties.write || c.properties.writeWithoutResponse);
+        if (!writeCharacteristic) writeCharacteristic = characteristics[0];
+
+        // Connection Success UI
+        const badge = document.getElementById('bleStatus');
+        badge.innerText = `● 연결됨 (${bleDevice.name || '터틀봇'})`;
+        badge.className = 'status-badge online';
+        document.getElementById('btnConnect').classList.add('connected');
+        document.getElementById('btnConnect').innerHTML = `<span>✔ ${bleDevice.name || '터틀봇'} 연결완료</span>`;
+
+        // Send Welcome Blink
+        sendTurtleCommand(0, 0, [0, 255, 0], 1);
+        setTimeout(() => sendTurtleCommand(0, 0, [0, 0, 0], 0), 500);
+
+      } catch (err) {
+        console.error('BLE Connect Error:', err);
+        document.getElementById('bleStatus').innerText = '연결 실패 (시뮬레이터 모드)';
+        document.getElementById('bleStatus').className = 'status-badge';
+        alert('블루투스 연결에 실패했거나 취소되었습니다.\n(등 버튼을 누른 채 터틀봇을 켜 파란 불이 깜빡이는지 확인해주세요)');
+      }
+    }
+
+    // ── Build & Send BLE Command Packet to Turtle ──
+    function sendTurtleCommand(leftSpeed, rightSpeed, rgbLed = [0,0,0], buzzerSound = 0) {
+      if (!writeCharacteristic) return;
+
+      // Roboid BLE 20-byte Motoring Packet
+      const buffer = new Uint8Array(18);
+      buffer[0] = 0x10; // Header Motoring
+
+      // Left wheel (-100 to 100) -> 16-bit signed
+      const l = Math.max(-100, Math.min(100, leftSpeed)) * 10;
+      buffer[1] = (l >> 8) & 0xff;
+      buffer[2] = l & 0xff;
+
+      // Right wheel (-100 to 100) -> 16-bit signed
+      const r = Math.max(-100, Math.min(100, rightSpeed)) * 10;
+      buffer[3] = (r >> 8) & 0xff;
+      buffer[4] = r & 0xff;
+
+      // RGB Head LED
+      buffer[8] = rgbLed[0]; // Red
+      buffer[9] = rgbLed[1]; // Green
+      buffer[10] = rgbLed[2]; // Blue
+
+      // Buzzer Clip
+      if (buzzerSound > 0) {
+        buffer[14] = 0x80 | buzzerSound;
+      }
+
+      try {
+        if (writeCharacteristic.writeValueWithoutResponse) {
+          writeCharacteristic.writeValueWithoutResponse(buffer);
+        } else {
+          writeCharacteristic.writeValue(buffer);
+        }
+      } catch (e) {
+        console.warn('Packet send error:', e);
+      }
+    }
+
+    // ── Virtual Simulator State ──
+    let simX = 0, simY = 0, simAngle = 0;
+    function updateSim(dx, dy, dAngle) {
+      simAngle += dAngle;
+      simX += dx * Math.cos(simAngle * Math.PI / 180);
+      simY += dx * Math.sin(simAngle * Math.PI / 180);
+      
+      const v = document.getElementById('vTurtle');
+      v.style.transform = `translate(calc(-50% + ${simX}px), calc(-50% + ${simY}px)) rotate(${simAngle}deg)`;
+    }
+
+    // ── Block Execution Engine ──
+    async function runScript() {
+      if (isRunning) return;
+      isRunning = true;
+
+      const blocks = Array.from(document.getElementById('scriptStack').children);
+      
+      for (let i = 0; i < blocks.length; i++) {
+        if (!isRunning) break;
+        const b = blocks[i];
+        if (b.dataset.type === 'start') continue;
+
+        // Highlight active block
+        b.classList.add('running');
+
+        const type = b.dataset.type;
+        const valInput = b.querySelector('.block-val');
+        const selectBox = b.querySelector('.block-select');
+        const val = valInput ? parseFloat(valInput.value) || 1 : 1;
+        const sel = selectBox ? selectBox.value : '';
+
+        // Execute action
+        await executeBlock(type, val, sel);
+
+        b.classList.remove('running');
+      }
+
+      stopScript();
+    }
+
+    async function executeBlock(type, val, sel) {
+      switch (type) {
+        case 'forward':
+          sendTurtleCommand(50, 50);
+          updateSim(25 * val, 0, 0);
+          await sleep(val * 1000);
+          sendTurtleCommand(0, 0);
+          break;
+
+        case 'backward':
+          sendTurtleCommand(-50, -50);
+          updateSim(-25 * val, 0, 0);
+          await sleep(val * 1000);
+          sendTurtleCommand(0, 0);
+          break;
+
+        case 'turn_left':
+          sendTurtleCommand(-40, 40);
+          updateSim(0, 0, -val);
+          await sleep((val / 90) * 800);
+          sendTurtleCommand(0, 0);
+          break;
+
+        case 'turn_right':
+          sendTurtleCommand(40, -40);
+          updateSim(0, 0, val);
+          await sleep((val / 90) * 800);
+          sendTurtleCommand(0, 0);
+          break;
+
+        case 'stop_wheels':
+          sendTurtleCommand(0, 0);
+          break;
+
+        case 'led_color':
+          const colors = {
+            '빨강': [255, 0, 0], '초록': [0, 255, 0], '파랑': [0, 0, 255],
+            '노랑': [255, 255, 0], '보라': [255, 0, 255], '하늘': [0, 255, 255], '흰색': [255, 255, 255]
+          };
+          const rgb = colors[sel] || [255, 255, 255];
+          sendTurtleCommand(0, 0, rgb);
+          document.getElementById('vTurtle').style.boxShadow = `0 0 12px rgb(${rgb.join(',')})`;
+          break;
+
+        case 'led_off':
+          sendTurtleCommand(0, 0, [0, 0, 0]);
+          document.getElementById('vTurtle').style.boxShadow = 'none';
+          break;
+
+        case 'buzzer_beep':
+          sendTurtleCommand(0, 0, [0, 0, 0], 1); // beep clip 1
+          await sleep(300);
+          break;
+
+        case 'buzzer_siren':
+          sendTurtleCommand(0, 0, [0, 0, 0], 9); // siren clip 9
+          await sleep(800);
+          break;
+
+        case 'wait':
+          await sleep(val * 1000);
+          break;
+      }
+    }
+
+    function stopScript() {
+      isRunning = false;
+      document.querySelectorAll('.block.running').forEach(b => b.classList.remove('running'));
+      sendTurtleCommand(0, 0, [0, 0, 0], 0);
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    // Init with Motion Palette
+    renderPalette('motion');
+  </script>
+</body>
+</html>
