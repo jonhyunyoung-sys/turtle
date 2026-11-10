@@ -493,169 +493,130 @@
       position: fixed;
       pointer-events: none;
       z-index: 9999;
-      opacity: 0.9;
-      transform: scale(1.05) translate(-10px, -10px);
-      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      opacity: 0.92;
+      transform: none !important;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+      white-space: nowrap !important;
+      width: max-content !important;
     }
 
-    /* ── Live Simulation & Robot View ── */
-    .sim-dock {
+    /* ── Fixed Keypad Dock (in place of Simulator) ── */
+    .keypad-dock {
       position: fixed;
-      right: 20px;
-      bottom: 20px;
+      right: 18px;
+      bottom: 18px;
       width: 250px;
-      height: 250px;
-      background: #2b2d42;
+      background: #24283b;
+      border: 2px solid #3d435d;
       border-radius: 14px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.38);
       display: flex;
       flex-direction: column;
-      overflow: hidden;
       z-index: 90;
-      border: 2px solid #3d405b;
-    }
-    .sim-dock-head {
-      background: #1e202f;
-      padding: 8px 12px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: #cbd5e0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .sim-field {
-      flex: 1;
-      position: relative;
-      background: #171822;
       overflow: hidden;
-      cursor: pointer;
+      transition: height 0.25s ease, transform 0.2s ease;
     }
-    .sim-grid {
-      position: absolute; width: 100%; height: 100%;
-      background-image: 
-        linear-gradient(#252738 1px, transparent 1px),
-        linear-gradient(90deg, #252738 1px, transparent 1px);
-      background-size: 20px 20px;
-    }
-    .sim-turtle {
-      width: 36px;
-      height: 36px;
-      background: #00b894;
-      border-radius: 50%;
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%) rotate(0deg);
-      transition: all 0.25s linear;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      box-shadow: 0 0 12px rgba(0, 184, 148, 0.7);
-    }
-    .sim-turtle-eye {
-      position: absolute;
-      top: -3px;
-      width: 9px;
-      height: 9px;
-      background: #e63946;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #e63946;
-      transition: background 0.2s;
-    }
-    .sim-turtle-tag {
-      position: absolute;
-      bottom: -16px;
-      font-size: 9px;
-      background: rgba(0,0,0,0.6);
-      color: #fff;
-      padding: 1px 4px;
-      border-radius: 4px;
-      white-space: nowrap;
-    }
-    .trail-dot {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: rgba(0, 206, 201, 0.45);
-    }
-
-    /* ── iPad On-Screen Virtual Controller (가상 조종기) ── */
-    .virtual-controller-modal {
-      position: fixed;
-      right: 20px;
-      top: 75px;
-      background: rgba(33, 37, 54, 0.95);
-      backdrop-filter: blur(8px);
-      border: 2px solid #4a5568;
-      border-radius: 16px;
-      padding: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      z-index: 150;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      width: 220px;
-    }
-    .virtual-controller-modal.show { display: flex; }
-    .ctrl-title {
+    .keypad-dock-head {
+      background: #1a1c2a;
+      padding: 9px 12px;
       font-size: 0.82rem;
       font-weight: 800;
       color: #e2e8f0;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border-bottom: 1px solid #33384f;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      white-space: nowrap;
     }
+    .keypad-dock-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: center;
+    }
+    .keypad-dock.collapsed .keypad-dock-body {
+      display: none;
+    }
+    .keypad-dock.collapsed {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
     .d-pad-box {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(3, 1fr);
+      grid-template-columns: repeat(3, 44px);
+      grid-template-rows: repeat(3, 44px);
       gap: 6px;
-      margin: 4px auto;
-      width: 150px;
-      height: 150px;
+      margin: 2px auto;
     }
     .pad-btn {
-      background: #3b4259;
+      background: #383e58;
       color: #fff;
-      border: none;
+      border: 1px solid rgba(255,255,255,0.12);
       border-radius: 10px;
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.3);
       cursor: pointer;
       touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background 0.1s, transform 0.1s;
     }
-    .pad-btn:active { background: #00b894; transform: scale(0.94); }
+    .pad-btn:active {
+      background: #00b894 !important;
+      transform: scale(0.92);
+      box-shadow: 0 0 10px rgba(0, 184, 148, 0.6);
+    }
     .pad-up { grid-column: 2; grid-row: 1; }
     .pad-left { grid-column: 1; grid-row: 2; }
-    .pad-center { grid-column: 2; grid-row: 2; background: #2a2f42; font-size: 0.7rem; color: #a0aec0; }
+    .pad-center {
+      grid-column: 2; grid-row: 2;
+      background: #1e2130;
+      font-size: 0.95rem;
+      color: #a0aec0;
+      border: none;
+      cursor: default;
+    }
     .pad-right { grid-column: 3; grid-row: 2; }
     .pad-down { grid-column: 2; grid-row: 3; }
-    
-    .action-btn-row {
+
+    .keypad-action-row {
       display: flex;
       gap: 8px;
-      justify-content: space-between;
+      width: 100%;
+      box-sizing: border-box;
     }
     .act-btn {
       flex: 1;
-      padding: 10px 4px;
+      height: 38px;
+      padding: 0 6px;
       background: #e84393;
       color: #fff;
-      border: none;
+      border: 1px solid rgba(255,255,255,0.15);
       border-radius: 8px;
       font-weight: 800;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       cursor: pointer;
       box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+      white-space: nowrap !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: transform 0.1s, filter 0.1s;
     }
-    .act-btn:active { transform: scale(0.94); filter: brightness(1.2); }
-    .act-btn.btn-space { background: #6c5ce7; }
+    .act-btn:active { transform: scale(0.94); filter: brightness(1.25); }
+    .act-btn.btn-space { background: #6c5ce7; flex: 1.3; }
+    .act-btn.btn-robot { background: #00b894; flex: 1.3; }
 
     /* Score / Variables Overlay */
     .variable-hud {
@@ -686,7 +647,7 @@
       .block input, .block select, .block-c-header input { font-size: 0.8rem !important; height: 25px !important; }
       .btn { padding: 6px 10px; font-size: 0.82rem; }
       .brand { font-size: 1.02rem; }
-      .sim-dock { width: 200px; height: 200px; right: 12px; bottom: 12px; }
+      .keypad-dock { width: 240px; right: 12px; bottom: 12px; }
     }
 
     @media (max-width: 768px) {
@@ -694,7 +655,7 @@
       .cat-item { font-size: 0.65rem; }
       .palette-drawer { width: 250px; min-width: 230px; }
       .block, .block-c-header { font-size: 0.78rem !important; padding: 5px 8px !important; }
-      .sim-dock { width: 175px; height: 175px; }
+      .keypad-dock { width: 220px; }
     }
   </style>
 </head>
@@ -783,41 +744,30 @@
         </div>
       </div>
 
-      <!-- Realtime Simulator Window -->
-      <div class="sim-dock">
-        <div class="sim-dock-head">
-          <span>🐢 가상 로봇 주행판</span>
-          <button style="background:none; border:none; color:#00cec9; font-size:11px; font-weight:bold; cursor:pointer;" onclick="resetSim()">원위치</button>
+      <!-- Docked Virtual Keypad (in place of simulator) -->
+      <div class="keypad-dock" id="keypadDock">
+        <div class="keypad-dock-head" onclick="toggleKeypad()">
+          <span>🎮 가상 키패드 (조종기)</span>
+          <button id="btnKeypadFold" style="background:none; border:none; color:#00cec9; font-size:12px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); toggleKeypad();">접기 ▼</button>
         </div>
-        <div class="sim-field" id="simField" onclick="triggerStartEvent('click_robot')" title="터틀봇을 터치하면 [오브젝트를 클릭했을 때] 실행">
-          <div class="sim-grid"></div>
-          <div class="sim-turtle" id="simTurtle">
-            <div class="sim-turtle-eye"></div>
-            <span>🐢</span>
-            <div class="sim-turtle-tag">터치 가능</div>
+        <div class="keypad-dock-body">
+          <div class="d-pad-box">
+            <button class="pad-btn pad-up" onpointerdown="pressVirtualKey('ArrowUp')">▲</button>
+            <button class="pad-btn pad-left" onpointerdown="pressVirtualKey('ArrowLeft')">◀</button>
+            <div class="pad-btn pad-center">🕹</div>
+            <button class="pad-btn pad-right" onpointerdown="pressVirtualKey('ArrowRight')">▶</button>
+            <button class="pad-btn pad-down" onpointerdown="pressVirtualKey('ArrowDown')">▼</button>
+          </div>
+          <div class="keypad-action-row">
+            <button class="act-btn btn-space" onpointerdown="pressVirtualKey('Space')">␣ 스페이스</button>
+            <button class="act-btn btn-robot" onpointerdown="triggerStartEvent('click_robot')">🐢 로봇 터치</button>
+          </div>
+          <div class="keypad-action-row">
+            <button class="act-btn" onpointerdown="pressVirtualKey('KeyA')">A 키</button>
+            <button class="act-btn" onpointerdown="pressVirtualKey('KeyB')">B 키</button>
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- iPad Floating Virtual Pad Modal -->
-  <div class="virtual-controller-modal" id="virtualControllerModal">
-    <div class="ctrl-title">
-      <span>🎮 아이패드 가상 키패드</span>
-      <button style="background:none; border:none; color:#cbd5e0; font-size:16px; cursor:pointer;" onclick="toggleController()">✕</button>
-    </div>
-    <div class="d-pad-box">
-      <button class="pad-btn pad-up" onpointerdown="pressVirtualKey('ArrowUp')">▲</button>
-      <button class="pad-btn pad-left" onpointerdown="pressVirtualKey('ArrowLeft')">◀</button>
-      <div class="pad-btn pad-center">방향키</div>
-      <button class="pad-btn pad-right" onpointerdown="pressVirtualKey('ArrowRight')">▶</button>
-      <button class="pad-btn pad-down" onpointerdown="pressVirtualKey('ArrowDown')">▼</button>
-    </div>
-    <div class="action-btn-row">
-      <button class="act-btn btn-space" onpointerdown="pressVirtualKey('Space')">␣ 스페이스</button>
-      <button class="act-btn" onpointerdown="pressVirtualKey('KeyA')">A</button>
-      <button class="act-btn" onpointerdown="pressVirtualKey('KeyB')">B</button>
     </div>
   </div>
 
@@ -1031,15 +981,21 @@
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
         e.preventDefault();
 
+        const rect = el.getBoundingClientRect();
+        const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
+        const grabOffsetY = Math.max(8, Math.min(rect.height - 8, e.clientY - rect.top));
+
         dragData = {
           source: 'palette',
           def: def,
           originEl: el,
           startX: e.clientX,
-          startY: e.clientY
+          startY: e.clientY,
+          grabOffsetX: grabOffsetX,
+          grabOffsetY: grabOffsetY
         };
 
-        createDragGhost(el, e.clientX, e.clientY);
+        createDragGhost(el, e.clientX - grabOffsetX, e.clientY - grabOffsetY);
         window.addEventListener('pointermove', onGlobalPointerMove);
         window.addEventListener('pointerup', onGlobalPointerUp);
       };
@@ -1076,16 +1032,22 @@
           return;
         }
 
+        const rect = el.getBoundingClientRect();
+        const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
+        const grabOffsetY = Math.max(8, Math.min(rect.height - 8, e.clientY - rect.top));
+
         dragData = {
           source: 'workspace',
           blockEl: el,
           originalParent: el.parentElement,
           originalNextSibling: el.nextElementSibling,
           startX: e.clientX,
-          startY: e.clientY
+          startY: e.clientY,
+          grabOffsetX: grabOffsetX,
+          grabOffsetY: grabOffsetY
         };
 
-        createDragGhost(el, e.clientX, e.clientY);
+        createDragGhost(el, e.clientX - grabOffsetX, e.clientY - grabOffsetY);
         el.style.opacity = '0.3';
 
         window.addEventListener('pointermove', onGlobalPointerMove);
@@ -1103,12 +1065,12 @@
 
     function onGlobalPointerMove(e) {
       if (!dragData) return;
-      if (Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY) > 6) {
+      if (Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY) > 5) {
         dragData.moved = true;
       }
-      if (ghostEl) {
-        ghostEl.style.left = `${e.clientX}px`;
-        ghostEl.style.top = `${e.clientY}px`;
+      if (ghostEl && dragData.grabOffsetX !== undefined) {
+        ghostEl.style.left = `${e.clientX - dragData.grabOffsetX}px`;
+        ghostEl.style.top = `${e.clientY - dragData.grabOffsetY}px`;
       }
 
       // Check drop target under pointer
@@ -1118,11 +1080,11 @@
     function findAndShowDropIndicator(clientX, clientY) {
       removeDropIndicator();
 
-      // Temporarily hide ghost to raycast elementsFromPoint
       if (ghostEl) ghostEl.style.display = 'none';
       const elements = document.elementsFromPoint(clientX, clientY);
       if (ghostEl) ghostEl.style.display = '';
 
+      // 1. Direct hit on C-block slot
       const slot = elements.find(el => el.classList && el.classList.contains('block-c-slot'));
       if (slot) {
         targetDropSlot = slot;
@@ -1130,17 +1092,61 @@
         return;
       }
 
-      const targetBlock = elements.find(el => (el.classList && (el.classList.contains('block') || el.classList.contains('block-c-container'))) && el !== ghostEl && (!dragData || el !== dragData.blockEl));
-      if (targetBlock) {
-        const rect = targetBlock.getBoundingClientRect();
-        const midY = rect.top + rect.height / 2;
+      // 2. Magnetic search among all blocks on workspace
+      const allBlocks = Array.from(document.querySelectorAll('#workspaceBoard .block, #workspaceBoard .block-c-container'))
+        .filter(b => b !== ghostEl && (!dragData || b !== dragData.blockEl));
+
+      let bestTarget = null;
+      let bestPlacement = 'after'; // 'before' | 'after'
+      let minDistance = 999999;
+
+      for (const b of allBlocks) {
+        const rect = b.getBoundingClientRect();
+        const isHat = (b.dataset.isHat === 'true');
+
+        // Horizontal magnetic tolerance (within block or 60px near sides)
+        if (clientX < rect.left - 60 || clientX > rect.right + 60) {
+          continue;
+        }
+
+        if (isHat) {
+          // Hat block: generous magnetic snap directly below hat block
+          if (clientY >= rect.top && clientY <= rect.bottom + 85) {
+            const dist = Math.hypot(clientX - (rect.left + rect.width / 2), clientY - rect.bottom);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestTarget = b;
+              bestPlacement = 'after';
+            }
+          }
+        } else {
+          const midY = rect.top + rect.height / 2;
+          if (clientY < midY && clientY >= rect.top - 45) {
+            const dist = Math.hypot(clientX - (rect.left + rect.width / 2), clientY - rect.top);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestTarget = b;
+              bestPlacement = 'before';
+            }
+          } else if (clientY >= midY && clientY <= rect.bottom + 55) {
+            const dist = Math.hypot(clientX - (rect.left + rect.width / 2), clientY - rect.bottom);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestTarget = b;
+              bestPlacement = 'after';
+            }
+          }
+        }
+      }
+
+      if (bestTarget && minDistance < 180) {
         const indicator = document.createElement('div');
         indicator.className = 'drop-indicator';
 
-        if (clientY < midY && targetBlock.dataset.isHat !== 'true') {
-          targetBlock.parentElement.insertBefore(indicator, targetBlock);
+        if (bestPlacement === 'before' && bestTarget.dataset.isHat !== 'true') {
+          bestTarget.parentElement.insertBefore(indicator, bestTarget);
         } else {
-          targetBlock.parentElement.insertBefore(indicator, targetBlock.nextSibling);
+          bestTarget.parentElement.insertBefore(indicator, bestTarget.nextSibling);
         }
         currentDropIndicator = indicator;
       }
@@ -1174,27 +1180,26 @@
         targetEl.style.opacity = '1.0';
       }
 
-      if (currentDropIndicator) {
+      const isTargetHat = (targetEl.dataset.isHat === 'true');
+
+      if (currentDropIndicator && !isTargetHat) {
         // Insert at indicator position
         currentDropIndicator.parentElement.insertBefore(targetEl, currentDropIndicator);
-      } else if (targetDropSlot) {
+      } else if (targetDropSlot && !isTargetHat) {
         // Insert into C-slot
         targetDropSlot.appendChild(targetEl);
       } else {
-        // Dropped onto empty workspace: create new stack
-        if (dragData.source === 'palette' || dragData.source === 'workspace') {
-          // Calculate drop coordinates relative to board
-          const dropX = Math.max(30, e.clientX - boardRect.left - 20);
-          const dropY = Math.max(30, e.clientY - boardRect.top - 20);
+        // Dropped onto empty workspace or Hat block: create new stack
+        const dropX = Math.max(30, e.clientX - boardRect.left - (dragData.grabOffsetX || 20));
+        const dropY = Math.max(30, e.clientY - boardRect.top - (dragData.grabOffsetY || 20));
 
-          const newStack = document.createElement('div');
-          newStack.className = 'code-stack';
-          newStack.style.left = `${dropX}px`;
-          newStack.style.top = `${dropY}px`;
-          newStack.appendChild(targetEl);
-          board.appendChild(newStack);
-          attachStackDrag(newStack);
-        }
+        const newStack = document.createElement('div');
+        newStack.className = 'code-stack';
+        newStack.style.left = `${dropX}px`;
+        newStack.style.top = `${dropY}px`;
+        newStack.appendChild(targetEl);
+        board.appendChild(newStack);
+        attachStackDrag(newStack);
       }
 
       removeDropIndicator();
@@ -1248,10 +1253,19 @@
     // Initialize existing default stack drag
     document.querySelectorAll('.code-stack').forEach(attachStackDrag);
 
-    // ── Virtual Controller Modal & Key Binding ──
+    // ── Keypad Dock Toggle & Key Binding ──
+    function toggleKeypad() {
+      const dock = document.getElementById('keypadDock');
+      if (!dock) return;
+      dock.classList.toggle('collapsed');
+      const btnFold = document.getElementById('btnKeypadFold');
+      if (btnFold) {
+        btnFold.innerText = dock.classList.contains('collapsed') ? '펼치기 ▲' : '접기 ▼';
+      }
+    }
+
     function toggleController() {
-      const modal = document.getElementById('virtualControllerModal');
-      modal.classList.toggle('show');
+      toggleKeypad();
     }
 
     function pressVirtualKey(keyName) {
@@ -1494,7 +1508,9 @@
           const clipId = clips[sel] || 1;
           sendPacket(0, 0, [0,0,0], clipId);
           playWebAudioClip(clipId);
-          await sleep(750);
+          const clipDurations = { 1: 300, 16: 1500, 48: 900, 64: 1200, 65: 2200, 66: 900, 67: 900 };
+          await sleep(clipDurations[clipId] || 1000);
+          sendPacket(0, 0, [0,0,0], 0);
           break;
         }
         case 'play_note': {
@@ -1620,14 +1636,14 @@
     }
 
     // ── Web Audio Simulator Synthesis ──
-    function playWebAudioTone(freq, durMs) {
+    function playWebAudioTone(freq, durMs, waveType = 'sine') {
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
-        osc.type = 'sine';
+        osc.type = waveType;
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durMs / 1000);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -1637,10 +1653,89 @@
     }
 
     function playWebAudioClip(clipId) {
-      // Fun simulated chime/beeps
-      playWebAudioTone(523.25, 120);
-      setTimeout(() => playWebAudioTone(659.25, 120), 120);
-      setTimeout(() => playWebAudioTone(783.99, 200), 240);
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const now = audioCtx.currentTime;
+
+        if (clipId === 1) { // 삐- 소리 (Single Beep)
+          playWebAudioTone(880, 160);
+        } else if (clipId === 16) { // 사이렌 (Police Siren: rising and falling pitch)
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.2, now);
+          gain.gain.linearRampToValueAtTime(0.2, now + 1.2);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 1.4);
+          
+          osc.frequency.setValueAtTime(600, now);
+          osc.frequency.linearRampToValueAtTime(1100, now + 0.35);
+          osc.frequency.linearRampToValueAtTime(600, now + 0.7);
+          osc.frequency.linearRampToValueAtTime(1100, now + 1.05);
+          osc.frequency.linearRampToValueAtTime(600, now + 1.4);
+          
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(now);
+          osc.stop(now + 1.4);
+        } else if (clipId === 48) { // 로봇 소리 (R2-D2 Sci-Fi Chirp)
+          const freqs = [440, 880, 1320, 660, 1760, 990, 1500, 2200];
+          freqs.forEach((f, idx) => {
+            setTimeout(() => playWebAudioTone(f, 65, 'square'), idx * 75);
+          });
+        } else if (clipId === 64) { // 행진곡 (March Fanfare: G4 - C5 - E5 - G5)
+          const notes = [
+            { f: 392.00, d: 150 }, // G4
+            { f: 523.25, d: 200 }, // C5
+            { f: 659.25, d: 200 }, // E5
+            { f: 783.99, d: 400 }  // G5
+          ];
+          let time = 0;
+          notes.forEach(n => {
+            setTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
+            time += n.d + 50;
+          });
+        } else if (clipId === 65) { // 생일축하곡 (Happy Birthday opening: C C D C F E)
+          const notes = [
+            { f: 261.63, d: 180 }, // C4
+            { f: 261.63, d: 180 }, // C4
+            { f: 293.66, d: 350 }, // D4
+            { f: 261.63, d: 350 }, // C4
+            { f: 349.23, d: 350 }, // F4
+            { f: 329.63, d: 600 }  // E4
+          ];
+          let time = 0;
+          notes.forEach(n => {
+            setTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
+            time += n.d + 40;
+          });
+        } else if (clipId === 66) { // 디비디비딥 (3 bouncy beats: E5 - E5 - G5 - C6)
+          const notes = [
+            { f: 659.25, d: 120 },
+            { f: 659.25, d: 120 },
+            { f: 783.99, d: 150 },
+            { f: 1046.50, d: 300 }
+          ];
+          let time = 0;
+          notes.forEach(n => {
+            setTimeout(() => playWebAudioTone(n.f, n.d, 'square'), time);
+            time += n.d + 50;
+          });
+        } else if (clipId === 67) { // 잘했어요 (Good Job / Victory jingle)
+          const notes = [
+            { f: 523.25, d: 100 }, // C5
+            { f: 659.25, d: 100 }, // E5
+            { f: 783.99, d: 120 }, // G5
+            { f: 1046.50, d: 400 } // C6
+          ];
+          let time = 0;
+          notes.forEach(n => {
+            setTimeout(() => playWebAudioTone(n.f, n.d, 'sine'), time);
+            time += n.d + 30;
+          });
+        }
+      } catch(e) {
+        console.warn('Web Audio error:', e);
+      }
     }
 
     // ── Web Bluetooth Connection via Bluefy ──
@@ -1713,11 +1808,12 @@
     }
 
     // ── 18-Byte Roboid Motoring Packet Sender ──
+    let soundIdToggle = 0;
     function sendPacket(leftSpeed, rightSpeed, rgbLed = [0,0,0], soundClip = 0, noteVal = 0, buzzerFreq = 0) {
       if (!writeChar) return;
 
       const buffer = new Uint8Array(18);
-      buffer[0] = 0x10; // Header
+      buffer[0] = 0x10; // Motoring Protocol Header
 
       const l = Math.max(-100, Math.min(100, Math.round(leftSpeed))) * 10;
       buffer[1] = (l >> 8) & 0xff;
@@ -1727,19 +1823,26 @@
       buffer[3] = (r >> 8) & 0xff;
       buffer[4] = r & 0xff;
 
-      buffer[8] = rgbLed[0];
-      buffer[9] = rgbLed[1];
-      buffer[10] = rgbLed[2];
+      // Bytes 5: wheel_id, 6,7: wheel_move, 8: tracer_mode
 
+      // Head RGB LED: EXACTLY Bytes 9, 10, 11
+      buffer[9] = rgbLed[0];
+      buffer[10] = rgbLed[1];
+      buffer[11] = rgbLed[2];
+
+      // Byte 12: 0x00
+
+      // Sound Devices (Bytes 13-17)
       if (soundClip > 0) {
-        buffer[14] = 0x80 | (soundClip & 0x7f);
+        soundIdToggle = (soundIdToggle + 1) % 2;
+        buffer[17] = (soundIdToggle << 7) | (soundClip & 0x7f);
       } else if (noteVal > 0) {
-        buffer[13] = noteVal & 0xff;
+        buffer[16] = noteVal & 0xff;
       } else if (buzzerFreq > 0) {
         const b = Math.round(buzzerFreq * 100);
-        buffer[11] = (b >> 16) & 0xff;
-        buffer[12] = (b >> 8) & 0xff;
-        buffer[13] = b & 0xff;
+        buffer[13] = (b >> 16) & 0xff;
+        buffer[14] = (b >> 8) & 0xff;
+        buffer[15] = b & 0xff;
       }
 
       try {
@@ -1753,45 +1856,10 @@
       }
     }
 
-    // ── Virtual Simulator Graphics ──
-    let simX = 0, simY = 0, simHeading = 0;
-    function driveSim(dist, turnDeg) {
-      simHeading += turnDeg;
-      const rad = simHeading * Math.PI / 180;
-      simX += dist * Math.sin(rad);
-      simY -= dist * Math.cos(rad);
-
-      simX = Math.max(-100, Math.min(100, simX));
-      simY = Math.max(-100, Math.min(100, simY));
-
-      const t = document.getElementById('simTurtle');
-      t.style.transform = `translate(calc(-50% + ${simX}px), calc(-50% + ${simY}px)) rotate(${simHeading}deg)`;
-
-      const dot = document.createElement('div');
-      dot.className = 'trail-dot';
-      dot.style.left = `calc(50% + ${simX}px)`;
-      dot.style.top = `calc(50% + ${simY}px)`;
-      document.getElementById('simField').appendChild(dot);
-    }
-
-    function setSimLed(rgb) {
-      const eye = document.querySelector('.sim-turtle-eye');
-      if (rgb[0] === 0 && rgb[1] === 0 && rgb[2] === 0) {
-        eye.style.background = '#333';
-        eye.style.boxShadow = 'none';
-      } else {
-        eye.style.background = `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-        eye.style.boxShadow = `0 0 10px rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
-      }
-    }
-
-    function resetSim() {
-      simX = 0; simY = 0; simHeading = 0;
-      const t = document.getElementById('simTurtle');
-      t.style.transform = 'translate(-50%, -50%) rotate(0deg)';
-      document.querySelectorAll('.trail-dot').forEach(d => d.remove());
-      setSimLed([0,0,0]);
-    }
+    // ── Safe Simulation Stubs (Ensures seamless execution without DOM errors) ──
+    function driveSim(dist, turnDeg) {}
+    function setSimLed(rgb) {}
+    function resetSim() {}
 
     function resetWorkspace() {
       if (confirm('모든 블록을 초기화하시겠습니까?')) {
