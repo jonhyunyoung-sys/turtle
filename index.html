@@ -248,12 +248,52 @@
       gap: 6px;
       border: none;
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
     }
-    .btn:active { transform: scale(0.96); }
+    .btn:active { transform: scale(0.94); }
     .btn-ble { background: var(--cat-hardware); color: #fff; border: 1.5px solid var(--cat-hardware-dark); }
     .btn-ble.connected { background: #00b894; color: #fff; border-color: #009975; }
-    .btn-run { background: var(--cat-start); color: #fff; font-size: 0.98rem; padding: 8px 18px; border: 1.5px solid var(--cat-start-dark); box-shadow: 0 2px 6px rgba(16, 211, 94, 0.4); }
-    .btn-stop { background: var(--cat-looks); color: #fff; border: 1.5px solid var(--cat-looks-dark); }
+    .btn-run {
+      background: var(--cat-start);
+      color: #fff;
+      font-size: 0.98rem;
+      padding: 8px 18px;
+      border: 1.5px solid var(--cat-start-dark);
+      box-shadow: 0 2px 6px rgba(16, 211, 94, 0.4);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .btn-run:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 4px 10px rgba(16, 211, 94, 0.55);
+    }
+    .btn-run.is-running {
+      background: #00b894 !important;
+      border-color: #009975 !important;
+      box-shadow: 0 0 14px rgba(16, 211, 94, 0.85) !important;
+      animation: pulse-run 1.2s infinite ease-in-out;
+    }
+    @keyframes pulse-run {
+      0%, 100% { transform: scale(1); filter: brightness(1); }
+      50% { transform: scale(1.04); filter: brightness(1.15); }
+    }
+    .btn-stop {
+      background: var(--cat-looks);
+      color: #fff;
+      border: 1.5px solid var(--cat-looks-dark);
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .btn-stop.can-stop {
+      box-shadow: 0 0 12px rgba(255, 71, 87, 0.8) !important;
+      animation: pulse-stop 1.4s infinite ease-in-out;
+    }
+    @keyframes pulse-stop {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
     .btn-ctrl { background: var(--cat-motion); color: #fff; border: 1.5px solid var(--cat-motion-dark); }
     .btn-reset { background: #475569; color: #fff; border: 1.5px solid #334155; }
 
@@ -319,10 +359,11 @@
 
     /* ── Palette Drawer (Blocks List) ── */
     .palette-drawer {
-      width: 310px;
+      width: 320px;
       background: var(--entry-palette-bg);
       border-right: 2px solid var(--border-color);
       overflow-y: auto;
+      overflow-x: auto;
       padding: 16px 12px;
       display: flex;
       flex-direction: column;
@@ -549,9 +590,15 @@
       min-width: max-content !important;
       position: relative;
       margin-bottom: 0px;
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      cursor: grab;
+      touch-action: none;
     }
+    .block-c-container:active { cursor: grabbing; }
     .block-c-header {
-      border-radius: 4px 18px 0 0;
+      border-radius: 4px 18px 18px 0;
       padding: 6px 14px;
       color: #fff;
       font-family: inherit;
@@ -568,52 +615,85 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.14);
       position: relative;
       box-sizing: border-box;
+      z-index: 2;
     }
     .block-c-header::before {
-      content: ""; position: absolute; top: 0px; left: 16px; width: 14px; height: 5px; background: rgba(0,0,0,0.22); clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 1;
+      content: ""; position: absolute; top: 0px; left: 16px; width: 14px; height: 5px; background: rgba(0,0,0,0.22); clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 3;
+    }
+    .block-c-header::after {
+      content: ""; position: absolute; bottom: -5px; left: 32px; width: 14px; height: 5px; background: inherit; clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 3;
     }
     .block-c-body {
       display: flex;
       flex-direction: row;
       align-items: stretch;
-      min-height: 24px;
+      min-height: 30px;
+      width: 100%;
     }
     .block-c-bar {
-      width: 14px;
+      width: 16px;
       flex-shrink: 0;
+      border-top: none !important;
+      border-bottom: none !important;
+      margin-top: -1px;
+      margin-bottom: -1px;
+      z-index: 1;
     }
     .block-c-slot {
-      min-height: 24px;
-      min-width: 150px;
+      min-height: 30px;
+      min-width: 140px;
       display: flex;
       flex-direction: column;
+      align-items: flex-start;
       gap: 0px;
-      padding: 3px 0 3px 4px;
-      background: rgba(255, 255, 255, 0.45);
-      border: 1px dashed rgba(0, 0, 0, 0.15);
-      border-radius: 4px;
-      margin: 2px 0 2px 2px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 0 6px 6px 0;
+      margin: 0;
       box-sizing: border-box;
+      transition: background 0.15s, border-color 0.15s, min-height 0.15s;
+    }
+    .block-c-slot:empty {
+      min-height: 30px;
+      min-width: 145px;
+      background: rgba(255, 255, 255, 0.55);
+      border: 1.5px dashed rgba(8, 172, 221, 0.45);
+      margin: 2px 0 2px 2px;
+    }
+    .block-c-slot.slot-hover {
+      min-height: 36px;
+      background: rgba(0, 206, 201, 0.22) !important;
+      border: 2px dashed #00cec9 !important;
+      box-shadow: inset 0 0 8px rgba(0, 206, 201, 0.3);
+      padding: 2px;
     }
     .block-c-divider {
-      padding: 4px 14px;
+      padding: 5px 16px 5px 14px;
+      min-width: 110px;
       color: #fff;
       font-family: inherit;
       font-weight: 700;
       font-size: 12px;
-      border-radius: 0 14px 0 0;
+      border-radius: 0 16px 16px 0;
       display: inline-flex;
       align-items: center;
       gap: 6px;
       position: relative;
       box-sizing: border-box;
+      z-index: 2;
+    }
+    .block-c-divider::after {
+      content: ""; position: absolute; bottom: -5px; left: 32px; width: 14px; height: 5px; background: inherit; clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 3;
     }
     .block-c-footer {
-      height: 14px;
-      min-width: 80px;
-      border-radius: 0 0 14px 4px;
+      height: 16px;
+      min-width: 110px;
+      border-radius: 0 12px 12px 4px;
       position: relative;
       box-sizing: border-box;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.14);
+      z-index: 2;
     }
     .block-c-footer::after {
       content: "";
@@ -633,8 +713,8 @@
     /* ── Entry Floating Trashcan (휴지통) ── */
     .entry-trashcan {
       position: absolute;
-      right: 28px;
-      bottom: 28px;
+      right: 194px;
+      bottom: 20px;
       width: 66px;
       height: 66px;
       background: #ffffff;
@@ -751,7 +831,7 @@
       border-radius: 12px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.35);
       z-index: 50;
-      display: none;
+      display: flex;
       flex-direction: column;
       overflow: hidden;
       transition: max-height 0.3s ease;
@@ -1099,8 +1179,8 @@
         <button class="btn btn-stop" onclick="stopAllExecution()">
           <span>■ 정지하기</span>
         </button>
-        <button class="btn btn-ctrl" id="btnHeaderCtrl" onclick="toggleKeypad()" style="display:none;">
-          <span>🎮 조종기</span>
+        <button class="btn btn-ctrl" id="btnHeaderCtrl" onclick="toggleKeypad()">
+          <span>🎮 가상 키패드</span>
         </button>
         <button class="btn btn-reset" onclick="resetWorkspace()">
           <span>↺ 초기화</span>
@@ -1181,7 +1261,7 @@
       <div class="workspace-board" id="workspaceBoard">
         <!-- Initial Entry Default Hat Stack -->
         <div class="code-stack" id="defaultStack" style="left: 60px; top: 40px;">
-          <div class="block block-hat block-cat-start" data-cmd="hat_start_click" data-cat="start">
+          <div class="block block-hat block-cat-start" data-cmd="hat_start_click" data-cat="start" data-is-hat="true">
             <span>🚩 [시작하기] 버튼을 클릭했을 때</span>
           </div>
         </div>
@@ -1190,20 +1270,21 @@
       <!-- Docked Virtual Keypad (Controller) -->
       <div class="keypad-dock" id="keypadDock">
         <div class="keypad-dock-head" onclick="toggleKeypad()">
-          <span>🎮 가상 키패드 (조종기)</span>
+          <span>🎮 가상 키패드</span>
           <button id="btnKeypadFold" style="background:none; border:none; color:#00cec9; font-size:12px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); toggleKeypad();">접기 ▼</button>
         </div>
         <div class="keypad-dock-body">
+          <div id="keypadHintText" style="font-size:0.7rem; font-weight:700; color:#94a3b8; text-align:center; margin-top:-4px; margin-bottom:-2px; transition:color 0.2s;">코딩한 [키] 블록이 실행됩니다</div>
           <div class="d-pad-box">
-            <button class="pad-btn pad-up" onpointerdown="handleKeypadDirection('ArrowUp', true)" onpointerup="handleKeypadDirection('ArrowUp', false)">▲</button>
-            <button class="pad-btn pad-left" onpointerdown="handleKeypadDirection('ArrowLeft', true)" onpointerup="handleKeypadDirection('ArrowLeft', false)">◀</button>
+            <button class="pad-btn pad-up" onpointerdown="pressVirtualKey('ArrowUp')">▲</button>
+            <button class="pad-btn pad-left" onpointerdown="pressVirtualKey('ArrowLeft')">◀</button>
             <div class="pad-btn pad-center">🕹</div>
-            <button class="pad-btn pad-right" onpointerdown="handleKeypadDirection('ArrowRight', true)" onpointerup="handleKeypadDirection('ArrowRight', false)">▶</button>
-            <button class="pad-btn pad-down" onpointerdown="handleKeypadDirection('ArrowDown', true)" onpointerup="handleKeypadDirection('ArrowDown', false)">▼</button>
+            <button class="pad-btn pad-right" onpointerdown="pressVirtualKey('ArrowRight')">▶</button>
+            <button class="pad-btn pad-down" onpointerdown="pressVirtualKey('ArrowDown')">▼</button>
           </div>
           <div class="keypad-action-row">
             <button class="act-btn btn-space" onpointerdown="pressVirtualKey('Space')">␣ 스페이스</button>
-            <button class="act-btn btn-robot" onpointerdown="triggerStartEvent('click_robot')">🐢 로봇 터치</button>
+            <button class="act-btn btn-robot" onpointerdown="pressVirtualRobotClick()">🐢 로봇 터치</button>
           </div>
           <div class="keypad-action-row">
             <button class="act-btn" onpointerdown="pressVirtualKey('KeyA')">A 키</button>
@@ -1280,29 +1361,38 @@
           { 
             cmd: 'if_then', cat: 'flow', label: '❓ 만약 <', 
             select: [
-              '앞쪽에 장애물이 있으면',
               '바닥 선이 감지되면',
               '바닥이 [빨간색] 이면',
-              '바닥이 [초록색] 이면',
-              '바닥이 [파란색] 이면',
               '바닥이 [노란색] 이면',
+              '바닥이 [초록색] 이면',
+              '바닥이 [하늘색] 이면',
+              '바닥이 [파란색] 이면',
+              '바닥이 [보라색] 이면',
+              '바닥이 [흰색] 이면',
               '변수 [점수] > 0 이면',
               '변수 [점수] >= 10 이면',
-              '50% 확률로 참이면'
+              '변수 [임의값] == 1 이면',
+              '50% 확률로 참이면',
+              '앞쪽에 장애물이 있으면'
             ],
             unit: '> 이라면', type: 'c_cond' 
           },
           { 
             cmd: 'if_else', cat: 'flow', label: '❓ 만약 <', 
             select: [
-              '앞쪽에 장애물이 있으면',
               '바닥 선이 감지되면',
               '바닥이 [빨간색] 이면',
-              '바닥이 [초록색] 이면',
-              '바닥이 [파란색] 이면',
               '바닥이 [노란색] 이면',
+              '바닥이 [초록색] 이면',
+              '바닥이 [하늘색] 이면',
+              '바닥이 [파란색] 이면',
+              '바닥이 [보라색] 이면',
+              '바닥이 [흰색] 이면',
               '변수 [점수] > 0 이면',
-              '50% 확률로 참이면'
+              '변수 [점수] >= 10 이면',
+              '변수 [임의값] == 1 이면',
+              '50% 확률로 참이면',
+              '앞쪽에 장애물이 있으면'
             ],
             unit: '> 이라면 / 아니면', type: 'c_ifelse' 
           },
@@ -1310,6 +1400,23 @@
             cmd: 'if_floor_color', cat: 'flow', label: '❓ 만약 바닥 색상이 <', 
             select: ['검은색', '빨간색', '노란색', '초록색', '하늘색', '파란색', '보라색', '흰색'],
             unit: '> 이라면', type: 'c_color' 
+          },
+          {
+            cmd: 'wait_until_cond', cat: 'flow', label: '⏳ <',
+            select: [
+              '바닥 선이 감지되면',
+              '바닥이 [빨간색] 이면',
+              '바닥이 [노란색] 이면',
+              '바닥이 [초록색] 이면',
+              '바닥이 [하늘색] 이면',
+              '바닥이 [파란색] 이면',
+              '바닥이 [보라색] 이면',
+              '바닥이 [흰색] 이면',
+              '변수 [점수] > 0 이면',
+              '변수 [점수] >= 10 이면',
+              '변수 [임의값] == 1 이면'
+            ],
+            unit: '> 이 될 때까지 기다리기', type: 'select'
           },
           { cmd: 'stop_all', cat: 'flow', label: '🛑 모든 코드 멈추기', type: 'none' }
         ]
@@ -1426,13 +1533,13 @@
       // 1. C-Blocks: repeat, repeat_forever, c_cond, c_color
       if (def.type === 'repeat' || def.type === 'repeat_forever' || def.type === 'c_cond' || def.type === 'c_color') {
         const el = document.createElement('div');
-        el.className = `block-c-container block-cat-${def.cat}`;
+        el.className = 'block-c-container';
         el.dataset.cmd = def.cmd;
         el.dataset.cat = def.cat;
 
         let headerHtml = `<span>${def.label}</span>`;
         if (def.type === 'repeat') {
-          headerHtml += ` <input type="number" class="c-param" value="${def.param}" min="1" onclick="event.stopPropagation()"> <span>번</span>`;
+          headerHtml += ` <input type="number" class="c-param" value="${def.param}" min="1" step="1" onclick="event.stopPropagation()"> <span>${def.unit || '번 반복하기'}</span>`;
         } else if (def.type === 'c_cond' || def.type === 'c_color') {
           headerHtml += ` <select class="c-param-cond" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
         }
@@ -1457,7 +1564,7 @@
       // 2. Dual-Slot C-Block: if_else (만약 ~ 이라면 / 아니면)
       if (def.type === 'c_ifelse') {
         const el = document.createElement('div');
-        el.className = `block-c-container block-cat-${def.cat} block-c-ifelse`;
+        el.className = 'block-c-container block-c-ifelse';
         el.dataset.cmd = def.cmd;
         el.dataset.cat = def.cat;
 
@@ -1495,27 +1602,27 @@
 
       let inner = `<span>${def.label}</span>`;
       if (def.type === 'num') {
-        inner += ` <input type="number" class="param-1" value="${def.param}" min="0.1" step="0.5" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <input type="number" class="param-1" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'two_num') {
-        inner += ` <input type="number" class="param-1" value="${def.param1}" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-2" value="${def.param2}" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <input type="number" class="param-1" value="${def.param1}" step="any" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-2" value="${def.param2}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'rgb') {
         inner += ` <input type="number" class="param-r" value="${def.param1}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-g" value="${def.param2}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label3}</span> <input type="number" class="param-b" value="${def.param3}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'select') {
         inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
       } else if (def.type === 'note') {
-        inner += ` <select class="param-note" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-beats" value="${def.param}" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <select class="param-note" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-beats" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'line_sec') {
-        inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" min="0.5" step="0.5" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'calc_op') {
-        inner += ` <input type="number" class="param-op1" value="${def.param1}" style="width:44px;" onclick="event.stopPropagation()"> <select class="param-op" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-op2" value="${def.param2}" style="width:44px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+        inner += ` <input type="number" class="param-op1" value="${def.param1}" style="width:44px;" step="any" onclick="event.stopPropagation()"> <select class="param-op" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-op2" value="${def.param2}" style="width:44px;" step="any" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
       } else if (def.type === 'random_range') {
-        inner += ` <input type="number" class="param-r1" value="${def.param1}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-r2" value="${def.param2}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label3}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+        inner += ` <input type="number" class="param-r1" value="${def.param1}" style="width:40px;" step="1" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-r2" value="${def.param2}" style="width:40px;" step="1" onclick="event.stopPropagation()"> <span>${def.label3}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
       } else if (def.type === 'compare_branch') {
-        inner += ` <select class="param-cvar" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-comp" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-cval" value="${def.param}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select3.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+        inner += ` <select class="param-cvar" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-comp" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-cval" value="${def.param}" style="width:40px;" step="any" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select3.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
       } else if (def.type === 'logic_op') {
         inner += ` <select class="param-l1" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-lop" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-l2" onclick="event.stopPropagation()">${def.select3.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span>`;
       } else if (def.type === 'var_set' || def.type === 'var_add') {
-        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       }
 
       if (!isPalette) {
@@ -1529,13 +1636,30 @@
       return el;
     }
 
+    function copyBlockControlValues(sourceEl, targetEl) {
+      if (!sourceEl || !targetEl) return;
+      const srcInputs = sourceEl.querySelectorAll('input, select');
+      const dstInputs = targetEl.querySelectorAll('input, select');
+      srcInputs.forEach((src, i) => {
+        if (dstInputs[i]) dstInputs[i].value = src.value;
+      });
+    }
+
     function deleteBlock(btn) {
       const block = btn.closest('.block, .block-c-container');
+      if (!block) return;
       const stack = block.closest('.code-stack');
       block.remove();
       if (stack && stack.children.length === 0) {
         stack.remove();
       }
+    }
+
+    function isHatBlock(el) {
+      if (!el) return false;
+      return el.dataset.isHat === 'true' || 
+             el.classList.contains('block-hat') || 
+             (el.dataset.cmd && el.dataset.cmd.startsWith('hat_'));
     }
 
     // ── High-Precision Drag & Drop Snapping System ──
@@ -1544,13 +1668,29 @@
     let currentDropIndicator = null;
     let targetDropSlot = null;
 
+    function isOverTrashcan(clientX, clientY) {
+      const trashcan = document.getElementById('entryTrashcan');
+      if (!trashcan) return false;
+      const r = trashcan.getBoundingClientRect();
+      return (clientX >= r.left - 14 && clientX <= r.right + 14 &&
+              clientY >= r.top - 14 && clientY <= r.bottom + 14);
+    }
+
+    function isValidDropTarget(el) {
+      if (!el || el === ghostEl) return false;
+      if (dragData && dragData.blockEl) {
+        if (el === dragData.blockEl || dragData.blockEl.contains(el)) return false;
+      }
+      return true;
+    }
+
     function attachPaletteDragEvents(el, def) {
       el.onpointerdown = (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
 
         const rect = el.getBoundingClientRect();
         const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
-        const grabOffsetY = Math.max(8, Math.min(rect.height - 8, e.clientY - rect.top));
+        const grabOffsetY = Math.max(8, Math.min(40, e.clientY - rect.top));
 
         dragData = {
           source: 'palette',
@@ -1575,14 +1715,14 @@
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.classList.contains('block-btn-del')) return;
         e.stopPropagation();
 
-        if (el.dataset.isHat === 'true' && el.parentElement && el.parentElement.classList.contains('code-stack')) {
+        if (isHatBlock(el) && el.parentElement && el.parentElement.classList.contains('code-stack')) {
           startStackDrag(el.parentElement, e);
           return;
         }
 
         const rect = el.getBoundingClientRect();
         const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
-        const grabOffsetY = Math.max(8, Math.min(rect.height - 8, e.clientY - rect.top));
+        const grabOffsetY = Math.max(8, Math.min(40, e.clientY - rect.top));
 
         dragData = {
           source: 'workspace',
@@ -1609,6 +1749,7 @@
       }
       ghostEl = sourceEl.cloneNode(true);
       ghostEl.classList.add('drag-ghost');
+      copyBlockControlValues(sourceEl, ghostEl);
       ghostEl.style.left = `${x}px`;
       ghostEl.style.top = `${y}px`;
       document.body.appendChild(ghostEl);
@@ -1630,6 +1771,7 @@
         } else {
           createDragGhost(dragData.blockEl, e.clientX - dragData.grabOffsetX, e.clientY - dragData.grabOffsetY);
           dragData.blockEl.style.opacity = '0.3';
+          dragData.blockEl.style.pointerEvents = 'none';
         }
       }
 
@@ -1638,12 +1780,18 @@
         ghostEl.style.top = `${e.clientY - dragData.grabOffsetY}px`;
       }
 
-      // Check if pointer is hovering over palette drawer or sidebar
+      // Check if pointer is hovering over palette drawer or trashcan
       const paletteDrawer = document.getElementById('paletteDrawer');
       const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
       const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
+      const overTrash = isOverTrashcan(e.clientX, e.clientY);
 
-      if (isInsidePalette) {
+      const trashcan = document.getElementById('entryTrashcan');
+      if (trashcan) {
+        trashcan.classList.toggle('drag-over', Boolean(dragData.dragging && overTrash));
+      }
+
+      if (isInsidePalette || overTrash) {
         removeDropIndicator();
       } else if (dragData.dragging) {
         findAndShowDropIndicator(e.clientX, e.clientY);
@@ -1653,21 +1801,75 @@
     function findAndShowDropIndicator(clientX, clientY) {
       removeDropIndicator();
 
-      if (ghostEl) ghostEl.style.display = 'none';
-      const elements = document.elementsFromPoint(clientX, clientY);
-      if (ghostEl) ghostEl.style.display = '';
+      const isDraggingHat = (dragData && dragData.source === 'palette' && dragData.def && dragData.def.isHat) ||
+                            (dragData && dragData.source === 'workspace' && isHatBlock(dragData.blockEl));
 
-      // 1. Direct hit on C-block slot (supports both standard and dual-slot)
-      const slot = elements.find(el => el.classList && el.classList.contains('block-c-slot'));
-      if (slot) {
-        targetDropSlot = slot;
-        slot.classList.add('slot-hover');
-        return;
+      // Connector reference point (near top-left puzzle notch of dragged ghost)
+      const connX = dragData ? (clientX - dragData.grabOffsetX + 26) : clientX;
+      const connY = dragData ? (clientY - dragData.grabOffsetY + 12) : clientY;
+
+      // 1. Check C-block slots first (unless dragging a Hat block)
+      if (!isDraggingHat) {
+        const allSlots = Array.from(document.querySelectorAll('#workspaceBoard .block-c-slot'))
+          .filter(s => isValidDropTarget(s));
+
+        let matchedSlot = null;
+        for (const s of allSlots) {
+          const sr = s.getBoundingClientRect();
+          const hitByCursor = (clientX >= sr.left - 18 && clientX <= sr.right + 45 &&
+                               clientY >= sr.top - 8 && clientY <= sr.bottom + 8);
+          const hitByConn = (connX >= sr.left - 18 && connX <= sr.right + 45 &&
+                             connY >= sr.top - 8 && connY <= sr.bottom + 8);
+          if (hitByCursor || hitByConn) {
+            // Prefer nested (innermost) slot if multiple match
+            if (!matchedSlot || matchedSlot.contains(s)) {
+              matchedSlot = s;
+            }
+          }
+        }
+
+        if (matchedSlot) {
+          targetDropSlot = matchedSlot;
+          matchedSlot.classList.add('slot-hover');
+
+          const slotChildren = Array.from(matchedSlot.children).filter(c => isValidDropTarget(c) && !c.classList.contains('drop-indicator'));
+          if (slotChildren.length > 0) {
+            let bestChild = null;
+            let bestChildPlace = 'after';
+            let bestChildDist = 999999;
+            for (const ch of slotChildren) {
+              const cr = ch.getBoundingClientRect();
+              const midY = cr.top + cr.height / 2;
+              const dTop = Math.abs(clientY - cr.top);
+              const dBot = Math.abs(clientY - cr.bottom);
+              if (clientY < midY && dTop < bestChildDist) {
+                bestChildDist = dTop;
+                bestChild = ch;
+                bestChildPlace = 'before';
+              } else if (clientY >= midY && dBot < bestChildDist) {
+                bestChildDist = dBot;
+                bestChild = ch;
+                bestChildPlace = 'after';
+              }
+            }
+            if (bestChild) {
+              const indicator = document.createElement('div');
+              indicator.className = 'drop-indicator';
+              if (bestChildPlace === 'before') {
+                matchedSlot.insertBefore(indicator, bestChild);
+              } else {
+                matchedSlot.insertBefore(indicator, bestChild.nextSibling);
+              }
+              currentDropIndicator = indicator;
+            }
+          }
+          return;
+        }
       }
 
       // 2. Magnetic search among all workspace blocks
       const allBlocks = Array.from(document.querySelectorAll('#workspaceBoard .block, #workspaceBoard .block-c-container'))
-        .filter(b => b !== ghostEl && (!dragData || b !== dragData.blockEl));
+        .filter(b => isValidDropTarget(b));
 
       let bestTarget = null;
       let bestPlacement = 'after';
@@ -1675,9 +1877,25 @@
 
       for (const b of allBlocks) {
         const rect = b.getBoundingClientRect();
-        const isHat = (b.dataset.isHat === 'true');
+        const isHat = isHatBlock(b);
 
-        if (clientX < rect.left - 60 || clientX > rect.right + 60) continue;
+        if (clientX < rect.left - 70 && connX < rect.left - 70) continue;
+        if (clientX > rect.right + 70 && connX > rect.right + 70) continue;
+
+        // If dragging a Hat block, only allow snapping BEFORE the first block of a hatless stack
+        if (isDraggingHat) {
+          if (!isHat && b.parentElement && b.parentElement.classList.contains('code-stack') && b.parentElement.children[0] === b) {
+            if (clientY >= rect.top - 50 && clientY <= rect.bottom + 20) {
+              const dist = Math.hypot(clientX - (rect.left + rect.width / 2), clientY - rect.top);
+              if (dist < minDistance) {
+                minDistance = dist;
+                bestTarget = b;
+                bestPlacement = 'before';
+              }
+            }
+          }
+          continue;
+        }
 
         if (isHat) {
           if (clientY >= rect.top && clientY <= rect.bottom + 85) {
@@ -1686,6 +1904,49 @@
               minDistance = dist;
               bestTarget = b;
               bestPlacement = 'after';
+            }
+          }
+        } else if (b.classList.contains('block-c-container')) {
+          const headerEl = b.querySelector(':scope > .block-c-header') || b.firstElementChild;
+          const footerEl = b.querySelector(':scope > .block-c-footer') || b.lastElementChild;
+          const hRect = headerEl ? headerEl.getBoundingClientRect() : rect;
+          const fRect = footerEl ? footerEl.getBoundingClientRect() : rect;
+
+          // Top of C-Block header -> snap before C-Block
+          if (clientY >= hRect.top - 45 && clientY < hRect.top + hRect.height * 0.65) {
+            const dist = Math.hypot(clientX - (hRect.left + hRect.width / 2), clientY - hRect.top);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestTarget = b;
+              bestPlacement = 'before';
+            }
+          }
+          // Bottom of C-Block footer -> snap after C-Block
+          else if (clientY >= fRect.top - 8 && clientY <= fRect.bottom + 55) {
+            const dist = Math.hypot(clientX - (fRect.left + fRect.width / 2), clientY - fRect.bottom);
+            if (dist < minDistance) {
+              minDistance = dist;
+              bestTarget = b;
+              bestPlacement = 'after';
+            }
+          }
+          // Middle of C-Block -> snap into its slot!
+          else if (clientY >= hRect.top + hRect.height * 0.65 && clientY < fRect.top - 8) {
+            const slots = Array.from(b.querySelectorAll(':scope > .block-c-body > .block-c-slot'));
+            let chosenSlot = slots[0];
+            if (slots.length > 1) {
+              for (const s of slots) {
+                const sr = s.getBoundingClientRect();
+                if (clientY >= sr.top - 10 && clientY <= sr.bottom + 10) {
+                  chosenSlot = s;
+                  break;
+                }
+              }
+            }
+            if (chosenSlot && isValidDropTarget(chosenSlot)) {
+              targetDropSlot = chosenSlot;
+              chosenSlot.classList.add('slot-hover');
+              return;
             }
           }
         } else {
@@ -1708,11 +1969,11 @@
         }
       }
 
-      if (bestTarget && minDistance < 180) {
+      if (bestTarget && minDistance < 180 && bestTarget.parentElement && ! (dragData && dragData.blockEl && dragData.blockEl.contains(bestTarget))) {
         const indicator = document.createElement('div');
         indicator.className = 'drop-indicator';
 
-        if (bestPlacement === 'before' && bestTarget.dataset.isHat !== 'true') {
+        if (bestPlacement === 'before' && !isHatBlock(bestTarget)) {
           bestTarget.parentElement.insertBefore(indicator, bestTarget);
         } else {
           bestTarget.parentElement.insertBefore(indicator, bestTarget.nextSibling);
@@ -1738,64 +1999,69 @@
 
       if (!dragData) return;
 
-      const paletteDrawer = document.getElementById('paletteDrawer');
-      const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
-      const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
+      try {
+        const paletteDrawer = document.getElementById('paletteDrawer');
+        const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
+        const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
+        const overTrash = isOverTrashcan(e.clientX, e.clientY);
 
-      // ── Scenario A: Dragged from Palette ──
-      if (dragData.source === 'palette') {
-        // Tap without dragging: add cleanly ONCE to workspace
-        if (!dragData.dragging && !dragData.moved) {
-          const board = document.getElementById('workspaceBoard');
-          const firstStack = board.querySelector('.code-stack');
-          const newBlock = createBlockDOM(dragData.def, false);
-          if (dragData.def.isHat || !firstStack) {
-            const newStack = document.createElement('div');
-            newStack.className = 'code-stack';
-            newStack.style.left = (80 + Math.random() * 50) + 'px';
-            newStack.style.top = (60 + Math.random() * 50) + 'px';
-            newStack.appendChild(newBlock);
-            board.appendChild(newStack);
-            attachStackDrag(newStack);
-          } else {
-            firstStack.appendChild(newBlock);
+        // ── Scenario A: Dragged from Palette ──
+        if (dragData.source === 'palette') {
+          // Tap without dragging: add cleanly ONCE to workspace
+          if (!dragData.dragging && !dragData.moved) {
+            const board = document.getElementById('workspaceBoard');
+            const firstStack = board.querySelector('.code-stack');
+            const newBlock = createBlockDOM(dragData.def, false);
+            copyBlockControlValues(dragData.originEl, newBlock);
+            if (dragData.def.isHat || !firstStack) {
+              const newStack = document.createElement('div');
+              newStack.className = 'code-stack';
+              newStack.style.left = (80 + Math.random() * 50) + 'px';
+              newStack.style.top = (60 + Math.random() * 50) + 'px';
+              newStack.appendChild(newBlock);
+              board.appendChild(newStack);
+              attachStackDrag(newStack);
+            } else {
+              firstStack.appendChild(newBlock);
+            }
+            return;
           }
-          cleanupDrag();
-          return;
-        }
 
-        // Dragged but released inside palette drawer -> CANCEL (no block created!)
-        if (isInsidePalette) {
-          cleanupDrag();
-          return;
-        }
-
-        // Dragged into workspace -> create and place exactly once
-        const targetEl = createBlockDOM(dragData.def, false);
-        placeDroppedBlock(targetEl, e);
-        cleanupDrag();
-        return;
-      }
-
-      // ── Scenario B: Dragged from Workspace ──
-      if (dragData.source === 'workspace') {
-        dragData.blockEl.style.opacity = '1.0';
-
-        // Dropped inside palette drawer -> TRASH CAN DELETE!
-        if (isInsidePalette) {
-          const parentStack = dragData.originalParent;
-          dragData.blockEl.remove();
-          if (parentStack && parentStack.classList.contains('code-stack') && parentStack.children.length === 0) {
-            parentStack.remove();
+          // Dragged but released inside palette drawer or trashcan -> CANCEL
+          if (isInsidePalette || overTrash) {
+            return;
           }
-          cleanupDrag();
+
+          // Dragged into workspace -> create and place exactly once
+          const targetEl = createBlockDOM(dragData.def, false);
+          copyBlockControlValues(dragData.originEl, targetEl);
+          placeDroppedBlock(targetEl, e);
           return;
         }
 
-        // Dropped on workspace
-        if (dragData.dragging) {
-          placeDroppedBlock(dragData.blockEl, e);
+        // ── Scenario B: Dragged from Workspace ──
+        if (dragData.source === 'workspace') {
+          dragData.blockEl.style.opacity = '1.0';
+          dragData.blockEl.style.pointerEvents = '';
+
+          // Dropped inside palette drawer or trashcan -> DELETE!
+          if (isInsidePalette || overTrash) {
+            const parentStack = dragData.originalParent;
+            dragData.blockEl.remove();
+            if (parentStack && parentStack.classList.contains('code-stack') && parentStack.children.length === 0) {
+              parentStack.remove();
+            }
+            return;
+          }
+
+          // Dropped on workspace
+          if (dragData.dragging) {
+            placeDroppedBlock(dragData.blockEl, e);
+          }
         }
+      } catch (err) {
+        console.warn('Drag drop placement error:', err);
+      } finally {
         cleanupDrag();
       }
     }
@@ -1803,43 +2069,52 @@
     function placeDroppedBlock(targetEl, e) {
       const board = document.getElementById('workspaceBoard');
       const boardRect = board.getBoundingClientRect();
-      const isTargetHat = (targetEl.dataset.isHat === 'true');
+      const isTargetHat = isHatBlock(targetEl);
 
-      if (currentDropIndicator && !isTargetHat) {
-        currentDropIndicator.parentElement.insertBefore(targetEl, currentDropIndicator);
-      } else if (targetDropSlot && !isTargetHat) {
-        targetDropSlot.appendChild(targetEl);
-      } else {
-        const dropX = Math.max(30, e.clientX - boardRect.left - (dragData.grabOffsetX || 20));
-        const dropY = Math.max(30, e.clientY - boardRect.top - (dragData.grabOffsetY || 20));
-
-        if (!targetEl.parentElement || targetEl.parentElement.classList.contains('code-stack')) {
-          if (!targetEl.parentElement) {
-            const newStack = document.createElement('div');
-            newStack.className = 'code-stack';
-            newStack.style.left = `${dropX}px`;
-            newStack.style.top = `${dropY}px`;
-            newStack.appendChild(targetEl);
-            board.appendChild(newStack);
-            attachStackDrag(newStack);
-          } else if (targetEl.parentElement.children.length === 1) {
-            targetEl.parentElement.style.left = `${dropX}px`;
-            targetEl.parentElement.style.top = `${dropY}px`;
-          } else {
-            const newStack = document.createElement('div');
-            newStack.className = 'code-stack';
-            newStack.style.left = `${dropX}px`;
-            newStack.style.top = `${dropY}px`;
-            newStack.appendChild(targetEl);
-            board.appendChild(newStack);
-            attachStackDrag(newStack);
+      // 1. Snap at Drop Indicator (including Hat block snapping onto top of a hatless stack)
+      if (currentDropIndicator && currentDropIndicator.parentElement && !targetEl.contains(currentDropIndicator.parentElement)) {
+        const parent = currentDropIndicator.parentElement;
+        if (!isTargetHat || (parent.classList.contains('code-stack') && parent.firstElementChild === currentDropIndicator)) {
+          parent.insertBefore(targetEl, currentDropIndicator);
+          if (isTargetHat && parent.classList.contains('code-stack')) {
+            attachStackDrag(parent);
           }
+          return;
         }
+      }
+
+      // 2. Snap into C-Block Slot
+      if (targetDropSlot && !isTargetHat && !targetEl.contains(targetDropSlot)) {
+        targetDropSlot.appendChild(targetEl);
+        return;
+      }
+
+      // 3. Place as free-standing stack on workspace board
+      const dropX = Math.max(20, e.clientX - boardRect.left - (dragData.grabOffsetX || 20));
+      const dropY = Math.max(20, e.clientY - boardRect.top - (dragData.grabOffsetY || 20));
+
+      if (targetEl.parentElement && targetEl.parentElement.classList.contains('code-stack') && targetEl.parentElement.children.length === 1) {
+        targetEl.parentElement.style.left = `${dropX}px`;
+        targetEl.parentElement.style.top = `${dropY}px`;
+      } else {
+        const newStack = document.createElement('div');
+        newStack.className = 'code-stack';
+        newStack.style.left = `${dropX}px`;
+        newStack.style.top = `${dropY}px`;
+        newStack.appendChild(targetEl);
+        board.appendChild(newStack);
+        attachStackDrag(newStack);
       }
     }
 
     function cleanupDrag() {
       removeDropIndicator();
+      const trashcan = document.getElementById('entryTrashcan');
+      if (trashcan) trashcan.classList.remove('drag-over');
+      if (dragData && dragData.blockEl) {
+        dragData.blockEl.style.opacity = '1.0';
+        dragData.blockEl.style.pointerEvents = '';
+      }
       if (ghostEl) {
         ghostEl.remove();
         ghostEl = null;
@@ -1866,31 +2141,65 @@
       const startY = e.clientY;
       const initialLeft = parseFloat(stack.style.left) || 60;
       const initialTop = parseFloat(stack.style.top) || 40;
+      const trashcan = document.getElementById('entryTrashcan');
 
       function onMove(me) {
         const dx = me.clientX - startX;
         const dy = me.clientY - startY;
-        stack.style.left = `${Math.max(20, initialLeft + dx)}px`;
-        stack.style.top = `${Math.max(20, initialTop + dy)}px`;
+        stack.style.left = `${Math.max(10, initialLeft + dx)}px`;
+        stack.style.top = `${Math.max(10, initialTop + dy)}px`;
+        if (trashcan) {
+          trashcan.classList.toggle('drag-over', isOverTrashcan(me.clientX, me.clientY));
+        }
       }
 
-      function onUp() {
+      function onUp(ue) {
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
+        if (trashcan) trashcan.classList.remove('drag-over');
+        if (isOverTrashcan(ue.clientX, ue.clientY)) {
+          stack.remove();
+        }
       }
 
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
     }
 
+    function updateRunButtonState() {
+      const btnRun = document.querySelector('.btn-run');
+      const btnStop = document.querySelector('.btn-stop');
+      if (btnRun) {
+        if (isExecuting) {
+          btnRun.classList.add('is-running');
+          btnRun.innerHTML = '<span>▶ 실행 중...</span>';
+        } else {
+          btnRun.classList.remove('is-running');
+          btnRun.innerHTML = '<span>▶ 시작하기</span>';
+        }
+      }
+      if (btnStop) {
+        if (isExecuting) {
+          btnStop.classList.add('can-stop');
+        } else {
+          btnStop.classList.remove('can-stop');
+        }
+      }
+    }
+
     // ── Entry Event Dispatcher & Script Execution Engine ──
     async function triggerStartEvent(eventType, eventParam = null) {
+      // If user clicks Start, reset and stop any lingering/previous script execution
+      if (eventType === 'start_click') {
+        stopAllExecution();
+      }
+
       const stacks = Array.from(document.querySelectorAll('#workspaceBoard .code-stack'));
       const matchingStacks = [];
 
       for (const stack of stacks) {
         const firstBlock = stack.children[0];
-        if (!firstBlock || firstBlock.dataset.isHat !== 'true') continue;
+        if (!firstBlock || !isHatBlock(firstBlock)) continue;
 
         const cmd = firstBlock.dataset.cmd;
         let shouldRun = false;
@@ -1898,7 +2207,8 @@
         if (eventType === 'start_click' && cmd === 'hat_start_click') {
           shouldRun = true;
         } else if (eventType === 'key_press' && cmd === 'hat_key_pressed') {
-          const selectedKey = firstBlock.querySelector('.param-select').value;
+          const selectEl = firstBlock.querySelector('.param-select');
+          const selectedKey = selectEl ? selectEl.value : '스페이스';
           const keyMatches = {
             '스페이스': 'Space',
             '위쪽 화살표(↑)': 'ArrowUp',
@@ -1912,7 +2222,8 @@
         } else if (eventType === 'click_robot' && cmd === 'hat_robot_clicked') {
           shouldRun = true;
         } else if (eventType === 'signal' && cmd === 'hat_signal_received') {
-          const sig = firstBlock.querySelector('.param-select').value;
+          const selectEl = firstBlock.querySelector('.param-select');
+          const sig = selectEl ? selectEl.value : '신호 1';
           if (sig === eventParam) shouldRun = true;
         }
 
@@ -1921,15 +2232,25 @@
         }
       }
 
-      for (const stack of matchingStacks) {
-        executeStack(stack);
+      // Fallback: If no hat block was matched on start_click, but stacks exist without hat blocks,
+      // run those stacks so elementary students who dragged action blocks directly can still execute them!
+      if (eventType === 'start_click' && matchingStacks.length === 0) {
+        for (const stack of stacks) {
+          const firstBlock = stack.children[0];
+          if (firstBlock && !isHatBlock(firstBlock)) {
+            matchingStacks.push(stack);
+          }
+        }
       }
+
+      await Promise.all(matchingStacks.map(s => executeStack(s)));
     }
 
     async function executeStack(stack) {
       const executionToken = { cancelled: false };
       activeExecutionTokens.push(executionToken);
       isExecuting = true;
+      updateRunButtonState();
 
       try {
         const blocks = Array.from(stack.children);
@@ -1940,6 +2261,7 @@
         activeExecutionTokens = activeExecutionTokens.filter(t => t !== executionToken);
         if (activeExecutionTokens.length === 0) {
           isExecuting = false;
+          updateRunButtonState();
           // Do NOT forcibly stop wheels or tracer if continuous motion was requested!
           // Only stop wheels; NEVER abruptly kill ongoing sound or LED!
           if (currentLeftWheel === 0 && currentRightWheel === 0 && currentLineTracerMode === 0) {
@@ -1949,56 +2271,84 @@
       }
     }
 
+    function readNum(parent, selector, fallback = 0) {
+      const inp = parent ? parent.querySelector(selector) : null;
+      if (!inp) return fallback;
+      const val = parseFloat(inp.value);
+      return Number.isNaN(val) ? fallback : val;
+    }
+
+    async function waitMs(ms, token) {
+      const total = Math.max(0, ms);
+      const start = Date.now();
+      while (Date.now() - start < total) {
+        if ((token && token.cancelled) || !isExecuting) return false;
+        const rem = total - (Date.now() - start);
+        await sleep(Math.min(40, Math.max(5, rem)));
+      }
+      return !((token && token.cancelled) || !isExecuting);
+    }
+
     async function executeElements(elements, token) {
       for (const el of elements) {
         if (token.cancelled || !isExecuting) break;
-        if (el.dataset.isHat === 'true') continue;
+        if (isHatBlock(el)) continue;
 
         // Nested Loop & Condition C-Blocks
         if (el.classList.contains('block-c-container')) {
           const cmd = el.dataset.cmd;
+          const headerEl = el.querySelector(':scope > .block-c-header') || el.firstElementChild;
+          if (headerEl) headerEl.classList.add('running-highlight');
 
-          if (cmd === 'repeat_n') {
-            const slot = el.querySelector('.block-c-slot');
-            const childBlocks = Array.from(slot ? slot.children : []);
-            const count = parseInt(el.querySelector('.c-param').value) || 1;
-            for (let c = 0; c < count; c++) {
-              if (token.cancelled || !isExecuting) break;
-              await executeElements(childBlocks, token);
+          try {
+            if (cmd === 'repeat_n') {
+              const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
+              const childBlocks = Array.from(slot ? slot.children : []);
+              const count = Math.max(0, Math.round(readNum(headerEl, '.c-param', 1)));
+              for (let c = 0; c < count; c++) {
+                if (token.cancelled || !isExecuting) break;
+                await executeElements(childBlocks, token);
+                await sleep(20);
+              }
+            } else if (cmd === 'repeat_forever') {
+              const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
+              const childBlocks = Array.from(slot ? slot.children : []);
+              while (!token.cancelled && isExecuting) {
+                await executeElements(childBlocks, token);
+                await sleep(30);
+              }
+            } else if (cmd === 'if_then') {
+              const condSel = headerEl ? headerEl.querySelector('.c-param-cond') : el.querySelector('.c-param-cond');
+              const condStr = condSel ? condSel.value : '';
+              const isTrue = evaluateCondition(condStr);
+              const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
+              const childBlocks = Array.from(slot ? slot.children : []);
+              if (isTrue) {
+                await executeElements(childBlocks, token);
+              }
+            } else if (cmd === 'if_else') {
+              const condSel = headerEl ? headerEl.querySelector('.c-param-cond') : el.querySelector('.c-param-cond');
+              const condStr = condSel ? condSel.value : '';
+              const isTrue = evaluateCondition(condStr);
+              const slotIf = el.querySelector(':scope > .block-c-body > .slot-if');
+              const slotElse = el.querySelector(':scope > .block-c-body > .slot-else');
+              if (isTrue && slotIf) {
+                await executeElements(Array.from(slotIf.children), token);
+              } else if (!isTrue && slotElse) {
+                await executeElements(Array.from(slotElse.children), token);
+              }
+            } else if (cmd === 'if_floor_color') {
+              const condSel = headerEl ? headerEl.querySelector('.c-param-cond') : el.querySelector('.c-param-cond');
+              const targetColor = condSel ? condSel.value : '검은색';
+              const isColorMatch = (currentFloorColor === targetColor);
+              const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
+              const childBlocks = Array.from(slot ? slot.children : []);
+              if (isColorMatch) {
+                await executeElements(childBlocks, token);
+              }
             }
-          } else if (cmd === 'repeat_forever') {
-            const slot = el.querySelector('.block-c-slot');
-            const childBlocks = Array.from(slot ? slot.children : []);
-            while (!token.cancelled && isExecuting) {
-              await executeElements(childBlocks, token);
-              await sleep(15);
-            }
-          } else if (cmd === 'if_then') {
-            const condStr = el.querySelector('.c-param-cond').value;
-            const isTrue = evaluateCondition(condStr);
-            const slot = el.querySelector('.block-c-slot');
-            const childBlocks = Array.from(slot ? slot.children : []);
-            if (isTrue) {
-              await executeElements(childBlocks, token);
-            }
-          } else if (cmd === 'if_else') {
-            const condStr = el.querySelector('.c-param-cond').value;
-            const isTrue = evaluateCondition(condStr);
-            const slotIf = el.querySelector('.slot-if');
-            const slotElse = el.querySelector('.slot-else');
-            if (isTrue && slotIf) {
-              await executeElements(Array.from(slotIf.children), token);
-            } else if (!isTrue && slotElse) {
-              await executeElements(Array.from(slotElse.children), token);
-            }
-          } else if (cmd === 'if_floor_color') {
-            const targetColor = el.querySelector('.c-param-cond').value;
-            const isColorMatch = (currentFloorColor === targetColor);
-            const slot = el.querySelector('.block-c-slot');
-            const childBlocks = Array.from(slot ? slot.children : []);
-            if (isColorMatch) {
-              await executeElements(childBlocks, token);
-            }
+          } finally {
+            if (headerEl) headerEl.classList.remove('running-highlight');
           }
           continue;
         }
@@ -2017,21 +2367,31 @@
 
     function evaluateCondition(condStr) {
       if (condStr === '앞쪽에 장애물이 있으면') {
-        return currentFrontObstacle || Math.random() > 0.45;
-      } else if (condStr === '바닥 선이 감지되면') {
+        return Boolean(currentFrontObstacle);
+      } else if (condStr === '바닥 선이 감지되면' || condStr === '바닥 선(검은색)이 감지되면') {
         return currentFloorColor === '검은색' || currentFloorBrightness < 30;
+      } else if (condStr === '바닥이 [검은색] 이면') {
+        return currentFloorColor === '검은색';
       } else if (condStr === '바닥이 [빨간색] 이면') {
         return currentFloorColor === '빨간색';
-      } else if (condStr === '바닥이 [초록색] 이면') {
-        return currentFloorColor === '초록색';
-      } else if (condStr === '바닥이 [파란색] 이면') {
-        return currentFloorColor === '파란색';
       } else if (condStr === '바닥이 [노란색] 이면') {
         return currentFloorColor === '노란색';
+      } else if (condStr === '바닥이 [초록색] 이면') {
+        return currentFloorColor === '초록색';
+      } else if (condStr === '바닥이 [하늘색] 이면') {
+        return currentFloorColor === '하늘색';
+      } else if (condStr === '바닥이 [파란색] 이면') {
+        return currentFloorColor === '파란색';
+      } else if (condStr === '바닥이 [보라색] 이면') {
+        return currentFloorColor === '보라색';
+      } else if (condStr === '바닥이 [흰색] 이면') {
+        return currentFloorColor === '흰색';
       } else if (condStr === '변수 [점수] > 0 이면') {
         return (userVariables['점수'] || 0) > 0;
       } else if (condStr === '변수 [점수] >= 10 이면') {
         return (userVariables['점수'] || 0) >= 10;
+      } else if (condStr === '변수 [임의값] == 1 이면') {
+        return (userVariables['임의값'] || 0) == 1;
       } else if (condStr === '50% 확률로 참이면') {
         return Math.random() >= 0.5;
       }
@@ -2044,88 +2404,96 @@
       switch (cmd) {
         // ── Motion Blocks ──
         case 'move_forward_sec': {
-          const sec = parseFloat(el.querySelector('.param-1').value) || 1;
+          const sec = Math.max(0, readNum(el, '.param-1', 1));
           sendPacket(50, 50);
           driveSim(28 * sec, 0);
-          await sleep(sec * 1000);
-          sendPacket(0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'move_forward_cm': {
-          const cm = parseFloat(el.querySelector('.param-1').value) || 5;
+          const cm = Math.max(0, readNum(el, '.param-1', 5));
           // Calibrated TurtleBot formula: 106.8 pulses/cm at speed 50 (280 pulses/s) -> sec = (cm * 106.8) / 280.0
           const sec = (cm * 106.8) / 280.0;
           sendPacket(50, 50);
           driveSim(cm * 4, 0);
-          await sleep(sec * 1000);
-          sendPacket(0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'move_backward_sec': {
-          const sec = parseFloat(el.querySelector('.param-1').value) || 1;
+          const sec = Math.max(0, readNum(el, '.param-1', 1));
           sendPacket(-50, -50);
           driveSim(-28 * sec, 0);
-          await sleep(sec * 1000);
-          sendPacket(0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'move_backward_cm': {
-          const cm = parseFloat(el.querySelector('.param-1').value) || 5;
+          const cm = Math.max(0, readNum(el, '.param-1', 5));
           const sec = (cm * 106.8) / 280.0;
           sendPacket(-50, -50);
           driveSim(-cm * 4, 0);
-          await sleep(sec * 1000);
-          sendPacket(0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'turn_left_deg': {
-          const deg = parseFloat(el.querySelector('.param-1').value) || 90;
+          const deg = Math.max(0, readNum(el, '.param-1', 90));
           // Calibrated 2-wheel spin turn: 90 degrees takes 1.82s at speed -45/45
           const sec = (deg / 90.0) * 1.82;
           sendPacket(-45, 45);
           driveSim(0, -deg);
-          await sleep(sec * 1000);
-          sendPacket(0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'turn_right_deg': {
-          const deg = parseFloat(el.querySelector('.param-1').value) || 90;
+          const deg = Math.max(0, readNum(el, '.param-1', 90));
           const sec = (deg / 90.0) * 1.82;
           sendPacket(45, -45);
           driveSim(0, deg);
-          await sleep(sec * 1000);
-          sendPacket(0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'pivot_left': {
           sendPacket(0, 50);
           driveSim(10, 45);
-          await sleep(2850);
-          sendPacket(0, 0);
+          if (await waitMs(2850, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'pivot_right': {
           sendPacket(50, 0);
           driveSim(10, -45);
-          await sleep(2850);
-          sendPacket(0, 0);
+          if (await waitMs(2850, token)) {
+            sendPacket(0, 0);
+          }
           break;
         }
         case 'set_left_wheel': {
-          const l = parseFloat(el.querySelector('.param-1').value) || 0;
+          const l = readNum(el, '.param-1', 0);
           currentLeftWheel = l;
           sendPacket(currentLeftWheel, currentRightWheel);
           break;
         }
         case 'set_right_wheel': {
-          const r = parseFloat(el.querySelector('.param-1').value) || 0;
+          const r = readNum(el, '.param-1', 0);
           currentRightWheel = r;
           sendPacket(currentLeftWheel, currentRightWheel);
           break;
         }
         case 'set_wheels': {
-          const l = parseFloat(el.querySelector('.param-1').value) || 0;
-          const r = parseFloat(el.querySelector('.param-2').value) || 0;
+          const l = readNum(el, '.param-1', 0);
+          const r = readNum(el, '.param-2', 0);
           currentLeftWheel = l;
           currentRightWheel = r;
           sendPacket(currentLeftWheel, currentRightWheel);
@@ -2151,23 +2519,23 @@
           break;
         }
         case 'set_led_rgb': {
-          const r = parseInt(el.querySelector('.param-r').value) || 0;
-          const g = parseInt(el.querySelector('.param-g').value) || 0;
-          const b = parseInt(el.querySelector('.param-b').value) || 0;
+          const r = Math.max(0, Math.min(255, Math.round(readNum(el, '.param-r', 0))));
+          const g = Math.max(0, Math.min(255, Math.round(readNum(el, '.param-g', 0))));
+          const b = Math.max(0, Math.min(255, Math.round(readNum(el, '.param-b', 0))));
           sendPacket(null, null, [r, g, b]);
           setSimLed([r, g, b]);
           break;
         }
         case 'blink_led': {
-          const times = parseInt(el.querySelector('.param-1').value) || 3;
+          const times = Math.max(0, Math.round(readNum(el, '.param-1', 3)));
           for (let i = 0; i < times; i++) {
-            if (token.cancelled) break;
+            if (token.cancelled || !isExecuting) break;
             sendPacket(null, null, [255, 255, 0]);
             setSimLed([255, 255, 0]);
-            await sleep(250);
+            if (!(await waitMs(250, token))) break;
             sendPacket(null, null, [0, 0, 0]);
             setSimLed([0, 0, 0]);
-            await sleep(250);
+            if (!(await waitMs(250, token))) break;
           }
           break;
         }
@@ -2201,32 +2569,30 @@
           sendPacket(null, null, null, clipId);
           playWebAudioClip(clipId);
 
-          const startT = Date.now();
-          while (Date.now() - startT < dur) {
-            if (token.cancelled || !isExecuting) break;
-            await sleep(50);
-          }
+          await waitMs(dur, token);
           // Do NOT send soundClip=0 here! TurtleBot melody completes naturally without premature cutoff.
           break;
         }
         case 'play_note': {
           const noteStr = el.querySelector('.param-note').value;
-          const beats = parseFloat(el.querySelector('.param-beats').value) || 1;
+          const beats = Math.max(0.1, readNum(el, '.param-beats', 1));
           const notes = { '4옥타브 도': 60, '4옥타브 레': 62, '4옥타브 미': 64, '4옥타브 파': 65, '4옥타브 솔': 67, '4옥타브 라': 69, '4옥타브 시': 71, '5옥타브 도': 72 };
           const freqs = { 60: 261.63, 62: 293.66, 64: 329.63, 65: 349.23, 67: 392.00, 69: 440.00, 71: 493.88, 72: 523.25 };
           const noteCode = notes[noteStr] || 60;
           sendPacket(null, null, null, null, noteCode);
           playWebAudioTone(freqs[noteCode] || 440, beats * 500);
-          await sleep(beats * 500);
-          sendPacket(null, null, null, null, 0);
+          if (await waitMs(beats * 500, token)) {
+            sendPacket(null, null, null, null, 0);
+          }
           break;
         }
         case 'buzzer_hertz': {
-          const hz = parseFloat(el.querySelector('.param-1').value) || 440;
+          const hz = Math.max(20, readNum(el, '.param-1', 440));
           sendPacket(null, null, null, null, null, hz);
           playWebAudioTone(hz, 500);
-          await sleep(500);
-          sendPacket(null, null, null, null, null, 0);
+          if (await waitMs(500, token)) {
+            sendPacket(null, null, null, null, null, 0);
+          }
           break;
         }
         case 'stop_sound': {
@@ -2246,30 +2612,32 @@
           };
           const modeVal = colorModes[colorName] || 8;
           currentLineTracerMode = modeVal;
-          sendPacket(35, 35, [0,0,0], 0, 0, 0, modeVal);
+          sendPacket(35, 35, null, null, null, null, modeVal);
           driveSim(40, 0);
           break;
         }
         case 'follow_line_sec': {
           const colorName = el.querySelector('.param-select').value;
-          const sec = parseFloat(el.querySelector('.param-1').value) || 3;
+          const sec = Math.max(0.1, readNum(el, '.param-1', 3));
           const colorModes = {
             '검은색': 8, '빨간색': 9, '초록색': 11, '파란색': 13, '모든 색상': 15
           };
           const modeVal = colorModes[colorName] || 8;
           currentLineTracerMode = modeVal;
-          sendPacket(35, 35, [0,0,0], 0, 0, 0, modeVal);
+          sendPacket(35, 35, null, null, null, null, modeVal);
           driveSim(40, 0);
-          await sleep(sec * 1000);
-          currentLineTracerMode = 0;
-          sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
+          if (await waitMs(sec * 1000, token)) {
+            currentLineTracerMode = 0;
+            sendPacket(0, 0, null, null, null, null, 0);
+          }
           break;
         }
         case 'cross_intersection': {
-          sendPacket(45, 45, [0,0,0], 0, 0, 0, 32);
+          sendPacket(45, 45, null, null, null, null, 32);
           driveSim(20, 0);
-          await sleep(1600);
-          sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
+          if (await waitMs(1600, token)) {
+            sendPacket(0, 0, null, null, null, null, 0);
+          }
           break;
         }
         case 'turn_intersection': {
@@ -2278,38 +2646,52 @@
           let turnDur = 1600;
           if (dir === '오른쪽') { mode = 24; turnDur = 1600; }
           else if (dir === '유턴') { mode = 40; turnDur = 2500; }
-          sendPacket(null, null, [0,0,0], 0, 0, 0, mode);
+          sendPacket(null, null, null, null, null, null, mode);
           if (dir === '왼쪽') driveSim(0, -90);
           else if (dir === '오른쪽') driveSim(0, 90);
           else driveSim(0, 180);
-          await sleep(turnDur);
-          sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
+          if (await waitMs(turnDur, token)) {
+            sendPacket(0, 0, null, null, null, null, 0);
+          }
           break;
         }
         case 'wait_until_color': {
           const targetColor = el.querySelector('.param-select').value;
           sendPacket(38, 38);
           // Drive initial 350ms so if robot currently sits on targetColor, it doesn't instantly abort
-          await sleep(350);
+          if (!(await waitMs(350, token))) break;
           let elapsed = 0;
           while (!token.cancelled && isExecuting && elapsed < 60000) {
             if (currentFloorColor === targetColor) break;
-            await sleep(80);
+            if (!(await waitMs(80, token))) break;
             elapsed += 80;
           }
-          sendPacket(0, 0);
-          playWebAudioTone(880, 150);
+          if (!token.cancelled && isExecuting) {
+            sendPacket(0, 0);
+            playWebAudioTone(880, 150);
+          }
           break;
         }
         case 'stop_tracer': {
-          sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
+          currentLineTracerMode = 0;
+          sendPacket(0, 0, null, null, null, null, 0);
           break;
         }
 
         // ── Flow & Signals ──
         case 'wait_sec': {
-          const sec = parseFloat(el.querySelector('.param-1').value) || 1;
-          await sleep(sec * 1000);
+          const sec = Math.max(0, readNum(el, '.param-1', 1));
+          await waitMs(sec * 1000, token);
+          break;
+        }
+        case 'wait_until_cond': {
+          const condStr = el.querySelector('.param-select').value;
+          let elapsed = 0;
+          while (!token.cancelled && isExecuting && elapsed < 120000) {
+            if (evaluateCondition(condStr)) break;
+            if (!(await waitMs(60, token))) break;
+            elapsed += 60;
+          }
           break;
         }
         case 'send_signal': {
@@ -2330,9 +2712,9 @@
 
         // ── Math & Calculation Blocks ──
         case 'calc_op': {
-          const v1 = parseFloat(el.querySelector('.param-op1').value) || 0;
+          const v1 = readNum(el, '.param-op1', 0);
           const op = el.querySelector('.param-op').value;
-          const v2 = parseFloat(el.querySelector('.param-op2').value) || 0;
+          const v2 = readNum(el, '.param-op2', 0);
           const target = el.querySelector('.param-target-var').value;
           let res = 0;
           if (op === '+') res = v1 + v2;
@@ -2344,8 +2726,10 @@
           break;
         }
         case 'calc_random': {
-          const minVal = parseInt(el.querySelector('.param-r1').value) || 1;
-          const maxVal = parseInt(el.querySelector('.param-r2').value) || 10;
+          const r1 = Math.round(readNum(el, '.param-r1', 1));
+          const r2 = Math.round(readNum(el, '.param-r2', 10));
+          const minVal = Math.min(r1, r2);
+          const maxVal = Math.max(r1, r2);
           const target = el.querySelector('.param-target-var').value;
           const randVal = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
           userVariables[target] = randVal;
@@ -2355,7 +2739,7 @@
         case 'logic_compare': {
           const cvar = el.querySelector('.param-cvar').value;
           const comp = el.querySelector('.param-comp').value;
-          const cval = parseFloat(el.querySelector('.param-cval').value) || 0;
+          const cval = readNum(el, '.param-cval', 0);
           const target = el.querySelector('.param-target-var').value;
           const curr = userVariables[cvar] || 0;
           let matched = false;
@@ -2392,14 +2776,14 @@
         // ── Data, Variables & Lists ──
         case 'var_set': {
           const varName = el.querySelector('.param-var').value;
-          const val = parseFloat(el.querySelector('.param-1').value) || 0;
+          const val = readNum(el, '.param-1', 0);
           userVariables[varName] = val;
           updateHud();
           break;
         }
         case 'var_add': {
           const varName = el.querySelector('.param-var').value;
-          const val = parseFloat(el.querySelector('.param-1').value) || 0;
+          const val = readNum(el, '.param-1', 0);
           userVariables[varName] = (userVariables[varName] || 0) + val;
           updateHud();
           break;
@@ -2438,31 +2822,31 @@
             if (token.cancelled || !isExecuting) break;
             if (item === '앞으로') {
               sendPacket(50, 50);
-              await sleep(1000);
+              if (!(await waitMs(1000, token))) break;
               sendPacket(0, 0);
             } else if (item === '뒤로') {
               sendPacket(-50, -50);
-              await sleep(1000);
+              if (!(await waitMs(1000, token))) break;
               sendPacket(0, 0);
             } else if (item === '왼쪽') {
               sendPacket(-45, 45);
-              await sleep(780);
+              if (!(await waitMs(780, token))) break;
               sendPacket(0, 0);
             } else if (item === '오른쪽') {
               sendPacket(45, -45);
-              await sleep(780);
+              if (!(await waitMs(780, token))) break;
               sendPacket(0, 0);
             } else if (item === '삐-소리') {
-              sendPacket(null, null, [0,0,0], 1);
+              sendPacket(null, null, null, 1);
               playWebAudioClip(1);
-              await sleep(350);
-              sendPacket(null, null, [0,0,0], 0);
+              if (!(await waitMs(350, token))) break;
+              sendPacket(null, null, null, 0);
             } else if (item === 'LED켜기') {
               sendPacket(null, null, [0, 255, 0]);
-              await sleep(500);
+              if (!(await waitMs(500, token))) break;
               sendPacket(null, null, [0, 0, 0]);
             }
-            await sleep(200);
+            if (!(await waitMs(200, token))) break;
           }
           break;
         }
@@ -2482,6 +2866,7 @@
       currentNoteVal = 0;
       currentBuzzerFreq = 0;
       sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
+      updateRunButtonState();
     }
 
     function sleep(ms) {
@@ -2919,7 +3304,10 @@
       if (leftSpeed !== null) currentLeftWheel = leftSpeed;
       if (rightSpeed !== null) currentRightWheel = rightSpeed;
       if (rgbLed !== null) currentHeadLed = rgbLed;
-      if (tracerMode !== null) currentLineTracerMode = tracerMode;
+      if (tracerMode !== null) {
+        currentLineTracerMode = tracerMode;
+        if (tracerMode > 0) tracerIdToggle = (tracerIdToggle + 1) % 2;
+      }
 
       // Sound Subsystem Latching: preserve playing sound across wheel/LED packets!
       if (soundClip !== null) {
@@ -3005,7 +3393,7 @@
         const board = document.getElementById('workspaceBoard');
         board.innerHTML = `
           <div class="code-stack" id="defaultStack" style="left: 60px; top: 40px;">
-            <div class="block block-hat block-cat-start" data-cmd="hat_start_click" data-cat="start">
+            <div class="block block-hat block-cat-start" data-cmd="hat_start_click" data-cat="start" data-is-hat="true">
               <span>🚩 [시작하기] 버튼을 클릭했을 때</span>
             </div>
           </div>
@@ -3094,16 +3482,26 @@
     }
 
 
-    // ── Controller Settings & Coding Guide Logic ──
-    let isControllerEnabled = false; // 기본값: 꺼짐
-    let isDirectDriveAllowed = false; // 기본값: 꺼짐 (코딩 없는 단순 수동 운전 방지)
+    // ── Controller Settings & Coding Guide Logic (Coding-Only Virtual Keypad) ──
+    let isControllerEnabled = true; // 기본값: 켜짐 (아이패드용 가상 키패드 기본 표시)
+    let keypadHintTimer = null;
+
+    function showKeypadFeedback(msg, color) {
+      const el = document.getElementById('keypadHintText');
+      if (!el) return;
+      el.innerText = msg;
+      el.style.color = color;
+      if (keypadHintTimer) clearTimeout(keypadHintTimer);
+      keypadHintTimer = setTimeout(() => {
+        el.innerText = '코딩한 [키] 블록이 실행됩니다';
+        el.style.color = '#94a3b8';
+      }, 1800);
+    }
 
     function openGuideModal() {
       const modal = document.getElementById('guideModal');
       const chkController = document.getElementById('toggleShowController');
-      const chkDirect = document.getElementById('toggleDirectDrive');
       if (chkController) chkController.checked = isControllerEnabled;
-      if (chkDirect) chkDirect.checked = isDirectDriveAllowed;
       modal.classList.add('show');
     }
 
@@ -3122,101 +3520,49 @@
       isControllerEnabled = enabled;
       const dock = document.getElementById('keypadDock');
       const btnHeaderCtrl = document.getElementById('btnHeaderCtrl');
+      const trashcan = document.getElementById('entryTrashcan');
       if (dock) dock.style.display = enabled ? 'flex' : 'none';
       if (btnHeaderCtrl) btnHeaderCtrl.style.display = enabled ? 'inline-flex' : 'none';
+      if (trashcan) trashcan.style.right = enabled ? '194px' : '28px';
       updateNavSlideFades();
-    }
-
-    function onToggleDirectDrive(allowed) {
-      isDirectDriveAllowed = allowed;
     }
 
     function loadKeypadCodingSample() {
       if (confirm('작업 공간에 [기본 조종 코딩 예제 블록]을 배치하시겠습니까?')) {
         const board = document.getElementById('workspaceBoard');
-        board.innerHTML = `
-          <!-- 전진: 위쪽 화살표 -->
-          <div class="code-stack" style="left: 60px; top: 30px;">
-            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
-              <span>⌨</span>
-              <select class="param-select"><option value="위쪽 화살표(↑)" selected>위쪽 화살표(↑)</option></select>
-              <span>키를 눌렀을 때</span>
-            </div>
-            <div class="block block-cat-motion" data-cmd="move_forward_cm" data-cat="motion">
-              <span>앞으로</span>
-              <input type="number" class="param-1" value="5">
-              <span>cm 정밀 이동하기</span>
-              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
-            </div>
-          </div>
+        board.innerHTML = '';
 
-          <!-- 후진: 아래쪽 화살표 -->
-          <div class="code-stack" style="left: 60px; top: 155px;">
-            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
-              <span>⌨</span>
-              <select class="param-select"><option value="아래쪽 화살표(↓)" selected>아래쪽 화살표(↓)</option></select>
-              <span>키를 눌렀을 때</span>
-            </div>
-            <div class="block block-cat-motion" data-cmd="move_backward_cm" data-cat="motion">
-              <span>뒤로</span>
-              <input type="number" class="param-1" value="5">
-              <span>cm 정밀 이동하기</span>
-              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
-            </div>
-          </div>
+        const hatKeyDef = CATEGORIES.start.blocks.find(b => b.cmd === 'hat_key_pressed');
+        const fwdDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'move_forward_cm');
+        const bwdDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'move_backward_cm');
+        const leftDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'turn_left_deg');
+        const rightDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'turn_right_deg');
+        const soundDef = CATEGORIES.sound.blocks.find(b => b.cmd === 'play_clip');
 
-          <!-- 좌회전: 왼쪽 화살표 -->
-          <div class="code-stack" style="left: 380px; top: 30px;">
-            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
-              <span>⌨</span>
-              <select class="param-select"><option value="왼쪽 화살표(←)" selected>왼쪽 화살표(←)</option></select>
-              <span>키를 눌렀을 때</span>
-            </div>
-            <div class="block block-cat-motion" data-cmd="turn_left_deg" data-cat="motion">
-              <span>왼쪽으로</span>
-              <input type="number" class="param-1" value="90">
-              <span>도 회전하기</span>
-              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
-            </div>
-          </div>
+        const configs = [
+          { left: 60, top: 30, key: '위쪽 화살표(↑)', actionDef: fwdDef },
+          { left: 60, top: 155, key: '아래쪽 화살표(↓)', actionDef: bwdDef },
+          { left: 380, top: 30, key: '왼쪽 화살표(←)', actionDef: leftDef },
+          { left: 380, top: 155, key: '오른쪽 화살표(→)', actionDef: rightDef },
+          { left: 60, top: 280, key: '스페이스', actionDef: soundDef }
+        ];
 
-          <!-- 우회전: 오른쪽 화살표 -->
-          <div class="code-stack" style="left: 380px; top: 155px;">
-            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
-              <span>⌨</span>
-              <select class="param-select"><option value="오른쪽 화살표(→)" selected>오른쪽 화살표(→)</option></select>
-              <span>키를 눌렀을 때</span>
-            </div>
-            <div class="block block-cat-motion" data-cmd="turn_right_deg" data-cat="motion">
-              <span>오른쪽으로</span>
-              <input type="number" class="param-1" value="90">
-              <span>도 회전하기</span>
-              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
-            </div>
-          </div>
+        for (const cfg of configs) {
+          const stack = document.createElement('div');
+          stack.className = 'code-stack';
+          stack.style.left = cfg.left + 'px';
+          stack.style.top = cfg.top + 'px';
 
-          <!-- 경적: 스페이스 -->
-          <div class="code-stack" style="left: 60px; top: 280px;">
-            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
-              <span>⌨</span>
-              <select class="param-select"><option value="스페이스" selected>스페이스</option></select>
-              <span>키를 눌렀을 때</span>
-            </div>
-            <div class="block block-cat-sound" data-cmd="play_clip" data-cat="sound">
-              <span>효과음</span>
-              <select class="param-select"><option value="삐- 소리" selected>삐- 소리</option></select>
-              <span>재생하기</span>
-              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
-            </div>
-          </div>
-        `;
+          const hatEl = createBlockDOM(hatKeyDef, false);
+          const sel = hatEl.querySelector('.param-select');
+          if (sel) sel.value = cfg.key;
 
-        document.querySelectorAll('#workspaceBoard .code-stack').forEach(s => {
-          attachStackDrag(s);
-          Array.from(s.children).forEach(b => {
-            if (b.dataset.isHat !== 'true') attachBlockDragEvents(b);
-          });
-        });
+          const actEl = createBlockDOM(cfg.actionDef, false);
+          stack.appendChild(hatEl);
+          stack.appendChild(actEl);
+          board.appendChild(stack);
+          attachStackDrag(stack);
+        }
 
         // Automatically enable controller so they can test their code!
         onToggleShowController(true);
@@ -3227,27 +3573,48 @@
       }
     }
 
-    function handleKeypadDirection(key, isPressed) {
-      if (isPressed) {
-        // 1. Always fire student's coded blocks
-        triggerStartEvent('key_press', key);
-
-        // 2. Direct motor drive ONLY if teacher explicitly enabled it in settings
-        if (isDirectDriveAllowed) {
-          if (key === 'ArrowUp') sendPacket(50, 50);
-          else if (key === 'ArrowDown') sendPacket(-50, -50);
-          else if (key === 'ArrowLeft') sendPacket(-45, 45);
-          else if (key === 'ArrowRight') sendPacket(45, -45);
-        }
-      } else {
-        if (isDirectDriveAllowed) {
-          sendPacket(0, 0);
+    function hasMatchingEventBlock(eventType, eventParam = null) {
+      const stacks = Array.from(document.querySelectorAll('#workspaceBoard .code-stack'));
+      const keyMatches = {
+        '스페이스': 'Space',
+        '위쪽 화살표(↑)': 'ArrowUp',
+        '아래쪽 화살표(↓)': 'ArrowDown',
+        '왼쪽 화살표(←)': 'ArrowLeft',
+        '오른쪽 화살표(→)': 'ArrowRight',
+        'A 키': 'KeyA',
+        'B 키': 'KeyB'
+      };
+      for (const stack of stacks) {
+        const firstBlock = stack.children[0];
+        if (!firstBlock || !isHatBlock(firstBlock)) continue;
+        const cmd = firstBlock.dataset.cmd;
+        if (eventType === 'key_press' && cmd === 'hat_key_pressed') {
+          const selectEl = firstBlock.querySelector('.param-select');
+          const selectedKey = selectEl ? selectEl.value : '스페이스';
+          if (keyMatches[selectedKey] === eventParam) return true;
+        } else if (eventType === 'click_robot' && cmd === 'hat_robot_clicked') {
+          return true;
         }
       }
+      return false;
     }
 
     function pressVirtualKey(code) {
-      triggerStartEvent('key_press', code);
+      if (hasMatchingEventBlock('key_press', code)) {
+        showKeypadFeedback('▶ 코딩 블록 실행!', '#10D35E');
+        triggerStartEvent('key_press', code);
+      } else {
+        showKeypadFeedback('⚠️ [키를 눌렀을 때] 블록을 조립해 주세요', '#FEB71A');
+      }
+    }
+
+    function pressVirtualRobotClick() {
+      if (hasMatchingEventBlock('click_robot')) {
+        showKeypadFeedback('▶ [터틀봇 클릭] 블록 실행!', '#10D35E');
+        triggerStartEvent('click_robot');
+      } else {
+        showKeypadFeedback('⚠️ [터틀봇을 클릭했을 때] 블록을 조립해 주세요', '#FEB71A');
+      }
     }
 
     window.addEventListener('keydown', (e) => {
@@ -3279,29 +3646,19 @@
         
         <!-- Section 1: Controller Settings -->
         <div class="guide-section">
-          <div class="guide-sec-head">⚙️ 가상 조종기(키패드) 동작 설정</div>
+          <div class="guide-sec-head">⚙️ 가상 키패드(조종기) 표시 설정</div>
           <div class="setting-list">
             
             <div class="setting-card">
               <div class="setting-info">
-                <div class="setting-title">🎮 화면 조종기(가상 키패드) 표시</div>
-                <div class="setting-desc">화면 우측 하단에 방향키 조종기를 띄웁니다. (코딩 집중을 위해 기본값: 꺼짐)</div>
-              </div>
-              <label class="switch">
-                <input type="checkbox" id="toggleShowController" onchange="onToggleShowController(this.checked)">
-                <span class="slider"></span>
-              </label>
-            </div>
-
-            <div class="setting-card">
-              <div class="setting-info">
-                <div class="setting-title">🕹 코딩 없는 단순 수동 운전 허용</div>
+                <div class="setting-title">🎮 화면 가상 키패드 표시 (기본값: 켜짐)</div>
                 <div class="setting-desc">
-                  <b style="color:#f87171;">기본값(OFF) 권장:</b> 꺼져 있을 때는 학생이 작성한 코딩 블록(예: <code>[위쪽 화살표] 키를 눌렀을 때</code>)에 의해서만 로봇이 작동합니다. 코딩 없는 단순 장난 주행을 원천 방지합니다.
+                  별도의 물리 키보드가 없는 태블릿/아이패드 환경을 위해 화면 우측 하단에 가상 키패드를 제공합니다.<br>
+                  <b style="color:#00cec9;">※ 코딩 전용 키패드:</b> 코딩 없이 자동으로 로봇이 움직이지 않으며, 학생이 직접 조립한 <code>[키를 눌렀을 때]</code> 또는 <code>[터틀봇을 클릭했을 때]</code> 블록만 실행됩니다.
                 </div>
               </div>
               <label class="switch">
-                <input type="checkbox" id="toggleDirectDrive" onchange="onToggleDirectDrive(this.checked)">
+                <input type="checkbox" id="toggleShowController" checked onchange="onToggleShowController(this.checked)">
                 <span class="slider"></span>
               </label>
             </div>
