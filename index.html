@@ -3,24 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>터틀봇 엔트리 코딩 (TurtleBot Entry Edition)</title>
+  <title>엔트리 코딩 - 터틀봇 오프라인 에디션 (Entry Turtle Edition)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --entry-bg: #edf2f7;
-      --entry-header: #2b2d42;
-      --entry-palette-bg: #ffffff;
+      /* Official Entry 2.1 Colors (Directly from Entry-2.1.36.pkg) */
+      --entry-header-bg: #2f3b52;
+      --entry-sidebar-bg: #242938;
+      --entry-palette-bg: #f7f9fc;
       --entry-workspace-bg: #f8fafc;
       --border-color: #e2e8f0;
       
-      /* Entry Category Colors */
-      --cat-start: #00b894;      /* 시작 (Mint Green) */
-      --cat-flow: #ff7675;       /* 흐름 (Coral Red) */
-      --cat-motion: #0984e3;     /* 움직임 (Entry Blue) */
-      --cat-looks: #a29bfe;      /* 생김새 / LED (Purple) */
-      --cat-sound: #e84393;      /* 소리 (Pink) */
-      --cat-sensor: #00cec9;     /* 센서 / 판단 (Teal) */
-      --cat-calc: #0284c7;       /* 연산 / 계산 (Cyan/Sky) */
-      --cat-data: #d97706;       /* 자료 / 변수 / 리스트 (Amber) */
+      /* Exact Entry 2.1 Category Colors */
+      --cat-start: #10D35E;          /* 시작 (Green) */
+      --cat-start-dark: #13BF68;
+      --cat-flow: #31C1EC;           /* 흐름 (Cyan/Sky) */
+      --cat-flow-dark: #08ACDD;
+      --cat-motion: #BF63FF;         /* 움직임 (Purple) */
+      --cat-motion-dark: #B13EFE;
+      --cat-looks: #FF5174;          /* 생김새 (Pink) */
+      --cat-looks-dark: #EE3157;
+      --cat-sound: #82D214;          /* 소리 (Lime Green) */
+      --cat-sound-dark: #6EBC02;
+      --cat-judge: #7E8EFE;          /* 판단 (Periwinkle Blue) */
+      --cat-judge-dark: #1B3AD8;
+      --cat-calc: #FEB71A;           /* 계산 (Amber) */
+      --cat-calc-dark: #FF9C00;
+      --cat-data: #F57DF1;           /* 자료 (Magenta) */
+      --cat-data-dark: #EC52E7;
+      --cat-hardware: #00CFCA;       /* 하드웨어 (Teal) */
+      --cat-hardware-dark: #04B5B0;
+      --cat-sensor: #00CFCA;
+      --cat-sensor-dark: #04B5B0;
     }
 
     * {
@@ -33,7 +49,8 @@
       -webkit-text-size-adjust: 100%;
       text-size-adjust: 100%;
       -webkit-tap-highlight-color: transparent;
-      background: var(--entry-bg);
+      font-family: 'Nanum Gothic', 'NanumGothic', 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--entry-workspace-bg);
       color: #2d3748;
       height: 100vh;
       display: flex;
@@ -42,39 +59,125 @@
       touch-action: none;
     }
 
-    /* ── Top Header Navigation ── */
+    /* ── Top Header Navigation & Silky Slide Track ── */
     header {
-      background: #2b2d42;
-      height: 56px;
+      background: var(--entry-header-bg);
+      border-bottom: 2px solid #232c3d;
+      height: 52px;
+      min-height: 52px;
+      max-height: 52px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
+      padding: 0 8px 0 16px;
       color: #fff;
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       z-index: 100;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap !important;
     }
 
-    .brand {
+    .brand-sticky {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       font-weight: 800;
-      font-size: 1.15rem;
+      font-size: 1.12rem;
       letter-spacing: -0.3px;
+      flex-shrink: 0 !important;
+      padding-right: 14px;
+      border-right: 1px solid rgba(255, 255, 255, 0.15);
+      margin-right: 4px;
+      white-space: nowrap !important;
+      z-index: 10;
     }
-    .brand .logo-icon {
-      font-size: 1.6rem;
+    .brand-sticky .logo-icon {
+      font-size: 1.55rem;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
     }
     .brand-sub {
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       background: #00b894;
       color: #fff;
-      padding: 2px 7px;
-      border-radius: 12px;
+      padding: 2px 6px;
+      border-radius: 10px;
       font-weight: 700;
-      margin-left: 4px;
+    }
+
+    /* Slidable Track Container */
+    .header-scroll-wrapper {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header-nav-scroll {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-x;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      padding: 0 6px;
+      white-space: nowrap !important;
+    }
+    .header-nav-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-slide-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      font-weight: bold;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      z-index: 10;
+      user-select: none;
+      padding-bottom: 2px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .nav-slide-btn:hover { background: rgba(255, 255, 255, 0.28); }
+    .nav-slide-btn:active { transform: scale(0.92); }
+
+    .nav-fade-left, .nav-fade-right {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 28px;
+      pointer-events: none;
+      z-index: 8;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .nav-fade-left {
+      left: 0;
+      background: linear-gradient(to right, #2b2d42 35%, transparent);
+    }
+    .nav-fade-right {
+      right: 0;
+      background: linear-gradient(to left, #2b2d42 35%, transparent);
+    }
+    .nav-fade-left.visible, .nav-fade-right.visible {
+      opacity: 1;
     }
 
     .floor-badge {
@@ -83,13 +186,14 @@
       gap: 6px;
       background: #1e2235;
       border: 1px solid #3b4261;
-      padding: 4px 10px;
+      padding: 5px 11px;
       border-radius: 16px;
       font-size: 0.78rem;
       font-weight: 700;
       color: #cbd5e1;
       cursor: pointer;
-      white-space: nowrap;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
       transition: background 0.2s;
     }
     .floor-badge:hover {
@@ -110,9 +214,11 @@
       background: #3a3f58;
       color: #cbd5e0;
       font-weight: 600;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
       transition: all 0.3s;
     }
     .status-pill.online {
@@ -131,12 +237,6 @@
       box-shadow: 0 0 6px #fff;
     }
 
-    .header-btns {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .btn {
       padding: 8px 15px;
       border-radius: 8px;
@@ -150,12 +250,12 @@
       transition: transform 0.1s, background 0.2s, box-shadow 0.2s;
     }
     .btn:active { transform: scale(0.96); }
-    .btn-ble { background: #0984e3; color: #fff; }
-    .btn-ble.connected { background: #00b894; color: #fff; }
-    .btn-run { background: #00b894; color: #fff; font-size: 0.98rem; padding: 8px 18px; box-shadow: 0 2px 6px rgba(0,184,148,0.4); }
-    .btn-stop { background: #d63031; color: #fff; }
-    .btn-ctrl { background: #6c5ce7; color: #fff; }
-    .btn-reset { background: #4a5568; color: #fff; }
+    .btn-ble { background: var(--cat-hardware); color: #fff; border: 1.5px solid var(--cat-hardware-dark); }
+    .btn-ble.connected { background: #00b894; color: #fff; border-color: #009975; }
+    .btn-run { background: var(--cat-start); color: #fff; font-size: 0.98rem; padding: 8px 18px; border: 1.5px solid var(--cat-start-dark); box-shadow: 0 2px 6px rgba(16, 211, 94, 0.4); }
+    .btn-stop { background: var(--cat-looks); color: #fff; border: 1.5px solid var(--cat-looks-dark); }
+    .btn-ctrl { background: var(--cat-motion); color: #fff; border: 1.5px solid var(--cat-motion-dark); }
+    .btn-reset { background: #475569; color: #fff; border: 1.5px solid #334155; }
 
     /* ── Main App Layout ── */
     .app-body {
@@ -167,8 +267,8 @@
 
     /* ── Category Sidebar (Entry Style 8 Tabs) ── */
     .sidebar-categories {
-      width: 88px;
-      background: #232738;
+      width: 86px;
+      background: var(--entry-sidebar-bg);
       display: flex;
       flex-direction: column;
       border-right: 1px solid #1a1d2b;
@@ -176,13 +276,13 @@
       z-index: 10;
     }
     .cat-item {
-      padding: 10px 2px;
+      padding: 9px 2px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
-      font-size: 0.72rem;
+      gap: 3px;
+      font-size: 0.74rem;
       font-weight: 700;
       color: #94a3b8;
       background: none;
@@ -193,7 +293,7 @@
     }
     .cat-item.active {
       color: #fff;
-      background: #2c3147;
+      background: #2f364a;
       border-left-color: currentColor;
     }
     .cat-icon-badge {
@@ -203,7 +303,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
+      font-size: 1.08rem;
       color: #fff;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
@@ -212,9 +312,10 @@
     .cat-motion .cat-icon-badge { background: var(--cat-motion); }
     .cat-looks .cat-icon-badge { background: var(--cat-looks); }
     .cat-sound .cat-icon-badge { background: var(--cat-sound); }
-    .cat-sensor .cat-icon-badge { background: var(--cat-sensor); }
+    .cat-judge .cat-icon-badge { background: var(--cat-judge); }
     .cat-calc .cat-icon-badge { background: var(--cat-calc); }
     .cat-data .cat-icon-badge { background: var(--cat-data); }
+    .cat-hardware .cat-icon-badge, .cat-sensor .cat-icon-badge { background: var(--cat-hardware); }
 
     /* ── Palette Drawer (Blocks List) ── */
     .palette-drawer {
@@ -276,7 +377,7 @@
     }
     .code-stack:active { cursor: grabbing; }
 
-    /* ── Block Styling & Entry Interlocking Connectors ── */
+    /* ── Block Styling & Entry Interlocking Connectors (Official Entry 2.1 Design) ── */
     .block {
       display: inline-flex !important;
       align-items: center !important;
@@ -285,19 +386,21 @@
       width: max-content !important;
       min-width: max-content !important;
       flex-shrink: 0 !important;
-      padding: 7px 12px;
+      padding: 6px 14px 6px 14px;
       color: #ffffff;
+      font-family: 'Nanum Gothic', 'NanumGothic', sans-serif;
       font-weight: 700;
-      font-size: 0.88rem;
-      border-radius: 6px;
+      font-size: 13px;
+      border-radius: 4px 18px 18px 4px;
       cursor: grab;
       position: relative;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.14);
       transition: filter 0.15s, box-shadow 0.15s;
       gap: 6px;
       margin-bottom: 0px;
       touch-action: none;
       box-sizing: border-box;
+      line-height: 1.4;
     }
     .block:active { cursor: grabbing; }
 
@@ -305,107 +408,139 @@
       white-space: nowrap !important;
       flex-shrink: 0 !important;
       display: inline-block;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.18);
     }
 
-    /* Block Top Connector Notch (Puzzle Tab Indentation) */
+    /* Top Puzzle Notch (Concave socket indentation) */
     .block::before {
       content: "";
       position: absolute;
-      top: -4px;
-      left: 18px;
-      width: 16px;
-      height: 4px;
-      background: inherit;
-      border-radius: 2px 2px 0 0;
-      filter: brightness(0.9);
+      top: 0px;
+      left: 16px;
+      width: 14px;
+      height: 5px;
+      background: rgba(0, 0, 0, 0.22);
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      z-index: 1;
     }
-    /* Block Bottom Connector Tab */
+
+    /* Bottom Puzzle Tab (Convex tab protrusion) */
     .block::after {
       content: "";
       position: absolute;
-      bottom: -4px;
-      left: 18px;
-      width: 16px;
-      height: 4px;
+      bottom: -5px;
+      left: 16px;
+      width: 14px;
+      height: 5px;
       background: inherit;
-      border-radius: 0 0 2px 2px;
-      filter: brightness(0.9);
-      z-index: 2;
+      border-left: 1.5px solid inherit;
+      border-right: 1.5px solid inherit;
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      z-index: 5;
     }
 
-    /* Hat Block (Rounded Dome Top - No Top Notch) */
+    /* Hat Block (Rounded Dome Top - Signature Entry Hat) */
     .block-hat {
-      border-radius: 18px 18px 6px 6px;
+      border-radius: 20px 20px 4px 4px;
       padding-top: 10px;
-      padding-bottom: 9px;
-      border-top: 3px solid rgba(255,255,255,0.4);
+      padding-bottom: 8px;
+      border-top: 2.5px solid rgba(255,255,255,0.45);
     }
-    .block-hat::before { display: none; }
+    .block-hat::before { display: none !important; }
 
-    /* Category Block Backgrounds */
-    .block-cat-start { background: var(--cat-start); }
-    .block-cat-flow { background: var(--cat-flow); }
-    .block-cat-motion { background: var(--cat-motion); }
-    .block-cat-looks { background: var(--cat-looks); }
-    .block-cat-sound { background: var(--cat-sound); }
-    .block-cat-sensor { background: var(--cat-sensor); }
-    .block-cat-calc { background: var(--cat-calc); }
-    .block-cat-data { background: var(--cat-data); }
+    /* Category Block Backgrounds & Crisp Outer Border Lines */
+    .block-cat-start { background: var(--cat-start); border: 1.5px solid var(--cat-start-dark); }
+    .block-cat-flow { background: var(--cat-flow); border: 1.5px solid var(--cat-flow-dark); }
+    .block-cat-motion { background: var(--cat-motion); border: 1.5px solid var(--cat-motion-dark); }
+    .block-cat-looks { background: var(--cat-looks); border: 1.5px solid var(--cat-looks-dark); }
+    .block-cat-sound { background: var(--cat-sound); border: 1.5px solid var(--cat-sound-dark); }
+    .block-cat-judge { background: var(--cat-judge); border: 1.5px solid var(--cat-judge-dark); }
+    .block-cat-calc { background: var(--cat-calc); border: 1.5px solid var(--cat-calc-dark); }
+    .block-cat-data { background: var(--cat-data); border: 1.5px solid var(--cat-data-dark); }
+    .block-cat-hardware, .block-cat-sensor { background: var(--cat-hardware); border: 1.5px solid var(--cat-hardware-dark); }
 
-    /* Input & Select fields inside blocks (Tailored for iPad Touch & Nowrap) */
-    .block input, .block select, .block-c-header input, .block-c-header select {
+    /* Entry Capsule Dropdowns */
+    .block select, .block-c-header select {
       white-space: nowrap !important;
       flex-shrink: 0 !important;
-      background: rgba(255, 255, 255, 0.95);
-      color: #2d3748;
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      height: 27px;
-      padding: 2px 6px;
-      border-radius: 5px;
-      font-weight: 800;
-      font-size: 0.84rem;
-      text-align: center;
+      background-color: rgba(0, 0, 0, 0.18);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      height: 25px;
+      padding: 2px 20px 2px 9px;
+      border-radius: 12px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 12px;
       outline: none;
       cursor: pointer;
       vertical-align: middle;
       box-sizing: border-box;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 4px center;
+      transition: background-color 0.15s, border-color 0.15s;
+    }
+    .block select:hover, .block-c-header select:hover {
+      background-color: rgba(0, 0, 0, 0.28);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    .block select option {
+      background: #2f3b52;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    /* Entry White Input Fields */
+    .block input, .block-c-header input {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      background: #ffffff;
+      color: #1e293b;
+      border: 1.5px solid rgba(0, 0, 0, 0.14);
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 12.5px;
+      text-align: center;
+      outline: none;
+      cursor: text;
+      vertical-align: middle;
+      box-sizing: border-box;
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
     .block input[type="number"], .block-c-header input[type="number"] {
-      width: 48px;
+      width: 46px;
     }
-    .block select, .block-c-header select {
-      padding-right: 4px;
-      background-image: url('data:image/svg+xml;utf8,<svg fill="%234a5568" height="18" viewBox="0 0 24 24" width="18" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
-      background-repeat: no-repeat;
-      background-position: right 2px center;
-      background-size: 14px;
-      padding-right: 18px;
-    }
-    .block input:focus, .block select:focus, .block-c-header select:focus {
-      border-color: #3182ce;
-      box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+    .block input:focus, .block-c-header input:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
     }
 
     /* Delete Button on Blocks */
     .block-btn-del {
       margin-left: 6px;
-      width: 19px;
-      height: 19px;
+      width: 18px;
+      height: 18px;
       border-radius: 50%;
-      background: rgba(0,0,0,0.25);
+      background: rgba(0,0,0,0.22);
       border: none;
       color: #fff;
       font-size: 11px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s, transform 0.15s;
       flex-shrink: 0;
     }
-    .block-btn-del:hover { background: #e53e3e; }
+    .block-btn-del:hover { background: #e53e3e; transform: scale(1.1); }
 
-    /* C-Shape Nested Block (Loops & If Conditions) */
+    /* Entry C-Shape Nested Loops & If Conditions */
     .block-c-container {
       display: flex !important;
       flex-direction: column !important;
@@ -416,11 +551,12 @@
       margin-bottom: 0px;
     }
     .block-c-header {
-      border-radius: 6px 6px 0 0;
-      padding: 7px 12px;
+      border-radius: 4px 18px 0 0;
+      padding: 6px 14px;
       color: #fff;
+      font-family: inherit;
       font-weight: 700;
-      font-size: 0.88rem;
+      font-size: 13px;
       display: inline-flex !important;
       align-items: center !important;
       white-space: nowrap !important;
@@ -429,65 +565,114 @@
       min-width: max-content !important;
       flex-shrink: 0 !important;
       gap: 6px;
-      box-shadow: 0 3px 6px rgba(0,0,0,0.12);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.14);
       position: relative;
       box-sizing: border-box;
     }
     .block-c-header::before {
-      content: ""; position: absolute; top: -4px; left: 18px; width: 16px; height: 4px; background: inherit; border-radius: 2px 2px 0 0; filter: brightness(0.9);
+      content: ""; position: absolute; top: 0px; left: 16px; width: 14px; height: 5px; background: rgba(0,0,0,0.22); clip-path: polygon(0 0, 50% 100%, 100% 0); z-index: 1;
     }
     .block-c-body {
-      display: flex !important;
-      flex-direction: row !important;
-      width: 100% !important;
+      display: flex;
+      flex-direction: row;
       align-items: stretch;
+      min-height: 24px;
     }
     .block-c-bar {
-      width: 16px;
-      background: inherit;
-      filter: brightness(0.95);
+      width: 14px;
       flex-shrink: 0;
     }
     .block-c-slot {
-      flex: 1;
-      min-height: 38px;
-      min-width: 180px;
-      width: max-content;
+      min-height: 24px;
+      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      gap: 0px;
+      padding: 3px 0 3px 4px;
       background: rgba(255, 255, 255, 0.45);
-      border: 2px dashed rgba(0,0,0,0.18);
-      border-radius: 0 6px 6px 0;
-      margin: 2px 0 2px 0;
-      padding: 6px 6px 6px 10px;
-      display: flex !important;
-      flex-direction: column !important;
-      align-items: flex-start !important;
-      gap: 2px;
-    }
-    .block-c-slot.slot-hover {
-      background: rgba(0, 184, 148, 0.25);
-      border-color: #00b894;
+      border: 1px dashed rgba(0, 0, 0, 0.15);
+      border-radius: 4px;
+      margin: 2px 0 2px 2px;
+      box-sizing: border-box;
     }
     .block-c-divider {
-      padding: 5px 12px;
+      padding: 4px 14px;
       color: #fff;
+      font-family: inherit;
       font-weight: 700;
-      font-size: 0.88rem;
-      display: inline-flex !important;
-      align-items: center !important;
-      white-space: nowrap !important;
-      width: 100% !important;
+      font-size: 12px;
+      border-radius: 0 14px 0 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      position: relative;
       box-sizing: border-box;
-      background: inherit;
     }
     .block-c-footer {
-      width: 100% !important;
-      height: 13px;
-      border-radius: 0 0 6px 6px;
+      height: 14px;
+      min-width: 80px;
+      border-radius: 0 0 14px 4px;
       position: relative;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      box-sizing: border-box;
     }
     .block-c-footer::after {
-      content: ""; position: absolute; bottom: -4px; left: 18px; width: 16px; height: 4px; background: inherit; border-radius: 0 0 2px 2px; filter: brightness(0.9);
+      content: "";
+      position: absolute;
+      bottom: -5px;
+      left: 16px;
+      width: 14px;
+      height: 5px;
+      background: inherit;
+      border-left: 1.5px solid inherit;
+      border-right: 1.5px solid inherit;
+      clip-path: polygon(0 0, 50% 100%, 100% 0);
+      z-index: 5;
+    }
+    
+
+    /* ── Entry Floating Trashcan (휴지통) ── */
+    .entry-trashcan {
+      position: absolute;
+      right: 28px;
+      bottom: 28px;
+      width: 66px;
+      height: 66px;
+      background: #ffffff;
+      border: 2px solid #cbd5e1;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+      z-index: 25;
+      transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .entry-trashcan.drag-over {
+      background: #f7f2d1;
+      border: 2.5px dashed #ffc803;
+      transform: scale(1.18);
+      box-shadow: 0 6px 20px rgba(255, 200, 3, 0.45);
+    }
+    .trashcan-icon {
+      font-size: 24px;
+      line-height: 1;
+      transition: transform 0.2s;
+    }
+    .entry-trashcan.drag-over .trashcan-icon {
+      transform: rotate(-15deg) scale(1.1);
+    }
+    .trashcan-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #64748b;
+      margin-top: 2px;
+    }
+    .entry-trashcan.drag-over .trashcan-label {
+      color: #b45309;
     }
 
     /* Running Glow Highlight */
@@ -566,7 +751,7 @@
       border-radius: 12px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.35);
       z-index: 50;
-      display: flex;
+      display: none;
       flex-direction: column;
       overflow: hidden;
       transition: max-height 0.3s ease;
@@ -652,51 +837,278 @@
       .cat-item { padding: 8px 2px; font-size: 0.68rem; gap: 3px; }
       .cat-icon-badge { width: 26px; height: 26px; font-size: 0.95rem; }
       .btn { padding: 6px 10px; font-size: 0.8rem; }
-      .brand { font-size: 1rem; }
+      .brand-sticky { font-size: 0.98rem; padding-right: 10px; }
       .floor-badge { font-size: 0.72rem; padding: 3px 7px; }
       .status-pill { font-size: 0.72rem; padding: 4px 8px; }
     }
+
+    /* ── Modal Dialog (Guide & Settings) ── */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .modal-overlay.show {
+      display: flex;
+    }
+    .modal-card {
+      background: #232738;
+      border: 1px solid #3b4261;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 620px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      overflow: hidden;
+      color: #f8fafc;
+      animation: modalFadeIn 0.2s ease-out;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .modal-header {
+      background: #2b2f44;
+      padding: 14px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #3b4261;
+    }
+    .modal-header h3 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #00cec9;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-close-btn {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: #cbd5e0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .modal-close-btn:hover { background: #e53e3e; color: #fff; }
+    .modal-body {
+      padding: 18px 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 0.88rem;
+    }
+    .modal-footer {
+      padding: 12px 20px;
+      background: #1e2235;
+      border-top: 1px solid #3b4261;
+    }
+
+    .guide-section {
+      background: #1a1d2b;
+      border: 1px solid #2d334d;
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .guide-sec-head {
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: #f6e05e;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .setting-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .setting-card {
+      background: #232738;
+      border: 1px solid #3a3f58;
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+    .setting-info { flex: 1; }
+    .setting-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .setting-desc {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+
+    /* Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #4b5563; transition: .25s; border-radius: 24px;
+    }
+    .slider:before {
+      position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+      background-color: white; transition: .25s; border-radius: 50%;
+    }
+    input:checked + .slider { background-color: #00b894; }
+    input:checked + .slider:before { transform: translateX(20px); }
+
+    .btn-sample-load {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-sample-load:hover { background: #00cec9; }
+
+    .code-guide-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+    .guide-block-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+    .g-hat {
+      background: var(--cat-start);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 12px 12px 4px 4px;
+      white-space: nowrap;
+    }
+    .g-motion {
+      background: var(--cat-motion);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .g-sound {
+      background: var(--cat-sound);
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .g-arrow {
+      color: #a0aec0;
+      font-size: 0.9rem;
+    }
+
+    .guide-tip-list {
+      padding-left: 18px;
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      line-height: 1.45;
+    }
+    .btn-guide {
+      background: #6c5ce7;
+      color: #fff;
+      box-shadow: 0 2px 6px rgba(108, 92, 231, 0.4);
+    }
+    .btn-guide:hover { background: #5b4cc4; }
+
   </style>
 </head>
 <body>
 
   <!-- Top Navigation Header -->
+    <!-- Top Navigation Header with Smooth Slide Track -->
   <header>
-    <div class="brand">
-      <span class="logo-icon">🐢</span>
-      <span>터틀봇 엔트리</span>
-      <span class="brand-sub">Entry Edition</span>
-      
-      <!-- Live Color Floor Sensor Badge (Real BLE + Click to simulate) -->
-      <div id="floorSensorBadge" class="floor-badge" title="바닥 컬러 센서 감지 상태 (터치하여 시뮬레이션 변경)" onclick="cycleSimFloorColor()">
-        <span class="floor-dot" id="floorDot" style="background:#555; color:#555;"></span>
-        <span id="floorText">바닥: 대기 중</span>
+    <div class="brand-sticky">
+      <span style="font-family:'Nanum Gothic', sans-serif; font-size:1.6rem; font-weight:900; letter-spacing:-0.5px; color:#00CFCA; text-shadow:0 1px 2px rgba(0,0,0,0.3);">entry</span>
+      <span style="font-size:0.86rem; font-weight:800; color:#cbd5e1; background:rgba(255,255,255,0.1); padding:3px 8px; border-radius:6px; margin-left:4px;">터틀봇 코딩</span>
+    </div>
+
+    <!-- Slidable Track Container with Touch & Arrow Navigation -->
+    <div class="header-scroll-wrapper">
+      <button class="nav-slide-btn nav-btn-left" id="btnSlideLeft" onclick="scrollHeaderNav(-220)" title="왼쪽 메뉴 보기">‹</button>
+      <div class="nav-fade-left" id="navFadeLeft"></div>
+
+      <div class="header-nav-scroll" id="headerNavScroll">
+        <!-- Live Color Floor Sensor Badge -->
+        <div id="floorSensorBadge" class="floor-badge" title="바닥 컬러 센서 감지 상태 (터치하여 시뮬레이션 변경)" onclick="cycleSimFloorColor()">
+          <span class="floor-dot" id="floorDot" style="background:#555; color:#555;"></span>
+          <span id="floorText">바닥: 대기 중</span>
+        </div>
+
+        <!-- BLE Status Badge -->
+        <div id="bleStatusPill" class="status-pill">
+          <span class="dot"></span>
+          <span id="bleStatusText">로봇 미연결 (가상 시뮬레이터)</span>
+        </div>
+
+        <!-- Main Action Buttons -->
+        <button class="btn btn-guide" onclick="openGuideModal()">
+          <span>📖 코딩 안내 & 조종 설정</span>
+        </button>
+        <button id="btnConnect" class="btn btn-ble" onclick="connectTurtle()">
+          <span>📡 로봇 연결 (Bluetooth)</span>
+        </button>
+        <button id="btnFindRobot" class="btn" onclick="pingMyRobot()" style="display:none; background:#ffb703; color:#111;">
+          <span>💡 내 로봇 확인</span>
+        </button>
+        <button class="btn btn-run" onclick="triggerStartEvent('start_click')">
+          <span>▶ 시작하기</span>
+        </button>
+        <button class="btn btn-stop" onclick="stopAllExecution()">
+          <span>■ 정지하기</span>
+        </button>
+        <button class="btn btn-ctrl" id="btnHeaderCtrl" onclick="toggleKeypad()" style="display:none;">
+          <span>🎮 조종기</span>
+        </button>
+        <button class="btn btn-reset" onclick="resetWorkspace()">
+          <span>↺ 초기화</span>
+        </button>
       </div>
 
-      <div id="bleStatusPill" class="status-pill">
-        <span class="dot"></span>
-        <span id="bleStatusText">로봇 미연결 (가상 시뮬레이터)</span>
-      </div>
-    </div>
-    <div class="header-btns">
-      <button id="btnConnect" class="btn btn-ble" onclick="connectTurtle()">
-        <span>📡 로봇 연결 (Bluetooth)</span>
-      </button>
-      <button id="btnFindRobot" class="btn" onclick="pingMyRobot()" style="display:none; background:#ffb703; color:#111;">
-        <span>💡 내 로봇 확인</span>
-      </button>
-      <button class="btn btn-run" onclick="triggerStartEvent('start_click')">
-        <span>▶ 시작하기</span>
-      </button>
-      <button class="btn btn-stop" onclick="stopAllExecution()">
-        <span>■ 정지하기</span>
-      </button>
-      <button class="btn btn-ctrl" onclick="toggleKeypad()">
-        <span>🎮 조종기</span>
-      </button>
-      <button class="btn btn-reset" onclick="resetWorkspace()">
-        <span>↺ 초기화</span>
-      </button>
+      <div class="nav-fade-right" id="navFadeRight"></div>
+      <button class="nav-slide-btn nav-btn-right" id="btnSlideRight" onclick="scrollHeaderNav(220)" title="오른쪽 메뉴 보기">›</button>
     </div>
   </header>
 
@@ -708,11 +1120,11 @@
         <span>시작</span>
       </button>
       <button class="cat-item cat-flow" onclick="selectCat('flow', this)">
-        <div class="cat-icon-badge">⏱</div>
+        <div class="cat-icon-badge">🔁</div>
         <span>흐름</span>
       </button>
       <button class="cat-item cat-motion" onclick="selectCat('motion', this)">
-        <div class="cat-icon-badge">🚗</div>
+        <div class="cat-icon-badge">🧭</div>
         <span>움직임</span>
       </button>
       <button class="cat-item cat-looks" onclick="selectCat('looks', this)">
@@ -723,20 +1135,23 @@
         <div class="cat-icon-badge">🎵</div>
         <span>소리</span>
       </button>
-      <button class="cat-item cat-sensor" onclick="selectCat('sensor', this)">
-        <div class="cat-icon-badge">🏁</div>
-        <span>센서/판단</span>
+      <button class="cat-item cat-judge" onclick="selectCat('judge', this)">
+        <div class="cat-icon-badge">❓</div>
+        <span>판단</span>
       </button>
       <button class="cat-item cat-calc" onclick="selectCat('calc', this)">
         <div class="cat-icon-badge">➕</div>
-        <span>연산</span>
+        <span>계산</span>
       </button>
       <button class="cat-item cat-data" onclick="selectCat('data', this)">
-        <div class="cat-icon-badge">📊</div>
+        <div class="cat-icon-badge">🏷️</div>
         <span>자료</span>
       </button>
+      <button class="cat-item cat-hardware" onclick="selectCat('hardware', this)">
+        <div class="cat-icon-badge">🐢</div>
+        <span>하드웨어</span>
+      </button>
     </div>
-
     <!-- Palette Drawer (Blocks Palette) -->
     <div class="palette-drawer" id="paletteDrawer">
       <!-- Rendered dynamically -->
@@ -755,6 +1170,12 @@
         <div id="hudVarsList" style="margin-bottom:8px;"></div>
         <div class="hud-sec-title">리스트 (Lists)</div>
         <div id="hudListsList"></div>
+      </div>
+
+      <!-- Entry Floating Trashcan (휴지통) -->
+      <div class="entry-trashcan" id="entryTrashcan" title="블록을 이곳으로 끌어다 놓으면 삭제됩니다">
+        <div class="trashcan-icon">🗑️</div>
+        <div class="trashcan-label">휴지통</div>
       </div>
 
       <div class="workspace-board" id="workspaceBoard">
@@ -807,8 +1228,14 @@
     let currentLeftWheel = 0;
     let currentRightWheel = 0;
     let currentLineTracerMode = 0;
+    let currentHeadLed = [0, 0, 0];
+    let currentSoundClip = 0;
+    let currentNoteVal = 0;
+    let currentBuzzerFreq = 0;
     let soundIdToggle = 0;
     let tracerIdToggle = 0;
+    let soundStopTimer = null;
+    let activeAudioTimeouts = [];
 
     // Live Sensor State
     let currentFloorColor = '검은색';
@@ -832,7 +1259,7 @@
     // ── Entry-style Comprehensive Block Definitions ──
     const CATEGORIES = {
       start: {
-        title: '시작 블록 (Events & Triggers)',
+        title: '시작 블록 (Events)',
         hint: '다양한 시작 조건 블록을 조립소로 끌어다 놓으세요.',
         blocks: [
           { cmd: 'hat_start_click', cat: 'start', isHat: true, label: '🚩 [시작하기] 버튼을 클릭했을 때', type: 'none' },
@@ -844,8 +1271,8 @@
         ]
       },
       flow: {
-        title: '흐름 블록 (Control & Loops)',
-        hint: '조건문, 반복문, 대기 블록으로 동작 순서를 제어합니다.',
+        title: '흐름 블록 (Flow Control)',
+        hint: '반복문, 조건문, 대기 블록으로 동작 순서를 제어합니다.',
         blocks: [
           { cmd: 'wait_sec', cat: 'flow', label: '⏱', param: 1, unit: '초 기다리기', type: 'num' },
           { cmd: 'repeat_n', cat: 'flow', label: '🔁', param: 4, unit: '번 반복하기', type: 'repeat' },
@@ -889,12 +1316,12 @@
       },
       motion: {
         title: '움직임 블록 (Motion)',
-        hint: '양쪽 또는 각 바퀴 모터를 정밀하게 구동합니다.',
+        hint: '터틀봇의 직진, 후진, 회전 및 바퀴 속도를 제어합니다.',
         blocks: [
+          { cmd: 'move_forward_cm', cat: 'motion', label: '앞으로', param: 5, unit: 'cm 이동하기', type: 'num' },
           { cmd: 'move_forward_sec', cat: 'motion', label: '앞으로', param: 1, unit: '초 이동하기', type: 'num' },
-          { cmd: 'move_forward_cm', cat: 'motion', label: '앞으로', param: 5, unit: 'cm 정밀 이동하기', type: 'num' },
+          { cmd: 'move_backward_cm', cat: 'motion', label: '뒤로', param: 5, unit: 'cm 이동하기', type: 'num' },
           { cmd: 'move_backward_sec', cat: 'motion', label: '뒤로', param: 1, unit: '초 이동하기', type: 'num' },
-          { cmd: 'move_backward_cm', cat: 'motion', label: '뒤로', param: 5, unit: 'cm 정밀 이동하기', type: 'num' },
           { cmd: 'turn_left_deg', cat: 'motion', label: '왼쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
           { cmd: 'turn_right_deg', cat: 'motion', label: '오른쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
           { cmd: 'pivot_left', cat: 'motion', label: '왼쪽 바퀴 축으로 피벗 회전하기', type: 'none' },
@@ -902,54 +1329,49 @@
           { cmd: 'set_left_wheel', cat: 'motion', label: '왼쪽 바퀴 속도를', param: 50, unit: '% 로 정하기', type: 'num' },
           { cmd: 'set_right_wheel', cat: 'motion', label: '오른쪽 바퀴 속도를', param: 50, unit: '% 로 정하기', type: 'num' },
           { cmd: 'set_wheels', cat: 'motion', label: '왼쪽', param1: 50, label2: '% 오른쪽', param2: 50, unit: '% 바퀴 속도 정하기', type: 'two_num' },
-          { cmd: 'stop_wheels', cat: 'motion', label: '바퀴 동작 멈추기', type: 'none' }
+          { cmd: 'stop_wheels', cat: 'motion', label: '모든 바퀴 멈추기', type: 'none' }
         ]
       },
       looks: {
         title: '생김새 / 머리 LED (Looks)',
-        hint: '터틀봇 머리의 풀컬러 RGB LED를 제어합니다.',
+        hint: '터틀봇 머리의 풀컬러 RGB LED 조명을 제어합니다.',
         blocks: [
-          { cmd: 'set_led_color', cat: 'looks', label: '머리 LED를', select: ['빨간색', '초록색', '파란색', '노란색', '보라색', '하늘색', '흰색'], unit: '으로 켜기', type: 'select' },
-          { cmd: 'set_led_rgb', cat: 'looks', label: '머리 LED를 R:', param1: 255, label2: 'G:', param2: 0, label3: 'B:', param3: 0, unit: '으로 정하기', type: 'rgb' },
+          { cmd: 'set_led_color', cat: 'looks', label: '머리 LED를', select: ['빨간색', '초록색', '파란색', '노란색', '보라색', '하늘색', '흰색'], unit: '(으)로 정하기', type: 'select' },
+          { cmd: 'set_led_rgb', cat: 'looks', label: '머리 LED를 R:', param1: 255, label2: 'G:', param2: 0, label3: 'B:', param3: 0, unit: '(으)로 정하기', type: 'rgb' },
           { cmd: 'blink_led', cat: 'looks', label: '머리 LED를', param: 3, unit: '번 깜빡이기', type: 'num' },
           { cmd: 'clear_led', cat: 'looks', label: '머리 LED 끄기', type: 'none' }
         ]
       },
       sound: {
         title: '소리 / 음악 블록 (Sound & Music)',
-        hint: '행진곡, 생일축하곡 및 버저 음계를 끊김 없이 재생합니다.',
+        hint: '터틀봇 부저 및 공식 멜로디(행진곡, 생일축하곡 등)를 연주합니다.',
         blocks: [
-          { cmd: 'play_clip', cat: 'sound', label: '효과음', select: ['삐- 소리', '사이렌', '로봇 소리', '행진곡', '생일축하곡', '디비디비딥', '잘했어요'], unit: '재생하기', type: 'select' },
+          { cmd: 'play_clip', cat: 'sound', label: '소리', select: ['삐- 소리', '사이렌', '로봇 소리', '행진곡', '생일축하곡', '디비디비딥', '잘했어요'], unit: '재생하기', type: 'select' },
           { cmd: 'play_note', cat: 'sound', label: '음계', select: ['4옥타브 도', '4옥타브 레', '4옥타브 미', '4옥타브 파', '4옥타브 솔', '4옥타브 라', '4옥타브 시', '5옥타브 도'], label2: '음을', param: 1, unit: '박자 연주하기', type: 'note' },
-          { cmd: 'buzzer_hertz', cat: 'sound', label: '버저를', param: 440, unit: 'Hz 주파수로 소리내기', type: 'num' },
-          { cmd: 'stop_sound', cat: 'sound', label: '모든 소리 멈추기', type: 'none' }
+          { cmd: 'buzzer_hertz', cat: 'sound', label: '버저 음을', param: 440, unit: 'Hz 로 정하기', type: 'num' },
+          { cmd: 'stop_sound', cat: 'sound', label: '소리 끄기', type: 'none' }
         ]
       },
-      sensor: {
-        title: '센서 / 라인트레이서 (Sensors & Colors)',
-        hint: '검은색 및 모든 색상 감지와 선 추적 기능을 제어합니다.',
+      judge: {
+        title: '판단 블록 (Judgement)',
+        hint: '센서 감지 여부, 대소 비교 및 논리 조건을 판단합니다.',
         blocks: [
-          { cmd: 'follow_line_color', cat: 'sensor', label: '선 따라가기:', select: ['검은색', '빨간색', '초록색', '파란색', '모든 색상'], unit: '선 추적', type: 'select' },
-          { cmd: 'cross_intersection', cat: 'sensor', label: '➕ 교차로 직진 건너가기', type: 'none' },
-          { cmd: 'turn_intersection', cat: 'sensor', label: '교차로에서', select: ['왼쪽', '오른쪽', '유턴'], unit: '으로 돌기', type: 'select' },
-          { cmd: 'wait_until_color', cat: 'sensor', label: '바닥 색상이', select: ['검은색', '빨간색', '노란색', '초록색', '하늘색', '파란색', '보라색', '흰색'], unit: '이 될 때까지 앞으로 가기', type: 'select' },
-          { cmd: 'stop_tracer', cat: 'sensor', label: '라인 트레이서 멈추기', type: 'none' }
+          { cmd: 'logic_compare', cat: 'judge', label: '조건 비교: 변수', select: ['점수', '속도', '거리', '임의값'], select2: ['>', '<', '==', '!=', '>=', '<='], param: 10, label2: '이면 변수', select3: ['점수', '속도', '거리', '임의값'], unit: '에 1 더하기', type: 'compare_branch' },
+          { cmd: 'logic_boolean', cat: 'judge', label: '논리:', select: ['참(TRUE)', '거짓(FALSE)'], select2: ['그리고 (AND)', '또는 (OR)'], select3: ['참(TRUE)', '거짓(FALSE)'], label2: '결과를 변수 [임의값] 에 정하기', type: 'logic_op' },
+          { cmd: 'logic_not', cat: 'judge', label: '논리 반전: [', select: ['거짓(FALSE)', '참(TRUE)'], unit: '] 의 반대(NOT)를 변수 [임의값] 에 정하기', type: 'select' }
         ]
       },
       calc: {
-        title: '연산 / 논리 판단 (Math & Logic)',
-        hint: '사칙연산, 난수(랜덤), 크기 비교 및 논리 연산을 수행합니다.',
+        title: '계산 블록 (Calculation)',
+        hint: '사칙연산 및 무작위 수(난수)를 계산하여 변수에 저장합니다.',
         blocks: [
           { cmd: 'calc_op', cat: 'calc', label: '계산:', param1: 10, select: ['+', '-', '×', '÷'], param2: 5, label2: '결과를 변수', select2: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_op' },
-          { cmd: 'calc_random', cat: 'calc', label: '무작위 수:', param1: 1, label2: '부터', param2: 10, label3: '사이의 수를 변수', select: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'random_range' },
-          { cmd: 'logic_compare', cat: 'calc', label: '조건 비교: 변수', select: ['점수', '속도', '거리', '임의값'], select2: ['>', '<', '==', '!=', '>=', '<='], param: 10, label2: '이면 변수', select3: ['점수', '속도', '거리', '임의값'], unit: '에 1 더하기', type: 'compare_branch' },
-          { cmd: 'logic_boolean', cat: 'calc', label: '논리:', select: ['참(TRUE)', '거짓(FALSE)'], select2: ['그리고 (AND)', '또는 (OR)'], select3: ['참(TRUE)', '거짓(FALSE)'], label2: '결과를 변수 [임의값] 에 정하기', type: 'logic_op' },
-          { cmd: 'logic_not', cat: 'calc', label: '논리 반전: [', select: ['거짓(FALSE)', '참(TRUE)'], unit: '] 의 반대(NOT)를 변수 [임의값] 에 정하기', type: 'select' }
+          { cmd: 'calc_random', cat: 'calc', label: '무작위 수:', param1: 1, label2: '부터', param2: 10, label3: '사이의 수를 변수', select: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'random_range' }
         ]
       },
       data: {
-        title: '자료 / 변수와 리스트 (Data & Lists)',
-        hint: '변수 값 조작 및 리스트 항목 저장/실행 기능을 활용합니다.',
+        title: '자료 블록 (Variables & Lists)',
+        hint: '변수 값 변경 및 명령 리스트를 생성하고 일괄 실행합니다.',
         blocks: [
           { cmd: 'var_set', cat: 'data', label: '변수', select: ['점수', '속도', '거리', '임의값'], label2: '를', param: 0, unit: '(으)로 정하기', type: 'var_set' },
           { cmd: 'var_add', cat: 'data', label: '변수', select: ['점수', '속도', '거리', '임의값'], label2: '에', param: 1, unit: '만큼 더하기', type: 'var_add' },
@@ -959,8 +1381,22 @@
           { cmd: 'list_clear', cat: 'data', label: '리스트 [명령목록] 의 모든 항목 삭제하기', type: 'none' },
           { cmd: 'list_execute_all', cat: 'data', label: '🚀 리스트 [명령목록] 에 저장된 명령 차례대로 실행하기', type: 'none' }
         ]
+      },
+      hardware: {
+        title: '하드웨어 블록 (TurtleBot Hardware)',
+        hint: '터틀봇 컬러 센서, 라인트레이서 및 교차로 주행을 제어합니다.',
+        blocks: [
+          { cmd: 'follow_line_color', cat: 'hardware', label: '선 따라가기:', select: ['검은색', '빨간색', '초록색', '파란색', '모든 색상'], unit: '선 계속 추적', type: 'select' },
+          { cmd: 'follow_line_sec', cat: 'hardware', label: '선 따라가기:', select: ['검은색', '빨간색', '초록색', '파란색', '모든 색상'], label2: '선을', param: 3, unit: '초 동안 추적하기', type: 'line_sec' },
+          { cmd: 'cross_intersection', cat: 'hardware', label: '검은색 교차로 건너가기', type: 'none' },
+          { cmd: 'turn_intersection', cat: 'hardware', label: '교차로에서', select: ['왼쪽', '오른쪽', '유턴'], unit: '으로 돌기', type: 'select' },
+          { cmd: 'wait_until_color', cat: 'hardware', label: '바닥 색상이', select: ['검은색', '빨간색', '노란색', '초록색', '하늘색', '파란색', '보라색', '흰색'], unit: '이 될 때까지 앞으로 가기', type: 'select' },
+          { cmd: 'stop_tracer', cat: 'hardware', label: '라인 트레이서 멈추기', type: 'none' }
+        ]
       }
     };
+    // Backward compatibility for sensor category mapping
+    CATEGORIES.sensor = CATEGORIES.hardware;
 
     // ── Active Category Selection & Palette Rendering ──
     let currentCat = 'start';
@@ -1068,6 +1504,8 @@
         inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
       } else if (def.type === 'note') {
         inner += ` <select class="param-note" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-beats" value="${def.param}" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+      } else if (def.type === 'line_sec') {
+        inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" min="0.5" step="0.5" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'calc_op') {
         inner += ` <input type="number" class="param-op1" value="${def.param1}" style="width:44px;" onclick="event.stopPropagation()"> <select class="param-op" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-op2" value="${def.param2}" style="width:44px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
       } else if (def.type === 'random_range') {
@@ -1109,7 +1547,6 @@
     function attachPaletteDragEvents(el, def) {
       el.onpointerdown = (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
-        e.preventDefault();
 
         const rect = el.getBoundingClientRect();
         const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
@@ -1122,39 +1559,21 @@
           startX: e.clientX,
           startY: e.clientY,
           grabOffsetX: grabOffsetX,
-          grabOffsetY: grabOffsetY
+          grabOffsetY: grabOffsetY,
+          dragging: false,
+          moved: false
         };
 
-        createDragGhost(el, e.clientX - grabOffsetX, e.clientY - grabOffsetY);
         window.addEventListener('pointermove', onGlobalPointerMove);
         window.addEventListener('pointerup', onGlobalPointerUp);
       };
-
-      // Quick tap fallback: click to append to main stack
-      el.onclick = (e) => {
-        if (dragData && dragData.moved) return;
-        const board = document.getElementById('workspaceBoard');
-        const firstStack = board.querySelector('.code-stack');
-        const newBlock = createBlockDOM(def, false);
-        if (def.isHat || !firstStack) {
-          const newStack = document.createElement('div');
-          newStack.className = 'code-stack';
-          newStack.style.left = (80 + Math.random() * 80) + 'px';
-          newStack.style.top = (60 + Math.random() * 80) + 'px';
-          newStack.appendChild(newBlock);
-          board.appendChild(newStack);
-          attachStackDrag(newStack);
-        } else {
-          firstStack.appendChild(newBlock);
-        }
-      };
+      // Note: el.onclick is intentionally omitted to prevent double block duplication!
     }
 
     function attachBlockDragEvents(el) {
       el.onpointerdown = (e) => {
         if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.classList.contains('block-btn-del')) return;
         e.stopPropagation();
-        e.preventDefault();
 
         if (el.dataset.isHat === 'true' && el.parentElement && el.parentElement.classList.contains('code-stack')) {
           startStackDrag(el.parentElement, e);
@@ -1173,11 +1592,10 @@
           startX: e.clientX,
           startY: e.clientY,
           grabOffsetX: grabOffsetX,
-          grabOffsetY: grabOffsetY
+          grabOffsetY: grabOffsetY,
+          dragging: false,
+          moved: false
         };
-
-        createDragGhost(el, e.clientX - grabOffsetX, e.clientY - grabOffsetY);
-        el.style.opacity = '0.3';
 
         window.addEventListener('pointermove', onGlobalPointerMove);
         window.addEventListener('pointerup', onGlobalPointerUp);
@@ -1185,6 +1603,10 @@
     }
 
     function createDragGhost(sourceEl, x, y) {
+      if (ghostEl) {
+        ghostEl.remove();
+        ghostEl = null;
+      }
       ghostEl = sourceEl.cloneNode(true);
       ghostEl.classList.add('drag-ghost');
       ghostEl.style.left = `${x}px`;
@@ -1194,14 +1616,38 @@
 
     function onGlobalPointerMove(e) {
       if (!dragData) return;
-      if (Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY) > 5) {
+
+      const dist = Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY);
+      if (dist > 8) {
         dragData.moved = true;
       }
+
+      // Only initiate ghost and drag visual when movement exceeds threshold
+      if (dragData.moved && !dragData.dragging) {
+        dragData.dragging = true;
+        if (dragData.source === 'palette') {
+          createDragGhost(dragData.originEl, e.clientX - dragData.grabOffsetX, e.clientY - dragData.grabOffsetY);
+        } else {
+          createDragGhost(dragData.blockEl, e.clientX - dragData.grabOffsetX, e.clientY - dragData.grabOffsetY);
+          dragData.blockEl.style.opacity = '0.3';
+        }
+      }
+
       if (ghostEl && dragData.grabOffsetX !== undefined) {
         ghostEl.style.left = `${e.clientX - dragData.grabOffsetX}px`;
         ghostEl.style.top = `${e.clientY - dragData.grabOffsetY}px`;
       }
-      findAndShowDropIndicator(e.clientX, e.clientY);
+
+      // Check if pointer is hovering over palette drawer or sidebar
+      const paletteDrawer = document.getElementById('paletteDrawer');
+      const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
+      const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
+
+      if (isInsidePalette) {
+        removeDropIndicator();
+      } else if (dragData.dragging) {
+        findAndShowDropIndicator(e.clientX, e.clientY);
+      }
     }
 
     function findAndShowDropIndicator(clientX, clientY) {
@@ -1292,17 +1738,71 @@
 
       if (!dragData) return;
 
-      const board = document.getElementById('workspaceBoard');
-      const boardRect = board.getBoundingClientRect();
+      const paletteDrawer = document.getElementById('paletteDrawer');
+      const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
+      const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
 
-      let targetEl = null;
+      // ── Scenario A: Dragged from Palette ──
       if (dragData.source === 'palette') {
-        targetEl = createBlockDOM(dragData.def, false);
-      } else {
-        targetEl = dragData.blockEl;
-        targetEl.style.opacity = '1.0';
+        // Tap without dragging: add cleanly ONCE to workspace
+        if (!dragData.dragging && !dragData.moved) {
+          const board = document.getElementById('workspaceBoard');
+          const firstStack = board.querySelector('.code-stack');
+          const newBlock = createBlockDOM(dragData.def, false);
+          if (dragData.def.isHat || !firstStack) {
+            const newStack = document.createElement('div');
+            newStack.className = 'code-stack';
+            newStack.style.left = (80 + Math.random() * 50) + 'px';
+            newStack.style.top = (60 + Math.random() * 50) + 'px';
+            newStack.appendChild(newBlock);
+            board.appendChild(newStack);
+            attachStackDrag(newStack);
+          } else {
+            firstStack.appendChild(newBlock);
+          }
+          cleanupDrag();
+          return;
+        }
+
+        // Dragged but released inside palette drawer -> CANCEL (no block created!)
+        if (isInsidePalette) {
+          cleanupDrag();
+          return;
+        }
+
+        // Dragged into workspace -> create and place exactly once
+        const targetEl = createBlockDOM(dragData.def, false);
+        placeDroppedBlock(targetEl, e);
+        cleanupDrag();
+        return;
       }
 
+      // ── Scenario B: Dragged from Workspace ──
+      if (dragData.source === 'workspace') {
+        dragData.blockEl.style.opacity = '1.0';
+
+        // Dropped inside palette drawer -> TRASH CAN DELETE!
+        if (isInsidePalette) {
+          const parentStack = dragData.originalParent;
+          dragData.blockEl.remove();
+          if (parentStack && parentStack.classList.contains('code-stack') && parentStack.children.length === 0) {
+            parentStack.remove();
+          }
+          cleanupDrag();
+          return;
+        }
+
+        // Dropped on workspace
+        if (dragData.dragging) {
+          placeDroppedBlock(dragData.blockEl, e);
+        }
+        cleanupDrag();
+      }
+    }
+
+    function placeDroppedBlock(targetEl, e) {
+      const board = document.getElementById('workspaceBoard');
+      const boardRect = board.getBoundingClientRect();
       const isTargetHat = (targetEl.dataset.isHat === 'true');
 
       if (currentDropIndicator && !isTargetHat) {
@@ -1313,25 +1813,40 @@
         const dropX = Math.max(30, e.clientX - boardRect.left - (dragData.grabOffsetX || 20));
         const dropY = Math.max(30, e.clientY - boardRect.top - (dragData.grabOffsetY || 20));
 
-        const newStack = document.createElement('div');
-        newStack.className = 'code-stack';
-        newStack.style.left = `${dropX}px`;
-        newStack.style.top = `${dropY}px`;
-        newStack.appendChild(targetEl);
-        board.appendChild(newStack);
-        attachStackDrag(newStack);
+        if (!targetEl.parentElement || targetEl.parentElement.classList.contains('code-stack')) {
+          if (!targetEl.parentElement) {
+            const newStack = document.createElement('div');
+            newStack.className = 'code-stack';
+            newStack.style.left = `${dropX}px`;
+            newStack.style.top = `${dropY}px`;
+            newStack.appendChild(targetEl);
+            board.appendChild(newStack);
+            attachStackDrag(newStack);
+          } else if (targetEl.parentElement.children.length === 1) {
+            targetEl.parentElement.style.left = `${dropX}px`;
+            targetEl.parentElement.style.top = `${dropY}px`;
+          } else {
+            const newStack = document.createElement('div');
+            newStack.className = 'code-stack';
+            newStack.style.left = `${dropX}px`;
+            newStack.style.top = `${dropY}px`;
+            newStack.appendChild(targetEl);
+            board.appendChild(newStack);
+            attachStackDrag(newStack);
+          }
+        }
       }
+    }
 
+    function cleanupDrag() {
       removeDropIndicator();
       if (ghostEl) {
         ghostEl.remove();
         ghostEl = null;
       }
-
       document.querySelectorAll('.code-stack').forEach(s => {
         if (s.children.length === 0) s.remove();
       });
-
       dragData = null;
     }
 
@@ -1371,6 +1886,8 @@
     // ── Entry Event Dispatcher & Script Execution Engine ──
     async function triggerStartEvent(eventType, eventParam = null) {
       const stacks = Array.from(document.querySelectorAll('#workspaceBoard .code-stack'));
+      const matchingStacks = [];
+
       for (const stack of stacks) {
         const firstBlock = stack.children[0];
         if (!firstBlock || firstBlock.dataset.isHat !== 'true') continue;
@@ -1400,8 +1917,12 @@
         }
 
         if (shouldRun) {
-          executeStack(stack);
+          matchingStacks.push(stack);
         }
+      }
+
+      for (const stack of matchingStacks) {
+        executeStack(stack);
       }
     }
 
@@ -1410,13 +1931,21 @@
       activeExecutionTokens.push(executionToken);
       isExecuting = true;
 
-      const blocks = Array.from(stack.children);
-      await executeElements(blocks, executionToken);
-
-      activeExecutionTokens = activeExecutionTokens.filter(t => t !== executionToken);
-      if (activeExecutionTokens.length === 0) {
-        isExecuting = false;
-        sendPacket(0, 0, [0,0,0], 0, 0, 0);
+      try {
+        const blocks = Array.from(stack.children);
+        await executeElements(blocks, executionToken);
+      } catch (err) {
+        console.warn('Stack execution err:', err);
+      } finally {
+        activeExecutionTokens = activeExecutionTokens.filter(t => t !== executionToken);
+        if (activeExecutionTokens.length === 0) {
+          isExecuting = false;
+          // Do NOT forcibly stop wheels or tracer if continuous motion was requested!
+          // Only stop wheels; NEVER abruptly kill ongoing sound or LED!
+          if (currentLeftWheel === 0 && currentRightWheel === 0 && currentLineTracerMode === 0) {
+            sendPacket(0, 0);
+          }
+        }
       }
     }
 
@@ -1476,8 +2005,13 @@
 
         // Standard Single Block Execution
         el.classList.add('running-highlight');
-        await executeSingleBlock(el, token);
-        el.classList.remove('running-highlight');
+        try {
+          await executeSingleBlock(el, token);
+        } catch (bErr) {
+          console.warn('Block run err:', el.dataset.cmd, bErr);
+        } finally {
+          el.classList.remove('running-highlight');
+        }
       }
     }
 
@@ -1546,7 +2080,8 @@
         }
         case 'turn_left_deg': {
           const deg = parseFloat(el.querySelector('.param-1').value) || 90;
-          const sec = (deg / 90.0) * 0.78;
+          // Calibrated 2-wheel spin turn: 90 degrees takes 1.82s at speed -45/45
+          const sec = (deg / 90.0) * 1.82;
           sendPacket(-45, 45);
           driveSim(0, -deg);
           await sleep(sec * 1000);
@@ -1555,7 +2090,7 @@
         }
         case 'turn_right_deg': {
           const deg = parseFloat(el.querySelector('.param-1').value) || 90;
-          const sec = (deg / 90.0) * 0.78;
+          const sec = (deg / 90.0) * 1.82;
           sendPacket(45, -45);
           driveSim(0, deg);
           await sleep(sec * 1000);
@@ -1565,14 +2100,14 @@
         case 'pivot_left': {
           sendPacket(0, 50);
           driveSim(10, 45);
-          await sleep(800);
+          await sleep(2850);
           sendPacket(0, 0);
           break;
         }
         case 'pivot_right': {
           sendPacket(50, 0);
           driveSim(10, -45);
-          await sleep(800);
+          await sleep(2850);
           sendPacket(0, 0);
           break;
         }
@@ -1642,7 +2177,7 @@
           break;
         }
 
-        // ── Sound & Music Blocks (Fixed Non-Cutting Melodies & Timers) ──
+        // ── Sound & Music Blocks (Full Melodies, Zero Premature Cuts) ──
         case 'play_clip': {
           const sel = el.querySelector('.param-select').value;
           const clips = {
@@ -1651,19 +2186,27 @@
           };
           const clipId = clips[sel] || 1;
           const clipDurations = {
-            1: 400,    // 삐- 소리 (Single Beep)
-            16: 2800,  // 사이렌 (Siren)
-            48: 1500,  // 로봇 소리 (Chirp)
-            64: 4500,  // 행진곡 (March)
-            65: 6800,  // 생일축하곡 (Happy Birthday)
-            66: 1600,  // 디비디비딥 (Dibidibidip)
-            67: 1800   // 잘했어요 (Good Job Fanfare)
+            1: 450,    // 삐- 소리 (Single Beep)
+            16: 3200,  // 사이렌 (Siren 3.0s)
+            48: 1800,  // 로봇 소리 (Chirp)
+            64: 4900,  // 행진곡 (March fanfare: full resolution chord)
+            65: 8200,  // 생일축하곡 (Happy Birthday: all 4 lines complete)
+            66: 1700,  // 디비디비딥 (Dibidibidip)
+            67: 2100   // 잘했어요 (Good Job Fanfare)
           };
-          const dur = clipDurations[clipId] || 1000;
-          sendPacket(null, null, [0,0,0], clipId);
+          const dur = clipDurations[clipId] || 1500;
+          if (soundStopTimer) clearTimeout(soundStopTimer);
+          soundStopTimer = setTimeout(() => { currentSoundClip = 0; }, dur + 600);
+
+          sendPacket(null, null, null, clipId);
           playWebAudioClip(clipId);
-          await sleep(dur);
-          sendPacket(null, null, [0,0,0], 0);
+
+          const startT = Date.now();
+          while (Date.now() - startT < dur) {
+            if (token.cancelled || !isExecuting) break;
+            await sleep(50);
+          }
+          // Do NOT send soundClip=0 here! TurtleBot melody completes naturally without premature cutoff.
           break;
         }
         case 'play_note': {
@@ -1672,22 +2215,26 @@
           const notes = { '4옥타브 도': 60, '4옥타브 레': 62, '4옥타브 미': 64, '4옥타브 파': 65, '4옥타브 솔': 67, '4옥타브 라': 69, '4옥타브 시': 71, '5옥타브 도': 72 };
           const freqs = { 60: 261.63, 62: 293.66, 64: 329.63, 65: 349.23, 67: 392.00, 69: 440.00, 71: 493.88, 72: 523.25 };
           const noteCode = notes[noteStr] || 60;
-          sendPacket(null, null, [0,0,0], 0, noteCode);
+          sendPacket(null, null, null, null, noteCode);
           playWebAudioTone(freqs[noteCode] || 440, beats * 500);
           await sleep(beats * 500);
-          sendPacket(null, null, [0,0,0], 0, 0);
+          sendPacket(null, null, null, null, 0);
           break;
         }
         case 'buzzer_hertz': {
           const hz = parseFloat(el.querySelector('.param-1').value) || 440;
-          sendPacket(null, null, [0,0,0], 0, 0, hz);
+          sendPacket(null, null, null, null, null, hz);
           playWebAudioTone(hz, 500);
           await sleep(500);
-          sendPacket(null, null, [0,0,0], 0, 0, 0);
+          sendPacket(null, null, null, null, null, 0);
           break;
         }
         case 'stop_sound': {
-          sendPacket(null, null, [0,0,0], 0, 0, 0);
+          stopAudioPlayback();
+          currentSoundClip = 0;
+          currentNoteVal = 0;
+          currentBuzzerFreq = 0;
+          sendPacket(null, null, null, 0, 0, 0);
           break;
         }
 
@@ -1698,43 +2245,60 @@
             '검은색': 8, '빨간색': 9, '초록색': 11, '파란색': 13, '모든 색상': 15
           };
           const modeVal = colorModes[colorName] || 8;
+          currentLineTracerMode = modeVal;
           sendPacket(35, 35, [0,0,0], 0, 0, 0, modeVal);
           driveSim(40, 0);
-          await sleep(2500);
+          break;
+        }
+        case 'follow_line_sec': {
+          const colorName = el.querySelector('.param-select').value;
+          const sec = parseFloat(el.querySelector('.param-1').value) || 3;
+          const colorModes = {
+            '검은색': 8, '빨간색': 9, '초록색': 11, '파란색': 13, '모든 색상': 15
+          };
+          const modeVal = colorModes[colorName] || 8;
+          currentLineTracerMode = modeVal;
+          sendPacket(35, 35, [0,0,0], 0, 0, 0, modeVal);
+          driveSim(40, 0);
+          await sleep(sec * 1000);
+          currentLineTracerMode = 0;
           sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
           break;
         }
         case 'cross_intersection': {
           sendPacket(45, 45, [0,0,0], 0, 0, 0, 32);
           driveSim(20, 0);
-          await sleep(700);
+          await sleep(1600);
           sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
           break;
         }
         case 'turn_intersection': {
           const dir = el.querySelector('.param-select').value;
           let mode = 16;
-          if (dir === '오른쪽') mode = 24;
-          else if (dir === '유턴') mode = 40;
+          let turnDur = 1600;
+          if (dir === '오른쪽') { mode = 24; turnDur = 1600; }
+          else if (dir === '유턴') { mode = 40; turnDur = 2500; }
           sendPacket(null, null, [0,0,0], 0, 0, 0, mode);
           if (dir === '왼쪽') driveSim(0, -90);
           else if (dir === '오른쪽') driveSim(0, 90);
           else driveSim(0, 180);
-          await sleep(850);
+          await sleep(turnDur);
           sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
           break;
         }
         case 'wait_until_color': {
           const targetColor = el.querySelector('.param-select').value;
-          sendPacket(40, 40);
-          let checkCount = 0;
-          while (!token.cancelled && isExecuting && checkCount < 80) {
+          sendPacket(38, 38);
+          // Drive initial 350ms so if robot currently sits on targetColor, it doesn't instantly abort
+          await sleep(350);
+          let elapsed = 0;
+          while (!token.cancelled && isExecuting && elapsed < 60000) {
             if (currentFloorColor === targetColor) break;
-            await sleep(100);
-            checkCount++;
+            await sleep(80);
+            elapsed += 80;
           }
           sendPacket(0, 0);
-          playWebAudioTone(880, 120);
+          playWebAudioTone(880, 150);
           break;
         }
         case 'stop_tracer': {
@@ -1909,10 +2473,14 @@
       activeExecutionTokens.forEach(t => t.cancelled = true);
       activeExecutionTokens = [];
       isExecuting = false;
+      stopAudioPlayback();
       document.querySelectorAll('.running-highlight').forEach(el => el.classList.remove('running-highlight'));
       currentLeftWheel = 0;
       currentRightWheel = 0;
       currentLineTracerMode = 0;
+      currentSoundClip = 0;
+      currentNoteVal = 0;
+      currentBuzzerFreq = 0;
       sendPacket(0, 0, [0,0,0], 0, 0, 0, 0);
     }
 
@@ -1978,7 +2546,25 @@
       updateFloorSensorBadge(nextColor);
     }
 
-    // ── Web Audio Simulator Synthesis (Full Non-Cutting Melodies) ──
+    // ── Web Audio Simulator Synthesis (Complete Non-Cutting Melodies & Timers) ──
+    function scheduleAudioTimeout(fn, delayMs) {
+      const tid = setTimeout(() => {
+        activeAudioTimeouts = activeAudioTimeouts.filter(id => id !== tid);
+        fn();
+      }, delayMs);
+      activeAudioTimeouts.push(tid);
+      return tid;
+    }
+
+    function stopAudioPlayback() {
+      activeAudioTimeouts.forEach(id => clearTimeout(id));
+      activeAudioTimeouts = [];
+      if (soundStopTimer) {
+        clearTimeout(soundStopTimer);
+        soundStopTimer = null;
+      }
+    }
+
     function playWebAudioTone(freq, durMs, waveType = 'sine') {
       try {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -2002,73 +2588,73 @@
 
         if (clipId === 1) { // 삐- 소리 (Single Beep)
           playWebAudioTone(880, 200);
-        } else if (clipId === 16) { // 사이렌 (Police Siren: continuous 2.6s rise and fall)
+        } else if (clipId === 16) { // 사이렌 (Police Siren: continuous 3.0s rise and fall)
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
           gain.gain.setValueAtTime(0.2, now);
-          gain.gain.linearRampToValueAtTime(0.2, now + 2.4);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 2.7);
+          gain.gain.linearRampToValueAtTime(0.2, now + 2.7);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 3.0);
 
           osc.frequency.setValueAtTime(550, now);
-          osc.frequency.linearRampToValueAtTime(1100, now + 0.45);
-          osc.frequency.linearRampToValueAtTime(550, now + 0.9);
-          osc.frequency.linearRampToValueAtTime(1100, now + 1.35);
-          osc.frequency.linearRampToValueAtTime(550, now + 1.8);
-          osc.frequency.linearRampToValueAtTime(1100, now + 2.25);
-          osc.frequency.linearRampToValueAtTime(550, now + 2.7);
+          osc.frequency.linearRampToValueAtTime(1100, now + 0.5);
+          osc.frequency.linearRampToValueAtTime(550, now + 1.0);
+          osc.frequency.linearRampToValueAtTime(1100, now + 1.5);
+          osc.frequency.linearRampToValueAtTime(550, now + 2.0);
+          osc.frequency.linearRampToValueAtTime(1100, now + 2.5);
+          osc.frequency.linearRampToValueAtTime(550, now + 3.0);
 
           osc.connect(gain);
           gain.connect(audioCtx.destination);
           osc.start(now);
-          osc.stop(now + 2.7);
+          osc.stop(now + 3.0);
         } else if (clipId === 48) { // 로봇 소리 (R2-D2 Sci-Fi Chirp Sequence 1.4s)
           const freqs = [440, 880, 1320, 660, 1760, 990, 1500, 2200, 1320, 1760, 880, 1200];
           freqs.forEach((f, idx) => {
-            setTimeout(() => playWebAudioTone(f, 65, 'square'), idx * 75);
+            scheduleAudioTimeout(() => playWebAudioTone(f, 65, 'square'), idx * 75);
           });
-        } else if (clipId === 64) { // 행진곡 (Full Spirited March Fanfare 4.2s)
+        } else if (clipId === 64) { // 행진곡 (Full Spirited March Fanfare ~4.5s)
           const notes = [
-            { f: 392.00, d: 180 }, // G4
-            { f: 523.25, d: 220 }, // C5
-            { f: 659.25, d: 220 }, // E5
-            { f: 783.99, d: 450 }, // G5
-            { f: 783.99, d: 180 }, // G5
-            { f: 659.25, d: 180 }, // E5
-            { f: 523.25, d: 180 }, // C5
-            { f: 587.33, d: 320 }, // D5
-            { f: 659.25, d: 180 }, // E5
-            { f: 698.46, d: 180 }, // F5
-            { f: 659.25, d: 180 }, // E5
-            { f: 587.33, d: 220 }, // D5
-            { f: 523.25, d: 500 }, // C5
-            { f: 392.00, d: 250 }, // G4
-            { f: 523.25, d: 650 }  // C5
+            { f: 392.00, d: 160 }, // G4
+            { f: 523.25, d: 200 }, // C5
+            { f: 659.25, d: 200 }, // E5
+            { f: 783.99, d: 400 }, // G5
+            { f: 783.99, d: 160 }, // G5
+            { f: 659.25, d: 160 }, // E5
+            { f: 523.25, d: 160 }, // C5
+            { f: 587.33, d: 280 }, // D5
+            { f: 659.25, d: 160 }, // E5
+            { f: 698.46, d: 160 }, // F5
+            { f: 659.25, d: 160 }, // E5
+            { f: 587.33, d: 200 }, // D5
+            { f: 523.25, d: 420 }, // C5
+            { f: 392.00, d: 220 }, // G4
+            { f: 523.25, d: 550 }  // C5 (Final resolving cadence)
           ];
           let time = 0;
           notes.forEach(n => {
-            setTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
-            time += n.d + 55;
+            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
+            time += n.d + 35;
           });
-        } else if (clipId === 65) { // 생일축하곡 (Complete Happy Birthday: 4 Phrases 6.6s)
+        } else if (clipId === 65) { // 생일축하곡 (Complete Happy Birthday: All 4 Phrases ~7.6s)
           const notes = [
-            // 생일 축하 합니다
-            { f: 261.63, d: 220 }, { f: 261.63, d: 220 }, { f: 293.66, d: 420 },
-            { f: 261.63, d: 420 }, { f: 349.23, d: 420 }, { f: 329.63, d: 750 },
-            // 생일 축하 합니다
-            { f: 261.63, d: 220 }, { f: 261.63, d: 220 }, { f: 293.66, d: 420 },
-            { f: 261.63, d: 420 }, { f: 392.00, d: 420 }, { f: 349.23, d: 750 },
-            // 사랑하는 친구의
-            { f: 261.63, d: 220 }, { f: 261.63, d: 220 }, { f: 523.25, d: 420 },
-            { f: 440.00, d: 420 }, { f: 349.23, d: 420 }, { f: 329.63, d: 420 }, { f: 293.66, d: 650 },
-            // 생일 축하 합니다
-            { f: 466.16, d: 220 }, { f: 466.16, d: 220 }, { f: 440.00, d: 420 },
-            { f: 349.23, d: 420 }, { f: 392.00, d: 420 }, { f: 349.23, d: 900 }
+            // Phrase 1: 생일 축하 합니다
+            { f: 261.63, d: 160 }, { f: 261.63, d: 160 }, { f: 293.66, d: 280 },
+            { f: 261.63, d: 280 }, { f: 349.23, d: 280 }, { f: 329.63, d: 520 },
+            // Phrase 2: 생일 축하 합니다
+            { f: 261.63, d: 160 }, { f: 261.63, d: 160 }, { f: 293.66, d: 280 },
+            { f: 261.63, d: 280 }, { f: 392.00, d: 280 }, { f: 349.23, d: 520 },
+            // Phrase 3: 사랑하는 친구의
+            { f: 261.63, d: 160 }, { f: 261.63, d: 160 }, { f: 523.25, d: 280 },
+            { f: 440.00, d: 280 }, { f: 349.23, d: 280 }, { f: 329.63, d: 280 }, { f: 293.66, d: 450 },
+            // Phrase 4: 생일 축하 합니다
+            { f: 466.16, d: 160 }, { f: 466.16, d: 160 }, { f: 440.00, d: 280 },
+            { f: 349.23, d: 280 }, { f: 392.00, d: 280 }, { f: 349.23, d: 600 }
           ];
           let time = 0;
           notes.forEach(n => {
-            setTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
-            time += n.d + 50;
+            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
+            time += n.d + 25;
           });
         } else if (clipId === 66) { // 디비디비딥 (3 bouncy beats & jump 1.5s)
           const notes = [
@@ -2080,8 +2666,8 @@
           ];
           let time = 0;
           notes.forEach(n => {
-            setTimeout(() => playWebAudioTone(n.f, n.d, 'square'), time);
-            time += n.d + 55;
+            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'square'), time);
+            time += n.d + 50;
           });
         } else if (clipId === 67) { // 잘했어요 (Good Job / Victory Fanfare 1.7s)
           const notes = [
@@ -2094,8 +2680,8 @@
           ];
           let time = 0;
           notes.forEach(n => {
-            setTimeout(() => playWebAudioTone(n.f, n.d, 'sine'), time);
-            time += n.d + 45;
+            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'sine'), time);
+            time += n.d + 40;
           });
         }
       } catch(e) {
@@ -2328,11 +2914,38 @@
       else pill.classList.remove('online');
     }
 
-    // ── 18-Byte Roboid Motoring Packet Sender ──
-    function sendPacket(leftSpeed = null, rightSpeed = null, rgbLed = [0,0,0], soundClip = 0, noteVal = 0, buzzerFreq = 0, tracerMode = null) {
+    // ── 18-Byte Roboid Motoring Packet Sender (Subsystem State Preserving) ──
+    function sendPacket(leftSpeed = null, rightSpeed = null, rgbLed = null, soundClip = null, noteVal = null, buzzerFreq = null, tracerMode = null) {
       if (leftSpeed !== null) currentLeftWheel = leftSpeed;
       if (rightSpeed !== null) currentRightWheel = rightSpeed;
+      if (rgbLed !== null) currentHeadLed = rgbLed;
       if (tracerMode !== null) currentLineTracerMode = tracerMode;
+
+      // Sound Subsystem Latching: preserve playing sound across wheel/LED packets!
+      if (soundClip !== null) {
+        if (soundClip > 0) {
+          currentSoundClip = soundClip;
+          currentNoteVal = 0;
+          currentBuzzerFreq = 0;
+          soundIdToggle = (soundIdToggle + 1) % 2;
+        } else {
+          currentSoundClip = 0;
+        }
+      }
+      if (noteVal !== null) {
+        currentNoteVal = noteVal;
+        if (noteVal > 0) {
+          currentSoundClip = 0;
+          currentBuzzerFreq = 0;
+        }
+      }
+      if (buzzerFreq !== null) {
+        currentBuzzerFreq = buzzerFreq;
+        if (buzzerFreq > 0) {
+          currentSoundClip = 0;
+          currentNoteVal = 0;
+        }
+      }
 
       if (!writeChar) return;
 
@@ -2349,25 +2962,23 @@
 
       // Byte 8: Line tracer mode
       if (currentLineTracerMode > 0) {
-        tracerIdToggle = (tracerIdToggle + 1) % 2;
-        buffer[8] = (tracerIdToggle << 7) | (currentLineTracerMode & 0x7f);
+        buffer[8] = ((tracerIdToggle & 0x01) << 7) | (currentLineTracerMode & 0x7f);
       } else {
         buffer[8] = 0;
       }
 
-      // Head RGB LED: EXACTLY Bytes 9, 10, 11
-      buffer[9] = rgbLed[0];
-      buffer[10] = rgbLed[1];
-      buffer[11] = rgbLed[2];
+      // Head RGB LED: EXACTLY Bytes 9, 10, 11 (Latched)
+      buffer[9] = currentHeadLed[0];
+      buffer[10] = currentHeadLed[1];
+      buffer[11] = currentHeadLed[2];
 
-      // Sound Devices (Bytes 13-17)
-      if (soundClip > 0) {
-        soundIdToggle = (soundIdToggle + 1) % 2;
-        buffer[17] = (soundIdToggle << 7) | (soundClip & 0x7f);
-      } else if (noteVal > 0) {
-        buffer[16] = noteVal & 0xff;
-      } else if (buzzerFreq > 0) {
-        const b = Math.round(buzzerFreq * 100);
+      // Sound Devices (Bytes 13-17 Latched - Never prematurely zeroes out while playing)
+      if (currentSoundClip > 0) {
+        buffer[17] = ((soundIdToggle & 0x01) << 7) | (currentSoundClip & 0x7f);
+      } else if (currentNoteVal > 0) {
+        buffer[16] = currentNoteVal & 0xff;
+      } else if (currentBuzzerFreq > 0) {
+        const b = Math.round(currentBuzzerFreq * 100);
         buffer[13] = (b >> 16) & 0xff;
         buffer[14] = (b >> 8) & 0xff;
         buffer[15] = b & 0xff;
@@ -2410,6 +3021,70 @@
       }
     }
 
+        // ── Slidable Top Header Navigation Helpers ──
+    function scrollHeaderNav(offset) {
+      const nav = document.getElementById('headerNavScroll');
+      if (nav) {
+        nav.scrollBy({ left: offset, behavior: 'smooth' });
+      }
+    }
+
+    function updateNavSlideFades() {
+      const nav = document.getElementById('headerNavScroll');
+      const fadeL = document.getElementById('navFadeLeft');
+      const fadeR = document.getElementById('navFadeRight');
+      const btnL = document.getElementById('btnSlideLeft');
+      const btnR = document.getElementById('btnSlideRight');
+      if (!nav) return;
+
+      const canScroll = nav.scrollWidth > nav.clientWidth + 4;
+      const isLeft = nav.scrollLeft <= 8;
+      const isRight = (nav.scrollLeft + nav.clientWidth) >= (nav.scrollWidth - 8);
+
+      if (canScroll) {
+        if (btnL) btnL.style.display = isLeft ? 'none' : 'flex';
+        if (btnR) btnR.style.display = isRight ? 'none' : 'flex';
+        if (fadeL) fadeL.classList.toggle('visible', !isLeft);
+        if (fadeR) fadeR.classList.toggle('visible', !isRight);
+      } else {
+        if (btnL) btnL.style.display = 'none';
+        if (btnR) btnR.style.display = 'none';
+        if (fadeL) fadeL.classList.remove('visible');
+        if (fadeR) fadeR.classList.remove('visible');
+      }
+    }
+
+    function initHeaderNavSlide() {
+      const nav = document.getElementById('headerNavScroll');
+      if (!nav) return;
+
+      nav.addEventListener('scroll', updateNavSlideFades);
+      window.addEventListener('resize', updateNavSlideFades);
+      setTimeout(updateNavSlideFades, 150);
+
+      let isDown = false;
+      let startX = 0;
+      let scrollLeftPos = 0;
+
+      nav.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('button, .floor-badge, .status-pill')) return;
+        isDown = true;
+        startX = e.pageX - nav.offsetLeft;
+        scrollLeftPos = nav.scrollLeft;
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!isDown) return;
+        const x = e.pageX - nav.offsetLeft;
+        const walk = (x - startX);
+        nav.scrollLeft = scrollLeftPos - walk;
+      });
+
+      window.addEventListener('pointerup', () => {
+        isDown = false;
+      });
+    }
+
     // ── Virtual Keypad & Keyboard Event Bridge ──
     function toggleKeypad() {
       const dock = document.getElementById('keypadDock');
@@ -2418,15 +3093,156 @@
       btn.innerText = dock.classList.contains('folded') ? '열기 ▲' : '접기 ▼';
     }
 
+
+    // ── Controller Settings & Coding Guide Logic ──
+    let isControllerEnabled = false; // 기본값: 꺼짐
+    let isDirectDriveAllowed = false; // 기본값: 꺼짐 (코딩 없는 단순 수동 운전 방지)
+
+    function openGuideModal() {
+      const modal = document.getElementById('guideModal');
+      const chkController = document.getElementById('toggleShowController');
+      const chkDirect = document.getElementById('toggleDirectDrive');
+      if (chkController) chkController.checked = isControllerEnabled;
+      if (chkDirect) chkDirect.checked = isDirectDriveAllowed;
+      modal.classList.add('show');
+    }
+
+    function closeGuideModal() {
+      const modal = document.getElementById('guideModal');
+      modal.classList.remove('show');
+    }
+
+    function closeGuideModalOnBackdrop(e) {
+      if (e.target.id === 'guideModal') {
+        closeGuideModal();
+      }
+    }
+
+    function onToggleShowController(enabled) {
+      isControllerEnabled = enabled;
+      const dock = document.getElementById('keypadDock');
+      const btnHeaderCtrl = document.getElementById('btnHeaderCtrl');
+      if (dock) dock.style.display = enabled ? 'flex' : 'none';
+      if (btnHeaderCtrl) btnHeaderCtrl.style.display = enabled ? 'inline-flex' : 'none';
+      updateNavSlideFades();
+    }
+
+    function onToggleDirectDrive(allowed) {
+      isDirectDriveAllowed = allowed;
+    }
+
+    function loadKeypadCodingSample() {
+      if (confirm('작업 공간에 [기본 조종 코딩 예제 블록]을 배치하시겠습니까?')) {
+        const board = document.getElementById('workspaceBoard');
+        board.innerHTML = `
+          <!-- 전진: 위쪽 화살표 -->
+          <div class="code-stack" style="left: 60px; top: 30px;">
+            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
+              <span>⌨</span>
+              <select class="param-select"><option value="위쪽 화살표(↑)" selected>위쪽 화살표(↑)</option></select>
+              <span>키를 눌렀을 때</span>
+            </div>
+            <div class="block block-cat-motion" data-cmd="move_forward_cm" data-cat="motion">
+              <span>앞으로</span>
+              <input type="number" class="param-1" value="5">
+              <span>cm 정밀 이동하기</span>
+              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
+            </div>
+          </div>
+
+          <!-- 후진: 아래쪽 화살표 -->
+          <div class="code-stack" style="left: 60px; top: 155px;">
+            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
+              <span>⌨</span>
+              <select class="param-select"><option value="아래쪽 화살표(↓)" selected>아래쪽 화살표(↓)</option></select>
+              <span>키를 눌렀을 때</span>
+            </div>
+            <div class="block block-cat-motion" data-cmd="move_backward_cm" data-cat="motion">
+              <span>뒤로</span>
+              <input type="number" class="param-1" value="5">
+              <span>cm 정밀 이동하기</span>
+              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
+            </div>
+          </div>
+
+          <!-- 좌회전: 왼쪽 화살표 -->
+          <div class="code-stack" style="left: 380px; top: 30px;">
+            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
+              <span>⌨</span>
+              <select class="param-select"><option value="왼쪽 화살표(←)" selected>왼쪽 화살표(←)</option></select>
+              <span>키를 눌렀을 때</span>
+            </div>
+            <div class="block block-cat-motion" data-cmd="turn_left_deg" data-cat="motion">
+              <span>왼쪽으로</span>
+              <input type="number" class="param-1" value="90">
+              <span>도 회전하기</span>
+              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
+            </div>
+          </div>
+
+          <!-- 우회전: 오른쪽 화살표 -->
+          <div class="code-stack" style="left: 380px; top: 155px;">
+            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
+              <span>⌨</span>
+              <select class="param-select"><option value="오른쪽 화살표(→)" selected>오른쪽 화살표(→)</option></select>
+              <span>키를 눌렀을 때</span>
+            </div>
+            <div class="block block-cat-motion" data-cmd="turn_right_deg" data-cat="motion">
+              <span>오른쪽으로</span>
+              <input type="number" class="param-1" value="90">
+              <span>도 회전하기</span>
+              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
+            </div>
+          </div>
+
+          <!-- 경적: 스페이스 -->
+          <div class="code-stack" style="left: 60px; top: 280px;">
+            <div class="block block-hat block-cat-start" data-cmd="hat_key_pressed" data-cat="start" data-is-hat="true">
+              <span>⌨</span>
+              <select class="param-select"><option value="스페이스" selected>스페이스</option></select>
+              <span>키를 눌렀을 때</span>
+            </div>
+            <div class="block block-cat-sound" data-cmd="play_clip" data-cat="sound">
+              <span>효과음</span>
+              <select class="param-select"><option value="삐- 소리" selected>삐- 소리</option></select>
+              <span>재생하기</span>
+              <button class="block-btn-del" onclick="deleteBlock(this)">✕</button>
+            </div>
+          </div>
+        `;
+
+        document.querySelectorAll('#workspaceBoard .code-stack').forEach(s => {
+          attachStackDrag(s);
+          Array.from(s.children).forEach(b => {
+            if (b.dataset.isHat !== 'true') attachBlockDragEvents(b);
+          });
+        });
+
+        // Automatically enable controller so they can test their code!
+        onToggleShowController(true);
+        const chk = document.getElementById('toggleShowController');
+        if (chk) chk.checked = true;
+
+        closeGuideModal();
+      }
+    }
+
     function handleKeypadDirection(key, isPressed) {
       if (isPressed) {
+        // 1. Always fire student's coded blocks
         triggerStartEvent('key_press', key);
-        if (key === 'ArrowUp') sendPacket(50, 50);
-        else if (key === 'ArrowDown') sendPacket(-50, -50);
-        else if (key === 'ArrowLeft') sendPacket(-45, 45);
-        else if (key === 'ArrowRight') sendPacket(45, -45);
+
+        // 2. Direct motor drive ONLY if teacher explicitly enabled it in settings
+        if (isDirectDriveAllowed) {
+          if (key === 'ArrowUp') sendPacket(50, 50);
+          else if (key === 'ArrowDown') sendPacket(-50, -50);
+          else if (key === 'ArrowLeft') sendPacket(-45, 45);
+          else if (key === 'ArrowRight') sendPacket(45, -45);
+        }
       } else {
-        sendPacket(0, 0);
+        if (isDirectDriveAllowed) {
+          sendPacket(0, 0);
+        }
       }
     }
 
@@ -2444,11 +3260,112 @@
 
     // ── Initialization ──
     window.addEventListener('DOMContentLoaded', () => {
+      initHeaderNavSlide();
       renderPalette('start');
       attachStackDrag(document.getElementById('defaultStack'));
       updateFloorSensorBadge('검은색');
       updateHud();
     });
   </script>
+
+  <!-- Coding Guide & Controller Settings Modal -->
+  <div class="modal-overlay" id="guideModal" onclick="closeGuideModalOnBackdrop(event)">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3><span>📖</span> 기본 조종 설정 및 코딩 안내</h3>
+        <button class="modal-close-btn" onclick="closeGuideModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        
+        <!-- Section 1: Controller Settings -->
+        <div class="guide-section">
+          <div class="guide-sec-head">⚙️ 가상 조종기(키패드) 동작 설정</div>
+          <div class="setting-list">
+            
+            <div class="setting-card">
+              <div class="setting-info">
+                <div class="setting-title">🎮 화면 조종기(가상 키패드) 표시</div>
+                <div class="setting-desc">화면 우측 하단에 방향키 조종기를 띄웁니다. (코딩 집중을 위해 기본값: 꺼짐)</div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggleShowController" onchange="onToggleShowController(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="setting-card">
+              <div class="setting-info">
+                <div class="setting-title">🕹 코딩 없는 단순 수동 운전 허용</div>
+                <div class="setting-desc">
+                  <b style="color:#f87171;">기본값(OFF) 권장:</b> 꺼져 있을 때는 학생이 작성한 코딩 블록(예: <code>[위쪽 화살표] 키를 눌렀을 때</code>)에 의해서만 로봇이 작동합니다. 코딩 없는 단순 장난 주행을 원천 방지합니다.
+                </div>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggleDirectDrive" onchange="onToggleDirectDrive(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Section 2: How to Code Movement -->
+        <div class="guide-section">
+          <div class="guide-sec-head" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>🚀 조종기로 움직이는 코딩 원리</span>
+            <button class="btn-sample-load" onclick="loadKeypadCodingSample()">✨ 기본 조종 예제 불러오기</button>
+          </div>
+          <p style="font-size:0.83rem; color:#cbd5e1; margin-bottom:8px;">
+            터틀봇은 코딩을 통해 움직임을 배우는 교육용 로봇입니다. 키패드나 키보드로 조종하려면 <b>[시작]</b> 카테고리의 <b>[키를 눌렀을 때]</b> 블록 아래에 <b>[움직임]</b> 블록을 붙여야 합니다.
+          </p>
+
+          <div class="code-guide-preview">
+            <div class="guide-block-row">
+              <div class="g-hat">⌨ [위쪽 화살표(↑)] 키를 눌렀을 때</div>
+              <div class="g-arrow">➔</div>
+              <div class="g-motion">앞으로 [ 5 ] cm 이동하기</div>
+            </div>
+            <div class="guide-block-row">
+              <div class="g-hat">⌨ [아래쪽 화살표(↓)] 키를 눌렀을 때</div>
+              <div class="g-arrow">➔</div>
+              <div class="g-motion">뒤로 [ 5 ] cm 이동하기</div>
+            </div>
+            <div class="guide-block-row">
+              <div class="g-hat">⌨ [왼쪽 화살표(←)] 키를 눌렀을 때</div>
+              <div class="g-arrow">➔</div>
+              <div class="g-motion">왼쪽으로 [ 90 ] 도 회전하기</div>
+            </div>
+            <div class="guide-block-row">
+              <div class="g-hat">⌨ [오른쪽 화살표(→)] 키를 눌렀을 때</div>
+              <div class="g-arrow">➔</div>
+              <div class="g-motion">오른쪽으로 [ 90 ] 도 회전하기</div>
+            </div>
+            <div class="guide-block-row">
+              <div class="g-hat">⌨ [스페이스] 키를 눌렀을 때</div>
+              <div class="g-arrow">➔</div>
+              <div class="g-sound">효과음 [ 삐- 소리 ] 재생하기</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Sensor & Classroom Tips -->
+        <div class="guide-section">
+          <div class="guide-sec-head">🏁 컬러 센서 & 라인트레이서 안내</div>
+          <ul class="guide-tip-list">
+            <li><b>선 따라가기:</b> <code>[검은색]</code> 외에도 빨간색, 파란색, 초록색 등 다양한 색상의 선을 추적할 수 있습니다.</li>
+            <li><b>색상 감지 대기:</b> <code>바닥 색상이 [빨간색] 이 될 때까지 앞으로 가기</code> 블록으로 신호등이나 정지선을 구현할 수 있습니다.</li>
+            <li><b>다인원 블루투스 접속 팁:</b> 교실에서 여러 대가 연결될 때는 상단의 <code>[💡 내 로봇 확인]</code> 버튼을 눌러보세요. 내 로봇의 머리 LED가 3색으로 깜빡이고 소리가 나서 즉시 식별할 수 있습니다.</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="closeGuideModal()" style="background:#00b894; color:#fff; width:100%; justify-content:center;">
+          <span>확인 및 닫기</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
