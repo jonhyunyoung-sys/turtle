@@ -1810,19 +1810,14 @@
       },
       motion: {
         title: '움직임 블록 (Motion)',
-        hint: '터틀봇의 직진, 후진, 회전 및 바퀴 속도를 제어합니다.',
+        hint: '터틀봇의 바퀴 회전 시간과 속도를 제어합니다.',
         blocks: [
-          { cmd: 'move_forward_cm', cat: 'motion', label: '앞으로', param: 5, unit: 'cm 이동하기', type: 'num' },
+          { cmd: 'wheel_sec_speed', cat: 'motion', label: '', select: ['양쪽', '왼쪽', '오른쪽', '제자리 좌회전', '제자리 우회전'], label2: '바퀴를', param1: 1, label3: '초간', param2: 50, unit: '% 속도로 회전하기', type: 'wheel_sec_speed' },
           { cmd: 'move_forward_sec', cat: 'motion', label: '앞으로', param: 1, unit: '초 이동하기', type: 'num' },
-          { cmd: 'move_backward_cm', cat: 'motion', label: '뒤로', param: 5, unit: 'cm 이동하기', type: 'num' },
           { cmd: 'move_backward_sec', cat: 'motion', label: '뒤로', param: 1, unit: '초 이동하기', type: 'num' },
-          { cmd: 'turn_left_deg', cat: 'motion', label: '왼쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
-          { cmd: 'turn_right_deg', cat: 'motion', label: '오른쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
-          { cmd: 'pivot_left', cat: 'motion', label: '왼쪽 바퀴 축으로 회전하기', type: 'none' },
-          { cmd: 'pivot_right', cat: 'motion', label: '오른쪽 바퀴 축으로 회전하기', type: 'none' },
+          { cmd: 'set_wheels', cat: 'motion', label: '왼쪽', param1: 50, label2: '% 오른쪽', param2: 50, unit: '% 바퀴 속도 정하기', type: 'two_num' },
           { cmd: 'set_left_wheel', cat: 'motion', label: '왼쪽 바퀴 속도를', param: 50, unit: '% 로 정하기', type: 'num' },
           { cmd: 'set_right_wheel', cat: 'motion', label: '오른쪽 바퀴 속도를', param: 50, unit: '% 로 정하기', type: 'num' },
-          { cmd: 'set_wheels', cat: 'motion', label: '왼쪽', param1: 50, label2: '% 오른쪽', param2: 50, unit: '% 바퀴 속도 정하기', type: 'two_num' },
           { cmd: 'stop_wheels', cat: 'motion', label: '모든 바퀴 멈추기', type: 'none' }
         ]
       },
@@ -2120,8 +2115,10 @@
       el.dataset.cat = def.cat;
       if (def.isHat) el.dataset.isHat = 'true';
 
-      let inner = `<span>${def.label}</span>`;
-      if (def.type === 'num') {
+      let inner = def.label ? `<span>${def.label}</span>` : '';
+      if (def.type === 'wheel_sec_speed') {
+        inner += `<select class="param-wheel-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2 || '바퀴를'}</span> ${buildValSlotHtml('param-sec', def.param1, 'min="0.05" step="0.1"', 'width:40px;')} <span>${def.label3 || '초간'}</span> ${buildValSlotHtml('param-speed', def.param2, 'step="5"', 'width:42px;')} <span>${def.unit || '% 속도로 회전하기'}</span>`;
+      } else if (def.type === 'num') {
         inner += ` ${buildValSlotHtml('param-1', def.param)} <span>${def.unit}</span>`;
       } else if (def.type === 'two_num') {
         inner += ` ${buildValSlotHtml('param-1', def.param1)} <span>${def.label2}</span> ${buildValSlotHtml('param-2', def.param2)} <span>${def.unit}</span>`;
@@ -3298,6 +3295,39 @@
 
       switch (cmd) {
         // ── Motion Blocks ──
+        case 'wheel_sec_speed': {
+          const wheelChoice = el.querySelector('.param-wheel-select')?.value || '양쪽';
+          const sec = Math.max(0.01, readNum(el, '.param-sec', 1));
+          const speed = Math.max(-100, Math.min(100, readNum(el, '.param-speed', 50)));
+          let left = 0, right = 0;
+          if (wheelChoice === '양쪽') {
+            left = speed;
+            right = speed;
+          } else if (wheelChoice === '왼쪽') {
+            left = speed;
+            right = 0;
+          } else if (wheelChoice === '오른쪽') {
+            left = 0;
+            right = speed;
+          } else if (wheelChoice.includes('좌회전') || wheelChoice.includes('(좌)')) {
+            left = -speed;
+            right = speed;
+          } else if (wheelChoice.includes('우회전') || wheelChoice.includes('(우)')) {
+            left = speed;
+            right = -speed;
+          }
+          currentLeftWheel = left;
+          currentRightWheel = right;
+          sendPacket(left, right);
+          const simHeadingDelta = (left === right) ? 0 : (left > right ? 45 : -45);
+          driveSim(((left + right) / 2) * sec * 0.4, simHeadingDelta);
+          if (await waitMs(sec * 1000, token)) {
+            currentLeftWheel = 0;
+            currentRightWheel = 0;
+            sendPacket(0, 0);
+          }
+          break;
+        }
         case 'move_forward_sec': {
           const sec = Math.max(0, readNum(el, '.param-1', 1));
           sendPacket(50, 50);
@@ -3443,105 +3473,28 @@
         // ── Sound & Music Blocks (Play for Exact n Seconds) ──
         case 'play_clip_until_done': {
           const sel = el.querySelector('.param-select').value;
-          const clips = {
-            '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
-            '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
-          };
-          const clipId = clips[sel] || 64;
-          const clipCycleMs = {
-            1: 500,    // 삐- 소리
-            16: 3000,  // 사이렌
-            48: 1400,  // 로봇 소리
-            64: 4500,  // 행진곡 (전체 소절 완료)
-            65: 7600,  // 생일축하곡 (전체 4소절 완료)
-            66: 1500,  // 디비디비딥
-            67: 1700   // 잘했어요
-          };
-          const durMs = clipCycleMs[clipId] || 4500;
-
           stopAudioPlayback();
-          if (currentVolume > 0) {
-            sendPacket(null, null, null, clipId);
-            playWebAudioClip(clipId);
-          }
-          // 소리가 끝까지 완전히 연주될 때까지 대기
-          await waitMs(durMs, token);
-          currentSoundClip = 0;
-          if (!token.cancelled && isExecuting) {
-            sendPacket(null, null, null, 0, 0, 0);
-          }
+          await playMelodyStream(sel, token, true);
           break;
         }
         case 'play_clip': {
           const sel = el.querySelector('.param-select').value;
-          const clips = {
-            '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
-            '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
-          };
-          const clipId = clips[sel] || 64;
-          const clipCycleMs = {
-            1: 500,    // 삐- 소리
-            16: 3000,  // 사이렌
-            48: 1400,  // 로봇 소리
-            64: 4500,  // 행진곡
-            65: 7600,  // 생일축하곡
-            66: 1500,  // 디비디비딥
-            67: 1700   // 잘했어요
-          };
-          const durMs = clipCycleMs[clipId] || 4500;
-
-          // 이전 버전(초간 재생하기 파라미터가 DOM에 남아있는 경우) 호환
           const paramEl = el.querySelector('.param-1');
           if (paramEl) {
             const sec = Math.max(0.1, readNum(el, '.param-1', 2));
-            const targetMs = Math.round(sec * 1000);
             stopAudioPlayback();
-            if (currentVolume > 0) {
-              sendPacket(null, null, null, clipId);
-              playWebAudioClip(clipId);
-            }
-            await waitMs(targetMs, token);
-            stopAudioPlayback();
-            currentSoundClip = 0;
-            if (!token.cancelled && isExecuting) {
-              sendPacket(null, null, null, 0, 0, 0);
-            }
+            await playMelodyStream(sel, token, true, Math.round(sec * 1000));
           } else {
-            // 백그라운드에서 다음 블록(이동, LED 등)과 함께 소리가 끝까지 재생되도록 시작
             stopAudioPlayback();
-            if (currentVolume > 0) {
-              sendPacket(null, null, null, clipId);
-              playWebAudioClip(clipId);
-            }
-            if (soundStopTimer) clearTimeout(soundStopTimer);
-            soundStopTimer = setTimeout(() => {
-              currentSoundClip = 0;
-              sendPacket(null, null, null, 0, 0, 0);
-            }, durMs + 100);
+            playMelodyStream(sel, null, false);
           }
           break;
         }
         case 'play_clip_sec': {
           const sel = el.querySelector('.param-select').value;
           const sec = Math.max(0.1, readNum(el, '.param-1', 2));
-          const targetMs = Math.round(sec * 1000);
-          const clips = {
-            '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
-            '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
-          };
-          const clipId = clips[sel] || 64;
-
           stopAudioPlayback();
-          if (currentVolume > 0) {
-            sendPacket(null, null, null, clipId);
-            playWebAudioClip(clipId);
-          }
-          await waitMs(targetMs, token);
-          stopAudioPlayback();
-          currentSoundClip = 0;
-          if (!token.cancelled && isExecuting) {
-            sendPacket(null, null, null, 0, 0, 0);
-          }
+          await playMelodyStream(sel, token, true, Math.round(sec * 1000));
           break;
         }
         case 'play_note': {
@@ -4053,7 +4006,76 @@
       updateFloorSensorBadge(nextColor);
     }
 
-    // ── Web Audio Simulator Synthesis (Complete Non-Cutting Melodies & Timers) ──
+    // ── Web Audio & Hardware Melody Streaming Engine (Complete Non-Cutting Melodies) ──
+    let currentMelodyToken = null;
+
+    const FULL_MELODIES = {
+      '생일축하곡': [
+        // Phrase 1: 생일 축하합니다
+        { f: 261.63, code: 60, d: 200 }, // 도 (생)
+        { f: 261.63, code: 60, d: 200 }, // 도 (일)
+        { f: 293.66, code: 62, d: 380 }, // 레 (축)
+        { f: 261.63, code: 60, d: 380 }, // 도 (하)
+        { f: 349.23, code: 65, d: 380 }, // 파 (합)
+        { f: 329.63, code: 64, d: 750 }, // 미 (니다)
+        // Phrase 2: 생일 축하합니다
+        { f: 261.63, code: 60, d: 200 }, // 도 (생)
+        { f: 261.63, code: 60, d: 200 }, // 도 (일)
+        { f: 293.66, code: 62, d: 380 }, // 레 (축)
+        { f: 261.63, code: 60, d: 380 }, // 도 (하)
+        { f: 392.00, code: 67, d: 380 }, // 솔 (합)
+        { f: 349.23, code: 65, d: 750 }, // 파 (니다)
+        // Phrase 3: 사랑하는 친구의
+        { f: 261.63, code: 60, d: 200 }, // 도 (사)
+        { f: 261.63, code: 60, d: 200 }, // 도 (랑)
+        { f: 523.25, code: 72, d: 380 }, // 도 (하)
+        { f: 440.00, code: 69, d: 380 }, // 라 (는)
+        { f: 349.23, code: 65, d: 380 }, // 파 (친)
+        { f: 329.63, code: 64, d: 380 }, // 미 (구)
+        { f: 293.66, code: 62, d: 650 }, // 레 (의)
+        // Phrase 4: 생일 축하합니다
+        { f: 466.16, code: 70, d: 200 }, // 시b (생)
+        { f: 466.16, code: 70, d: 200 }, // 시b (일)
+        { f: 440.00, code: 69, d: 380 }, // 라 (축)
+        { f: 349.23, code: 65, d: 380 }, // 파 (하)
+        { f: 392.00, code: 67, d: 380 }, // 솔 (합)
+        { f: 349.23, code: 65, d: 900 }  // 파 (니다~)
+      ],
+      '행진곡': [
+        { f: 392.00, code: 67, d: 180 }, // 솔
+        { f: 523.25, code: 72, d: 220 }, // 도
+        { f: 659.25, code: 76, d: 220 }, // 미
+        { f: 783.99, code: 79, d: 440 }, // 솔
+        { f: 783.99, code: 79, d: 180 }, // 솔
+        { f: 659.25, code: 76, d: 180 }, // 미
+        { f: 523.25, code: 72, d: 180 }, // 도
+        { f: 587.33, code: 74, d: 320 }, // 레
+        { f: 659.25, code: 76, d: 180 }, // 미
+        { f: 698.46, code: 77, d: 180 }, // 파
+        { f: 659.25, code: 76, d: 180 }, // 미
+        { f: 587.33, code: 74, d: 220 }, // 레
+        { f: 523.25, code: 72, d: 440 }, // 도
+        { f: 392.00, code: 67, d: 240 }, // 솔
+        { f: 523.25, code: 72, d: 650 }  // 도 (웅장한 마침)
+      ],
+      '디비디비딥': [
+        { f: 659.25, code: 76, d: 150 },
+        { f: 659.25, code: 76, d: 150 },
+        { f: 783.99, code: 79, d: 180 },
+        { f: 1046.50, code: 84, d: 350 },
+        { f: 1318.51, code: 88, d: 500 }
+      ],
+      '잘했어요': [
+        { f: 523.25, code: 72, d: 180 },
+        { f: 659.25, code: 76, d: 180 },
+        { f: 783.99, code: 79, d: 240 },
+        { f: 1046.50, code: 84, d: 650 }
+      ],
+      '삐- 소리': [
+        { f: 880.00, code: 81, d: 280 }
+      ]
+    };
+
     function scheduleAudioTimeout(fn, delayMs) {
       const tid = setTimeout(() => {
         activeAudioTimeouts = activeAudioTimeouts.filter(id => id !== tid);
@@ -4064,6 +4086,10 @@
     }
 
     function stopAudioPlayback() {
+      if (currentMelodyToken) {
+        currentMelodyToken.cancelled = true;
+        currentMelodyToken = null;
+      }
       activeAudioTimeouts.forEach(id => clearTimeout(id));
       activeAudioTimeouts = [];
       activeOscillators.forEach(osc => {
@@ -4105,9 +4131,9 @@
         const now = audioCtx.currentTime;
         const volRatio = Math.max(0, Math.min(100, currentVolume)) / 100.0;
 
-        if (clipId === 1) { // 삐- 소리 (Single Beep)
+        if (clipId === 1) { // 삐- 소리
           playWebAudioTone(880, 200);
-        } else if (clipId === 16) { // 사이렌 (Police Siren: continuous 3.0s rise and fall)
+        } else if (clipId === 16) { // 사이렌
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
@@ -4136,79 +4162,97 @@
           freqs.forEach((f, idx) => {
             scheduleAudioTimeout(() => playWebAudioTone(f, 65, 'square'), idx * 75);
           });
-        } else if (clipId === 64) { // 행진곡 (Full Spirited March Fanfare ~4.5s)
-          const notes = [
-            { f: 392.00, d: 160 }, // G4
-            { f: 523.25, d: 200 }, // C5
-            { f: 659.25, d: 200 }, // E5
-            { f: 783.99, d: 400 }, // G5
-            { f: 783.99, d: 160 }, // G5
-            { f: 659.25, d: 160 }, // E5
-            { f: 523.25, d: 160 }, // C5
-            { f: 587.33, d: 280 }, // D5
-            { f: 659.25, d: 160 }, // E5
-            { f: 698.46, d: 160 }, // F5
-            { f: 659.25, d: 160 }, // E5
-            { f: 587.33, d: 200 }, // D5
-            { f: 523.25, d: 420 }, // C5
-            { f: 392.00, d: 220 }, // G4
-            { f: 523.25, d: 550 }  // C5 (Final resolving cadence)
-          ];
-          let time = 0;
-          notes.forEach(n => {
-            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
-            time += n.d + 35;
-          });
-        } else if (clipId === 65) { // 생일축하곡 (Complete Happy Birthday: All 4 Phrases ~7.6s)
-          const notes = [
-            // Phrase 1: 생일 축하 합니다
-            { f: 261.63, d: 160 }, { f: 261.63, d: 160 }, { f: 293.66, d: 280 },
-            { f: 261.63, d: 280 }, { f: 349.23, d: 280 }, { f: 329.63, d: 520 },
-            // Phrase 2: 생일 축하 합니다
-            { f: 261.63, d: 160 }, { f: 261.63, d: 160 }, { f: 293.66, d: 280 },
-            { f: 261.63, d: 280 }, { f: 392.00, d: 280 }, { f: 349.23, d: 520 },
-            // Phrase 3: 사랑하는 친구의
-            { f: 261.63, d: 160 }, { f: 261.63, d: 160 }, { f: 523.25, d: 280 },
-            { f: 440.00, d: 280 }, { f: 349.23, d: 280 }, { f: 329.63, d: 280 }, { f: 293.66, d: 450 },
-            // Phrase 4: 생일 축하 합니다
-            { f: 466.16, d: 160 }, { f: 466.16, d: 160 }, { f: 440.00, d: 280 },
-            { f: 349.23, d: 280 }, { f: 392.00, d: 280 }, { f: 349.23, d: 600 }
-          ];
-          let time = 0;
-          notes.forEach(n => {
-            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'triangle'), time);
-            time += n.d + 25;
-          });
-        } else if (clipId === 66) { // 디비디비딥 (3 bouncy beats & jump 1.5s)
-          const notes = [
-            { f: 659.25, d: 140 },
-            { f: 659.25, d: 140 },
-            { f: 783.99, d: 180 },
-            { f: 1046.50, d: 350 },
-            { f: 1318.51, d: 450 }
-          ];
-          let time = 0;
-          notes.forEach(n => {
-            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'square'), time);
-            time += n.d + 50;
-          });
-        } else if (clipId === 67) { // 잘했어요 (Good Job / Victory Fanfare 1.7s)
-          const notes = [
-            { f: 523.25, d: 120 }, // C5
-            { f: 659.25, d: 120 }, // E5
-            { f: 783.99, d: 140 }, // G5
-            { f: 1046.50, d: 220 }, // C6
-            { f: 1318.51, d: 220 }, // E6
-            { f: 1567.98, d: 550 }  // G6
-          ];
-          let time = 0;
-          notes.forEach(n => {
-            scheduleAudioTimeout(() => playWebAudioTone(n.f, n.d, 'sine'), time);
-            time += n.d + 40;
-          });
         }
       } catch(e) {
         console.warn('Web Audio error:', e);
+      }
+    }
+
+    async function playMelodyStream(soundName, execToken = null, isBlocking = true, maxDurationMs = null) {
+      if (currentVolume <= 0) return;
+
+      if (currentMelodyToken) {
+        currentMelodyToken.cancelled = true;
+      }
+      const myToken = { cancelled: false };
+      currentMelodyToken = myToken;
+
+      const isCancelled = () => {
+        return myToken.cancelled || (execToken && execToken.cancelled);
+      };
+
+      const startTime = Date.now();
+      const melodyNotes = FULL_MELODIES[soundName];
+
+      if (melodyNotes) {
+        const runLoop = async () => {
+          for (let i = 0; i < melodyNotes.length; i++) {
+            if (isCancelled()) break;
+            if (maxDurationMs !== null && Date.now() - startTime >= maxDurationMs) break;
+
+            const n = melodyNotes[i];
+            const noteDur = (maxDurationMs !== null) ? Math.min(n.d, maxDurationMs - (Date.now() - startTime)) : n.d;
+            if (noteDur <= 0) break;
+
+            // Stream note to Physical Robot hardware (Byte 16) and Web Audio speakers!
+            sendPacket(null, null, null, 0, n.code);
+            playWebAudioTone(n.f, noteDur, 'triangle');
+
+            if (execToken) {
+              if (!(await waitMs(noteDur, execToken))) break;
+            } else {
+              await sleep(noteDur);
+            }
+            if (isCancelled()) break;
+
+            // Clear note with 25ms articulation gap
+            sendPacket(null, null, null, 0, 0);
+            if (execToken) {
+              if (!(await waitMs(25, execToken))) break;
+            } else {
+              await sleep(25);
+            }
+          }
+
+          currentSoundClip = 0;
+          currentNoteVal = 0;
+          sendPacket(null, null, null, 0, 0, 0);
+          if (currentMelodyToken === myToken) currentMelodyToken = null;
+        };
+
+        if (isBlocking) {
+          await runLoop();
+        } else {
+          runLoop().catch(() => {});
+        }
+        return;
+      }
+
+      // Special sound effects (사이렌, 로봇 소리)
+      const clipIds = { '사이렌': 16, '로봇 소리': 48 };
+      const clipDurations = { 16: 3000, 48: 1400 };
+      const clipId = clipIds[soundName] || 16;
+      let targetMs = clipDurations[clipId] || 1500;
+      if (maxDurationMs !== null) targetMs = Math.min(targetMs, maxDurationMs);
+
+      sendPacket(null, null, null, clipId, 0, 0);
+      playWebAudioClip(clipId);
+
+      if (isBlocking) {
+        if (execToken) await waitMs(targetMs, execToken);
+        else await sleep(targetMs);
+        currentSoundClip = 0;
+        sendPacket(null, null, null, 0, 0, 0);
+        if (currentMelodyToken === myToken) currentMelodyToken = null;
+      } else {
+        if (soundStopTimer) clearTimeout(soundStopTimer);
+        soundStopTimer = setTimeout(() => {
+          if (!isCancelled()) {
+            currentSoundClip = 0;
+            sendPacket(null, null, null, 0, 0, 0);
+          }
+          if (currentMelodyToken === myToken) currentMelodyToken = null;
+        }, targetMs + 50);
       }
     }
 
@@ -5260,18 +5304,15 @@
         board.innerHTML = '';
 
         const hatKeyDef = CATEGORIES.start.blocks.find(b => b.cmd === 'hat_key_pressed');
-        const fwdDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'move_forward_cm');
-        const bwdDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'move_backward_cm');
-        const leftDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'turn_left_deg');
-        const rightDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'turn_right_deg');
-        const soundDef = CATEGORIES.sound.blocks.find(b => b.cmd === 'play_clip');
+        const wheelDef = CATEGORIES.motion.blocks.find(b => b.cmd === 'wheel_sec_speed');
+        const soundDef = CATEGORIES.sound.blocks.find(b => b.cmd === 'play_clip_until_done') || CATEGORIES.sound.blocks.find(b => b.cmd === 'play_clip');
 
         const configs = [
-          { left: 60, top: 30, key: '위쪽 화살표(↑)', actionDef: fwdDef },
-          { left: 60, top: 155, key: '아래쪽 화살표(↓)', actionDef: bwdDef },
-          { left: 380, top: 30, key: '왼쪽 화살표(←)', actionDef: leftDef },
-          { left: 380, top: 155, key: '오른쪽 화살표(→)', actionDef: rightDef },
-          { left: 60, top: 280, key: '스페이스', actionDef: soundDef }
+          { left: 60, top: 30, key: '위쪽 화살표(↑)', wheel: '양쪽', sec: 0.5, speed: 50 },
+          { left: 60, top: 155, key: '아래쪽 화살표(↓)', wheel: '양쪽', sec: 0.5, speed: -50 },
+          { left: 380, top: 30, key: '왼쪽 화살표(←)', wheel: '제자리 좌회전', sec: 0.4, speed: 45 },
+          { left: 380, top: 155, key: '오른쪽 화살표(→)', wheel: '제자리 우회전', sec: 0.4, speed: 45 },
+          { left: 60, top: 280, key: '스페이스', isSound: true }
         ];
 
         for (const cfg of configs) {
@@ -5283,10 +5324,21 @@
           const hatEl = createBlockDOM(hatKeyDef, false);
           const sel = hatEl.querySelector('.param-select');
           if (sel) sel.value = cfg.key;
-
-          const actEl = createBlockDOM(cfg.actionDef, false);
           stack.appendChild(hatEl);
-          stack.appendChild(actEl);
+
+          if (cfg.isSound) {
+            const soundEl = createBlockDOM(soundDef, false);
+            stack.appendChild(soundEl);
+          } else {
+            const actEl = createBlockDOM(wheelDef, false);
+            const wheelSel = actEl.querySelector('.param-wheel-select');
+            if (wheelSel) wheelSel.value = cfg.wheel;
+            const secInp = actEl.querySelector('.param-sec');
+            if (secInp) secInp.value = cfg.sec;
+            const spdInp = actEl.querySelector('.param-speed');
+            if (spdInp) spdInp.value = cfg.speed;
+            stack.appendChild(actEl);
+          }
           board.appendChild(stack);
           attachStackDrag(stack);
         }
@@ -5438,29 +5490,29 @@
             <div class="guide-block-row">
               <div class="g-hat">⌨ [위쪽 화살표(↑)] 키를 눌렀을 때</div>
               <div class="g-arrow">➔</div>
-              <div class="g-motion">앞으로 [ 5 ] cm 이동하기</div>
+              <div class="g-motion">[양쪽] 바퀴를 [ 0.5 ] 초간 [ 50 ] % 속도로 회전하기</div>
             </div>
             <div class="guide-block-row">
               <div class="g-hat">⌨ [아래쪽 화살표(↓)] 키를 눌렀을 때</div>
               <div class="g-arrow">➔</div>
-              <div class="g-motion">뒤로 [ 5 ] cm 이동하기</div>
+              <div class="g-motion">[양쪽] 바퀴를 [ 0.5 ] 초간 [ -50 ] % 속도로 회전하기</div>
             </div>
             <div class="guide-block-row">
               <div class="g-hat">⌨ [왼쪽 화살표(←)] 키를 눌렀을 때</div>
               <div class="g-arrow">➔</div>
-              <div class="g-motion">왼쪽으로 [ 90 ] 도 회전하기</div>
+              <div class="g-motion">[제자리 좌회전] 바퀴를 [ 0.4 ] 초간 [ 45 ] % 속도로 회전하기</div>
             </div>
             <div class="guide-block-row">
               <div class="g-hat">⌨ [오른쪽 화살표(→)] 키를 눌렀을 때</div>
               <div class="g-arrow">➔</div>
-              <div class="g-motion">오른쪽으로 [ 90 ] 도 회전하기</div>
+              <div class="g-motion">[제자리 우회전] 바퀴를 [ 0.4 ] 초간 [ 45 ] % 속도로 회전하기</div>
             </div>
             <div class="guide-block-row">
               <div class="g-hat">⌨ [스페이스] 키를 눌렀을 때</div>
               <div class="g-arrow">➔</div>
-              <div class="g-sound">소리 [ 삐- 소리 ] 을(를) [ 2 ] 초간 재생하기</div>
+              <div class="g-sound">소리 [ 삐- 소리 ] 끝까지 재생하기</div>
             </div>
-          </div>
+          </div></div>
         </div>
 
         <!-- Section 3: Sensor & Classroom Tips -->
