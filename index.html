@@ -363,13 +363,266 @@
       background: var(--entry-palette-bg);
       border-right: 2px solid var(--border-color);
       overflow-y: auto;
-      overflow-x: auto;
-      padding: 16px 12px;
+      overflow-x: hidden;
+      padding: 16px 10px;
       display: flex;
       flex-direction: column;
       gap: 12px;
       box-shadow: 2px 0 8px rgba(0,0,0,0.04);
       z-index: 5;
+      touch-action: pan-y;
+    }
+    .palette-drawer .block,
+    .palette-drawer .block *,
+    .palette-drawer .block-c-container,
+    .palette-drawer .block-c-container * {
+      touch-action: none !important;
+    }
+    .palette-drawer .block,
+    .palette-drawer .block-c-header {
+      font-size: 12px;
+      padding: 5px 10px;
+      gap: 4px;
+    }
+    .palette-drawer select,
+    .palette-drawer input {
+      pointer-events: none !important;
+    }
+    .palette-drawer select {
+      max-width: 132px;
+      text-overflow: ellipsis;
+    }
+    .palette-drawer .block-bool,
+    .palette-drawer .block-bool * {
+      touch-action: none !important;
+    }
+    .palette-drawer .block-bool {
+      font-size: 11.5px;
+      padding: 4px 10px;
+      gap: 4px;
+    }
+
+    /* ── Entry Oval Value Blocks (.block-val) & Value Slots (.val-slot) ── */
+    .palette-drawer .block-val,
+    .palette-drawer .block-val * {
+      touch-action: none !important;
+    }
+    .palette-drawer .block-val {
+      font-size: 11.5px;
+      padding: 3px 10px;
+      gap: 4px;
+    }
+
+    .block-val {
+      display: inline-flex !important;
+      align-items: center !important;
+      white-space: nowrap !important;
+      flex-wrap: nowrap !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      flex-shrink: 0 !important;
+      padding: 3px 12px;
+      color: #ffffff;
+      font-family: 'Nanum Gothic', 'NanumGothic', sans-serif;
+      font-weight: 700;
+      font-size: 12.5px;
+      background: var(--cat-calc);
+      border: 1.5px solid var(--cat-calc-dark);
+      border-radius: 16px; /* Oval pill shape */
+      cursor: grab;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+      gap: 5px;
+      touch-action: none !important;
+      box-sizing: border-box;
+      line-height: 1.35;
+      vertical-align: middle;
+    }
+    .block-val:active { cursor: grabbing; }
+    .block-val * { touch-action: none; }
+    .block-val.block-cat-data {
+      background: var(--cat-data) !important;
+      border-color: var(--cat-data-dark) !important;
+    }
+    .block-val span {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      display: inline-block;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.18);
+    }
+    .block-val select {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      background-color: rgba(0, 0, 0, 0.22);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      height: 22px;
+      padding: 1px 16px 1px 7px;
+      border-radius: 11px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 11.5px;
+      outline: none;
+      cursor: pointer;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" height="14" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 3px center;
+    }
+    .block-val select option {
+      background: #2f3b52;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .block-val input {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      background: #ffffff;
+      color: #1e293b;
+      border: 1.5px solid rgba(0, 0, 0, 0.18);
+      height: 22px;
+      width: 42px;
+      padding: 0 5px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: center;
+      outline: none;
+    }
+
+    .val-slot {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center;
+      min-height: 25px;
+      min-width: 42px;
+      padding: 0 2px;
+      border-radius: 13px;
+      background: rgba(0, 0, 0, 0.14);
+      border: 1.5px dashed rgba(255, 255, 255, 0.52);
+      transition: all 0.15s ease;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+    .val-slot.val-slot-hover {
+      background: rgba(254, 183, 26, 0.38) !important;
+      border: 2px solid #ffeaa7 !important;
+      box-shadow: 0 0 10px #ffeaa7 !important;
+      transform: scale(1.06);
+    }
+    .val-slot > .block-val {
+      border: 1.5px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+    /* Automatically hide default input when an oval .block-val is plugged into .val-slot */
+    .val-slot > .block-val ~ .val-default-input {
+      display: none !important;
+    }
+    .val-default-input {
+      border-radius: 10px !important;
+    }
+
+    /* ── Entry Hexagonal Boolean Blocks (.block-bool) & Boolean Condition Slots (.bool-slot) ── */
+    .block-bool {
+      display: inline-flex !important;
+      align-items: center !important;
+      white-space: nowrap !important;
+      flex-wrap: nowrap !important;
+      width: max-content !important;
+      min-width: max-content !important;
+      flex-shrink: 0 !important;
+      padding: 4px 12px;
+      color: #ffffff;
+      font-family: 'Nanum Gothic', 'NanumGothic', sans-serif;
+      font-weight: 700;
+      font-size: 12.5px;
+      background: var(--cat-judge);
+      border: 1.5px solid var(--cat-judge-dark);
+      border-radius: 16px;
+      cursor: grab;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.18);
+      gap: 5px;
+      touch-action: none !important;
+      box-sizing: border-box;
+      line-height: 1.35;
+      vertical-align: middle;
+    }
+    .block-bool:active { cursor: grabbing; }
+    .block-bool * { touch-action: none; }
+    .block-bool span {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      display: inline-block;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.18);
+    }
+    .block-bool select {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      background-color: rgba(0, 0, 0, 0.22);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      height: 23px;
+      padding: 1px 18px 1px 8px;
+      border-radius: 11px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 11.5px;
+      outline: none;
+      cursor: pointer;
+      background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffffff" height="14" viewBox="0 0 24 24" width="14" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat: no-repeat;
+      background-position: right 3px center;
+    }
+    .block-bool select option {
+      background: #2f3b52;
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .block-bool input {
+      white-space: nowrap !important;
+      flex-shrink: 0 !important;
+      background: #ffffff;
+      color: #1e293b;
+      border: 1.5px solid rgba(0, 0, 0, 0.18);
+      height: 22px;
+      width: 44px;
+      padding: 0 5px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 12px;
+      text-align: center;
+      outline: none;
+    }
+
+    .bool-slot {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center;
+      min-height: 26px;
+      min-width: 48px;
+      padding: 1px 4px;
+      border-radius: 15px;
+      background: rgba(0, 0, 0, 0.16);
+      border: 1.5px dashed rgba(255, 255, 255, 0.55);
+      transition: all 0.15s ease;
+      vertical-align: middle;
+      box-sizing: border-box;
+    }
+    .bool-slot.bool-slot-hover {
+      background: rgba(254, 183, 26, 0.35) !important;
+      border: 2px solid #ffeaa7 !important;
+      box-shadow: 0 0 10px #ffeaa7 !important;
+      transform: scale(1.04);
+    }
+    .bool-slot > .block-bool {
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    }
+    /* Automatically hide default select when a hexagonal .block-bool is plugged into .bool-slot */
+    .bool-slot > .block-bool ~ .bool-default-select {
+      display: none !important;
     }
     .palette-title {
       font-size: 0.88rem;
@@ -594,6 +847,9 @@
       border: none !important;
       box-shadow: none !important;
       cursor: grab;
+      touch-action: none !important;
+    }
+    .block *, .block-c-container * {
       touch-action: none;
     }
     .block-c-container:active { cursor: grabbing; }
@@ -1219,9 +1475,9 @@
         <div class="cat-icon-badge">❓</div>
         <span>판단</span>
       </button>
-      <button class="cat-item cat-calc" onclick="selectCat('calc', this)">
+      <button class="cat-item cat-calc" onclick="selectCat('calc', this)" title="연산 / 계산 블록 (Operators & Calculation)">
         <div class="cat-icon-badge">➕</div>
-        <span>계산</span>
+        <span>연산</span>
       </button>
       <button class="cat-item cat-data" onclick="selectCat('data', this)">
         <div class="cat-icon-badge">🏷️</div>
@@ -1240,14 +1496,16 @@
     <!-- Workspace Infinite Board -->
     <div class="workspace-pane" id="workspacePane">
       
-      <!-- Interactive Variables & Lists Inspector HUD -->
+      <!-- Interactive Variables, Booleans & Lists Inspector HUD -->
       <div class="variable-hud" id="variableHud">
         <div class="var-hud-head">
-          <span>📊 변수 & 리스트 상태창</span>
+          <span>📊 변수 · 불린 · 리스트 상태창</span>
           <button onclick="toggleHud()" style="background:none; border:none; color:#cbd5e1; font-size:13px; font-weight:bold; cursor:pointer;">✕</button>
         </div>
-        <div class="hud-sec-title">변수 (Variables)</div>
+        <div class="hud-sec-title">숫자 변수 (Variables)</div>
         <div id="hudVarsList" style="margin-bottom:8px;"></div>
+        <div class="hud-sec-title">불린 변수 (Booleans - 터치하여 전환)</div>
+        <div id="hudBoolsList" style="margin-bottom:8px;"></div>
         <div class="hud-sec-title">리스트 (Lists)</div>
         <div id="hudListsList"></div>
       </div>
@@ -1323,16 +1581,48 @@
     let currentFloorBrightness = 15;
     let currentFrontObstacle = false;
 
-    // Variables & Lists Stores
+    // Variables, Booleans & Lists Stores
     const userVariables = {
       '점수': 0,
       '속도': 50,
       '거리': 5,
       '임의값': 0
     };
+    const userBooleans = {
+      '상태1': false,
+      '상태2': false,
+      '출발가능': true,
+      '위험감지': false
+    };
     const userLists = {
       '명령목록': ['앞으로', '오른쪽', '앞으로']
     };
+
+    let activeOscillators = [];
+
+    const DEFAULT_COND_OPTIONS = [
+      '바닥 선이 감지되면',
+      '바닥이 [빨간색] 이면',
+      '바닥이 [노란색] 이면',
+      '바닥이 [초록색] 이면',
+      '바닥이 [하늘색] 이면',
+      '바닥이 [파란색] 이면',
+      '바닥이 [보라색] 이면',
+      '바닥이 [흰색] 이면',
+      '바닥이 [검은색] 이면',
+      '불린 [상태1] 이 참(TRUE) 이면',
+      '불린 [상태1] 이 거짓(FALSE) 이면',
+      '불린 [상태2] 이 참(TRUE) 이면',
+      '불린 [출발가능] 이 참(TRUE) 이면',
+      '불린 [위험감지] 가 참(TRUE) 이면',
+      '참(TRUE) 이면',
+      '거짓(FALSE) 이면',
+      '변수 [점수] > 0 이면',
+      '변수 [점수] >= 10 이면',
+      '변수 [임의값] == 1 이면',
+      '50% 확률로 참이면',
+      '앞쪽에 장애물이 있으면'
+    ];
 
     // Web Audio Synthesizer (for simulator sounds on iPad/PC)
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1353,47 +1643,24 @@
       },
       flow: {
         title: '흐름 블록 (Flow Control)',
-        hint: '반복문, 조건문, 대기 블록으로 동작 순서를 제어합니다.',
+        hint: '반복문·조건문의 <조건> 칸에 [판단] 탭의 육각형 불린 블록을 끼워 넣을 수 있습니다.',
         blocks: [
           { cmd: 'wait_sec', cat: 'flow', label: '⏱', param: 1, unit: '초 기다리기', type: 'num' },
           { cmd: 'repeat_n', cat: 'flow', label: '🔁', param: 4, unit: '번 반복하기', type: 'repeat' },
           { cmd: 'repeat_forever', cat: 'flow', label: '🔄 계속 반복하기', type: 'repeat_forever' },
+          {
+            cmd: 'repeat_while', cat: 'flow', label: '🔄 <',
+            select: DEFAULT_COND_OPTIONS,
+            unit: '> 인 동안 반복하기', type: 'c_cond'
+          },
           { 
             cmd: 'if_then', cat: 'flow', label: '❓ 만약 <', 
-            select: [
-              '바닥 선이 감지되면',
-              '바닥이 [빨간색] 이면',
-              '바닥이 [노란색] 이면',
-              '바닥이 [초록색] 이면',
-              '바닥이 [하늘색] 이면',
-              '바닥이 [파란색] 이면',
-              '바닥이 [보라색] 이면',
-              '바닥이 [흰색] 이면',
-              '변수 [점수] > 0 이면',
-              '변수 [점수] >= 10 이면',
-              '변수 [임의값] == 1 이면',
-              '50% 확률로 참이면',
-              '앞쪽에 장애물이 있으면'
-            ],
+            select: DEFAULT_COND_OPTIONS,
             unit: '> 이라면', type: 'c_cond' 
           },
           { 
             cmd: 'if_else', cat: 'flow', label: '❓ 만약 <', 
-            select: [
-              '바닥 선이 감지되면',
-              '바닥이 [빨간색] 이면',
-              '바닥이 [노란색] 이면',
-              '바닥이 [초록색] 이면',
-              '바닥이 [하늘색] 이면',
-              '바닥이 [파란색] 이면',
-              '바닥이 [보라색] 이면',
-              '바닥이 [흰색] 이면',
-              '변수 [점수] > 0 이면',
-              '변수 [점수] >= 10 이면',
-              '변수 [임의값] == 1 이면',
-              '50% 확률로 참이면',
-              '앞쪽에 장애물이 있으면'
-            ],
+            select: DEFAULT_COND_OPTIONS,
             unit: '> 이라면 / 아니면', type: 'c_ifelse' 
           },
           { 
@@ -1403,20 +1670,8 @@
           },
           {
             cmd: 'wait_until_cond', cat: 'flow', label: '⏳ <',
-            select: [
-              '바닥 선이 감지되면',
-              '바닥이 [빨간색] 이면',
-              '바닥이 [노란색] 이면',
-              '바닥이 [초록색] 이면',
-              '바닥이 [하늘색] 이면',
-              '바닥이 [파란색] 이면',
-              '바닥이 [보라색] 이면',
-              '바닥이 [흰색] 이면',
-              '변수 [점수] > 0 이면',
-              '변수 [점수] >= 10 이면',
-              '변수 [임의값] == 1 이면'
-            ],
-            unit: '> 이 될 때까지 기다리기', type: 'select'
+            select: DEFAULT_COND_OPTIONS,
+            unit: '> 이 될 때까지 기다리기', type: 'wait_cond'
           },
           { cmd: 'stop_all', cat: 'flow', label: '🛑 모든 코드 멈추기', type: 'none' }
         ]
@@ -1431,8 +1686,8 @@
           { cmd: 'move_backward_sec', cat: 'motion', label: '뒤로', param: 1, unit: '초 이동하기', type: 'num' },
           { cmd: 'turn_left_deg', cat: 'motion', label: '왼쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
           { cmd: 'turn_right_deg', cat: 'motion', label: '오른쪽으로', param: 90, unit: '도 회전하기', type: 'num' },
-          { cmd: 'pivot_left', cat: 'motion', label: '왼쪽 바퀴 축으로 피벗 회전하기', type: 'none' },
-          { cmd: 'pivot_right', cat: 'motion', label: '오른쪽 바퀴 축으로 피벗 회전하기', type: 'none' },
+          { cmd: 'pivot_left', cat: 'motion', label: '왼쪽 바퀴 축으로 회전하기', type: 'none' },
+          { cmd: 'pivot_right', cat: 'motion', label: '오른쪽 바퀴 축으로 회전하기', type: 'none' },
           { cmd: 'set_left_wheel', cat: 'motion', label: '왼쪽 바퀴 속도를', param: 50, unit: '% 로 정하기', type: 'num' },
           { cmd: 'set_right_wheel', cat: 'motion', label: '오른쪽 바퀴 속도를', param: 50, unit: '% 로 정하기', type: 'num' },
           { cmd: 'set_wheels', cat: 'motion', label: '왼쪽', param1: 50, label2: '% 오른쪽', param2: 50, unit: '% 바퀴 속도 정하기', type: 'two_num' },
@@ -1451,35 +1706,79 @@
       },
       sound: {
         title: '소리 / 음악 블록 (Sound & Music)',
-        hint: '터틀봇 부저 및 공식 멜로디(행진곡, 생일축하곡 등)를 연주합니다.',
+        hint: '터틀봇 효과음 및 계이름 멜로디를 지정한 시간(초) 동안 재생합니다.',
         blocks: [
-          { cmd: 'play_clip', cat: 'sound', label: '소리', select: ['삐- 소리', '사이렌', '로봇 소리', '행진곡', '생일축하곡', '디비디비딥', '잘했어요'], unit: '재생하기', type: 'select' },
+          { cmd: 'play_clip', cat: 'sound', label: '소리', select: ['삐- 소리', '사이렌', '로봇 소리', '행진곡', '생일축하곡', '디비디비딥', '잘했어요'], label2: '을(를)', param: 2, unit: '초간 재생하기', type: 'line_sec' },
           { cmd: 'play_note', cat: 'sound', label: '음계', select: ['4옥타브 도', '4옥타브 레', '4옥타브 미', '4옥타브 파', '4옥타브 솔', '4옥타브 라', '4옥타브 시', '5옥타브 도'], label2: '음을', param: 1, unit: '박자 연주하기', type: 'note' },
-          { cmd: 'buzzer_hertz', cat: 'sound', label: '버저 음을', param: 440, unit: 'Hz 로 정하기', type: 'num' },
           { cmd: 'stop_sound', cat: 'sound', label: '소리 끄기', type: 'none' }
         ]
       },
       judge: {
-        title: '판단 블록 (Judgement)',
-        hint: '센서 감지 여부, 대소 비교 및 논리 조건을 판단합니다.',
+        title: '판단 / 불린 블록 (Judgement & Boolean)',
+        hint: '육각형 <⬡ 판단> 블록을 끌어다 [만약 ~ 이라면] 등의 <조건> 칸에 끼워 넣거나, 불린(참/거짓) 변수와 논리 연산(AND/OR/NOT)을 활용하세요.',
         blocks: [
-          { cmd: 'logic_compare', cat: 'judge', label: '조건 비교: 변수', select: ['점수', '속도', '거리', '임의값'], select2: ['>', '<', '==', '!=', '>=', '<='], param: 10, label2: '이면 변수', select3: ['점수', '속도', '거리', '임의값'], unit: '에 1 더하기', type: 'compare_branch' },
-          { cmd: 'logic_boolean', cat: 'judge', label: '논리:', select: ['참(TRUE)', '거짓(FALSE)'], select2: ['그리고 (AND)', '또는 (OR)'], select3: ['참(TRUE)', '거짓(FALSE)'], label2: '결과를 변수 [임의값] 에 정하기', type: 'logic_op' },
-          { cmd: 'logic_not', cat: 'judge', label: '논리 반전: [', select: ['거짓(FALSE)', '참(TRUE)'], unit: '] 의 반대(NOT)를 변수 [임의값] 에 정하기', type: 'select' }
+          { cmd: 'bool_const', cat: 'judge', isBool: true, label: '⬡ 불린값', select: ['참(TRUE)', '거짓(FALSE)'], unit: '', type: 'bool_select' },
+          { cmd: 'bool_var_get', cat: 'judge', isBool: true, label: '⬡ 불린', select: ['상태1', '상태2', '출발가능', '위험감지'], label2: '=', select2: ['참(TRUE)', '거짓(FALSE)'], unit: '인가?', type: 'bool_var_check' },
+          { cmd: 'bool_color_match', cat: 'judge', isBool: true, label: '⬡ 바닥 색상이', select: ['빨간색', '검은색', '노란색', '초록색', '하늘색', '파란색', '보라색', '흰색'], select2: ['인가? (==)', '아닌가? (!=)'], unit: '', type: 'bool_two_select' },
+          { cmd: 'bool_sensor_check', cat: 'judge', isBool: true, label: '⬡ 센서:', select: [
+            '바닥 검은선이 감지되었는가?',
+            '바닥이 흰색(밝은 면)인가?',
+            '바닥 밝기가 50 미만(어두움)인가?',
+            '바닥 밝기가 50 이상(밝음)인가?',
+            '앞쪽에 장애물이 있는가?',
+            '현재 바퀴가 움직이는 중인가?',
+            '현재 머리 LED가 켜져 있는가?',
+            '50% 무작위 확률로 참(TRUE)'
+          ], unit: '', type: 'bool_select' },
+          { cmd: 'bool_compare', cat: 'judge', isBool: true, label: '⬡ 비교:', select: ['변수: 점수', '변수: 속도', '변수: 거리', '변수: 임의값', '센서: 바닥 밝기', '리스트: 명령목록 항목 수'], select2: ['==', '!=', '>', '<', '>=', '<='], param: 10, unit: '', type: 'bool_compare' },
+          { cmd: 'bool_and_or', cat: 'judge', isBool: true, label: '⬡', select: ['그리고 (AND)', '또는 (OR)'], type: 'bool_and_or' },
+          { cmd: 'bool_not', cat: 'judge', isBool: true, label: '⬡', unit: '이(가) 아니다 (NOT)', type: 'bool_not' },
+          { cmd: 'bool_var_set', cat: 'judge', label: '🔘 불린 변수', select: ['상태1', '상태2', '출발가능', '위험감지'], label2: '을(를)', select2: ['참(TRUE)', '거짓(FALSE)'], unit: '(으)로 정하기', type: 'two_select' },
+          { cmd: 'bool_var_toggle', cat: 'judge', label: '🔄 불린 변수', select: ['상태1', '상태2', '출발가능', '위험감지'], unit: '값을 반대로 바꾸기 (참↔거짓)', type: 'select' },
+          { cmd: 'bool_var_store_cond', cat: 'judge', label: '📌 불린 변수', select: ['상태1', '상태2', '출발가능', '위험감지'], label2: '에 <', unit: '> 판단 결과 저장하기', type: 'bool_store_cond' },
+          { cmd: 'c_if_and_or', cat: 'judge', label: '❓ 만약 <', select: ['그리고 (AND)', '또는 (OR)'], unit: '> 이라면', type: 'c_if_and_or' }
         ]
       },
-      calc: {
-        title: '계산 블록 (Calculation)',
-        hint: '사칙연산 및 무작위 수(난수)를 계산하여 변수에 저장합니다.',
+            calc: {
+        title: '연산 / 계산 블록 (Operators & Calculation)',
+        hint: '터틀봇 주행 속도, 이동 거리, 회전각 계산 및 센서값 비례변환(매핑), 무작위 수 연산 블록입니다.',
         blocks: [
-          { cmd: 'calc_op', cat: 'calc', label: '계산:', param1: 10, select: ['+', '-', '×', '÷'], param2: 5, label2: '결과를 변수', select2: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_op' },
-          { cmd: 'calc_random', cat: 'calc', label: '무작위 수:', param1: 1, label2: '부터', param2: 10, label3: '사이의 수를 변수', select: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'random_range' }
+          // ── 1. 기본 사칙연산 & 나머지/몫 ──
+          { cmd: 'calc_op', cat: 'calc', label: '계산:', param1: 10, select: ['+', '-', '×', '÷', '나머지(%)', '몫(//)'], param2: 5, label2: '결과를 변수', select2: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_op' },
+          { cmd: 'calc_mod', cat: 'calc', label: '계산:', param1: 10, label2: '을(를)', param2: 3, label3: '(으)로 나눈 나머지를 변수', select: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_mod' },
+          { cmd: 'calc_quotient', cat: 'calc', label: '계산:', param1: 10, label2: '을(를)', param2: 3, label3: '(으)로 나눈 몫을 변수', select: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_quotient' },
+          { cmd: 'calc_var_op', cat: 'calc', label: '변수', select: ['점수', '속도', '거리', '임의값'], label2: '에', param: 2, label3: '을(를)', select2: ['더하기 (+)', '빼기 (-)', '곱하기 (×)', '나누기 (÷)', '나머지 (%)'], unit: '하기', type: 'calc_var_op' },
+          { cmd: 'calc_var_reset', cat: 'calc', label: '변수', select: ['점수', '속도', '거리', '임의값'], unit: '를 0 으로 초기화하기', type: 'select' },
+          
+          // ── 2. 무작위 수 (난수) & 수치 가공 ──
+          { cmd: 'calc_random', cat: 'calc', label: '무작위 수:', param1: 1, label2: '부터', param2: 10, label3: '사이의 수를 변수', select: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'random_range' },
+          { cmd: 'calc_round', cat: 'calc', label: '수학:', param: 3.14, label2: '의', select: ['반올림', '올림', '버림'], label3: '한 값을 변수', select2: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_round' },
+          { cmd: 'calc_min_max', cat: 'calc', label: '수학: 두 수', param1: 10, label2: '과(와)', param2: 20, label3: '중', select: ['더 큰 값 (최댓값)', '더 작은 값 (최솟값)'], label4: '을 변수', select2: ['점수', '속도', '거리', '임의값'], unit: '에 정하기', type: 'calc_min_max' },
+          
+          // ── 3. 로봇 센서값 비례 변환 (매핑 - Mapping) ──
+          { cmd: 'calc_sensor_map', cat: 'calc', label: '비례변환:', select: ['센서: 바닥 밝기', '센서: 왼쪽 바퀴 속도', '센서: 오른쪽 바퀴 속도', '변수: 점수', '변수: 거리'], label2: '의 (0 ~ 100) 범위를 (', param1: 10, label3: '~', param2: 80, label4: ') 로 매핑하여 변수', select2: ['속도', '점수', '거리', '임의값'], unit: '에 정하기', type: 'calc_sensor_map' },
+          
+          // ── 4. 비교 연산 & 불린 결과 저장 ──
+          { cmd: 'calc_compare_to_bool', cat: 'calc', label: '비교: 변수', select: ['점수', '속도', '거리', '임의값'], select2: ['==', '!=', '>', '<', '>=', '<='], param: 10, label2: '결과를 불린', select3: ['상태1', '상태2', '출발가능', '위험감지'], unit: '에 저장하기', type: 'calc_compare_to_bool' },
+          { cmd: 'bool_num_compare', cat: 'calc', isBool: true, label: '⬡ 수 비교:', param1: 10, select: ['==', '!=', '>', '<', '>=', '<='], param2: 5, type: 'bool_num_compare' },
+
+          // ── 5. 둥근 타원형 값 블록 (Oval Value Blocks) ──
+          { cmd: 'val_math_op', cat: 'calc', isVal: true, label: '(', param1: 10, select: ['+', '-', '×', '÷'], param2: 5, unit: ')', type: 'val_math_op' },
+          { cmd: 'val_mod', cat: 'calc', isVal: true, label: '(', param1: 10, label2: '%', param2: 3, unit: '나머지 )', type: 'val_two_num' },
+          { cmd: 'val_random', cat: 'calc', isVal: true, label: '(', param1: 1, label2: '~', param2: 10, unit: '무작위 수 )', type: 'val_two_num' },
+          { cmd: 'val_variable', cat: 'calc', isVal: true, label: '( 변수', select: ['점수', '속도', '거리', '임의값'], unit: '값 )', type: 'val_select' },
+          { cmd: 'val_sensor', cat: 'calc', isVal: true, label: '(', select: ['센서: 바닥 밝기', '센서: 왼쪽 바퀴 속도', '센서: 오른쪽 바퀴 속도'], unit: '값 )', type: 'val_select' },
+          { cmd: 'val_round', cat: 'calc', isVal: true, label: '(', param: 3.14, label2: '의', select: ['반올림', '올림', '버림'], unit: ')', type: 'val_num_select' },
+          { cmd: 'val_min_max', cat: 'calc', isVal: true, label: '( 두 수', param1: 10, label2: ',', param2: 20, label3: '중', select: ['더 큰 값', '더 작은 값'], unit: ')', type: 'val_min_max' },
+          { cmd: 'val_list_count', cat: 'calc', isVal: true, label: '( 리스트', select: ['명령목록'], unit: '항목 수 )', type: 'val_select' }
         ]
       },
       data: {
         title: '자료 블록 (Variables & Lists)',
-        hint: '변수 값 변경 및 명령 리스트를 생성하고 일괄 실행합니다.',
+        hint: '변수 값 변경 및 둥근 타원형 값 블록, 명령 리스트를 생성하고 일괄 실행합니다.',
         blocks: [
+          { cmd: 'val_variable', cat: 'data', isVal: true, label: '( 변수', select: ['점수', '속도', '거리', '임의값'], unit: '값 )', type: 'val_select' },
+          { cmd: 'val_list_count', cat: 'data', isVal: true, label: '( 리스트', select: ['명령목록'], unit: '항목 수 )', type: 'val_select' },
           { cmd: 'var_set', cat: 'data', label: '변수', select: ['점수', '속도', '거리', '임의값'], label2: '를', param: 0, unit: '(으)로 정하기', type: 'var_set' },
           { cmd: 'var_add', cat: 'data', label: '변수', select: ['점수', '속도', '거리', '임의값'], label2: '에', param: 1, unit: '만큼 더하기', type: 'var_add' },
           { cmd: 'var_toggle_hud', cat: 'data', label: '📊 변수 & 리스트 상태창', select: ['보이기', '숨기기'], unit: '', type: 'select' },
@@ -1528,10 +1827,88 @@
       });
     }
 
+    function buildValSlotHtml(paramClass, defaultVal, extraAttrs = '', style = '') {
+      const styleAttr = style ? `style="${style}"` : '';
+      return `<div class="val-slot" title="여기에 [연산] 탭의 둥근 타원형 값 블록을 끌어다 놓거나 숫자를 직접 입력하세요"><input type="number" class="${paramClass} val-default-input" value="${defaultVal}" step="any" ${extraAttrs} ${styleAttr} onclick="event.stopPropagation()"></div>`;
+    }
+
+    function buildBoolSlotHtml(options = DEFAULT_COND_OPTIONS, defaultVal = null) {
+      const optsHtml = options.map(s => `<option value="${s}" ${defaultVal === s ? 'selected' : ''}>${s}</option>`).join('');
+      return `<div class="bool-slot" title="여기에 [판단] 탭의 육각형 불린 블록을 끌어다 놓거나 목록에서 선택하세요"><select class="c-param-cond bool-default-select" onclick="event.stopPropagation()">${optsHtml}</select></div>`;
+    }
+
     // ── Generate Block DOM Element (Tailored for Snapping and Touch) ──
     function createBlockDOM(def, isPalette = false) {
-      // 1. C-Blocks: repeat, repeat_forever, c_cond, c_color
-      if (def.type === 'repeat' || def.type === 'repeat_forever' || def.type === 'c_cond' || def.type === 'c_color') {
+      // 0-B. Oval Value / Reporter Blocks (.block-val)
+      if (def.isVal) {
+        const el = document.createElement('div');
+        el.className = 'block-val block-cat-' + def.cat;
+        el.dataset.cmd = def.cmd;
+        el.dataset.cat = def.cat;
+        el.dataset.isVal = 'true';
+
+        let inner = `<span>${def.label}</span>`;
+        if (def.type === 'val_math_op') {
+          inner += ` ${buildValSlotHtml('param-op1', def.param1, '', 'width:38px;')} <select class="param-op" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildValSlotHtml('param-op2', def.param2, '', 'width:38px;')} <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'val_two_num') {
+          inner += ` ${buildValSlotHtml('param-1', def.param1, '', 'width:38px;')} <span>${def.label2 || ''}</span> ${buildValSlotHtml('param-2', def.param2, '', 'width:38px;')} <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'val_select') {
+          const selectClass = def.cmd === 'val_sensor' ? 'param-sensor' : (def.cmd === 'val_list_count' ? 'param-list' : 'param-var');
+          inner += ` <select class="${selectClass}" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'val_num_select') {
+          inner += ` ${buildValSlotHtml('param-1', def.param, '', 'width:42px;')} <span>${def.label2 || ''}</span> <select class="param-round-type" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'val_min_max') {
+          inner += ` ${buildValSlotHtml('param-1', def.param1, '', 'width:38px;')} <span>${def.label2 || ''}</span> ${buildValSlotHtml('param-2', def.param2, '', 'width:38px;')} <span>${def.label3 || ''}</span> <select class="param-minmax-type" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+        }
+
+        if (!isPalette) {
+          inner += `<button class="block-btn-del" onclick="deleteBlock(this)">✕</button>`;
+        }
+        el.innerHTML = inner;
+
+        if (!isPalette) attachBlockDragEvents(el);
+        else attachPaletteDragEvents(el, def);
+        return el;
+      }
+
+      // 0. Hexagonal Boolean Condition Blocks (.block-bool)
+      if (def.isBool) {
+        const el = document.createElement('div');
+        el.className = 'block-bool';
+        el.dataset.cmd = def.cmd;
+        el.dataset.cat = def.cat;
+        el.dataset.isBool = 'true';
+
+        let inner = `<span>${def.label}</span>`;
+        if (def.type === 'bool_select') {
+          inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
+          if (def.unit) inner += ` <span>${def.unit}</span>`;
+        } else if (def.type === 'bool_var_check') {
+          inner += ` <select class="param-bvar" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <select class="param-bval" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+        } else if (def.type === 'bool_two_select') {
+          inner += ` <select class="param-bcolor" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-bop" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select>`;
+        } else if (def.type === 'bool_compare') {
+          inner += ` <select class="param-lhs" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-comp" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildValSlotHtml('param-rhs', def.param, '', 'width:42px;')}`;
+        } else if (def.type === 'bool_and_or') {
+          inner += ` ${buildBoolSlotHtml(DEFAULT_COND_OPTIONS, '바닥 선이 감지되면')} <select class="param-lop" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildBoolSlotHtml(DEFAULT_COND_OPTIONS, '불린 [출발가능] 이 참(TRUE) 이면')}`;
+        } else if (def.type === 'bool_not') {
+          inner += ` ${buildBoolSlotHtml(DEFAULT_COND_OPTIONS, '바닥 선이 감지되면')} <span>${def.unit}</span>`;
+        } else if (def.type === 'bool_num_compare') {
+          inner += ` ${buildValSlotHtml('param-op1', def.param1, '', 'width:42px;')} <select class="param-comp" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildValSlotHtml('param-op2', def.param2, '', 'width:42px;')}`;
+        }
+
+        if (!isPalette) {
+          inner += `<button class="block-btn-del" onclick="deleteBlock(this)">✕</button>`;
+        }
+        el.innerHTML = inner;
+
+        if (!isPalette) attachBlockDragEvents(el);
+        else attachPaletteDragEvents(el, def);
+        return el;
+      }
+
+      // 1. C-Blocks: repeat, repeat_forever, c_cond, c_color, c_if_and_or
+      if (def.type === 'repeat' || def.type === 'repeat_forever' || def.type === 'c_cond' || def.type === 'c_color' || def.type === 'c_if_and_or') {
         const el = document.createElement('div');
         el.className = 'block-c-container';
         el.dataset.cmd = def.cmd;
@@ -1539,9 +1916,13 @@
 
         let headerHtml = `<span>${def.label}</span>`;
         if (def.type === 'repeat') {
-          headerHtml += ` <input type="number" class="c-param" value="${def.param}" min="1" step="1" onclick="event.stopPropagation()"> <span>${def.unit || '번 반복하기'}</span>`;
-        } else if (def.type === 'c_cond' || def.type === 'c_color') {
+          headerHtml += ` ${buildValSlotHtml('c-param', def.param, 'min="1" step="1"')} <span>${def.unit || '번 반복하기'}</span>`;
+        } else if (def.type === 'c_cond') {
+          headerHtml += ` ${buildBoolSlotHtml(def.select || DEFAULT_COND_OPTIONS)} <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'c_color') {
           headerHtml += ` <select class="c-param-cond" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'c_if_and_or') {
+          headerHtml += ` ${buildBoolSlotHtml(DEFAULT_COND_OPTIONS, '바닥 선이 감지되면')} <select class="param-lop" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildBoolSlotHtml(DEFAULT_COND_OPTIONS, '불린 [출발가능] 이 참(TRUE) 이면')} <span>${def.unit || '이라면'}</span>`;
         }
         if (!isPalette) {
           headerHtml += `<button class="block-btn-del" onclick="deleteBlock(this)">✕</button>`;
@@ -1569,7 +1950,7 @@
         el.dataset.cat = def.cat;
 
         let headerHtml = `<span>${def.label}</span>`;
-        headerHtml += ` <select class="c-param-cond" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>> 이라면</span>`;
+        headerHtml += ` ${buildBoolSlotHtml(def.select || DEFAULT_COND_OPTIONS)} <span>> 이라면</span>`;
         if (!isPalette) {
           headerHtml += `<button class="block-btn-del" onclick="deleteBlock(this)">✕</button>`;
         }
@@ -1602,27 +1983,41 @@
 
       let inner = `<span>${def.label}</span>`;
       if (def.type === 'num') {
-        inner += ` <input type="number" class="param-1" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` ${buildValSlotHtml('param-1', def.param)} <span>${def.unit}</span>`;
       } else if (def.type === 'two_num') {
-        inner += ` <input type="number" class="param-1" value="${def.param1}" step="any" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-2" value="${def.param2}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` ${buildValSlotHtml('param-1', def.param1)} <span>${def.label2}</span> ${buildValSlotHtml('param-2', def.param2)} <span>${def.unit}</span>`;
       } else if (def.type === 'rgb') {
         inner += ` <input type="number" class="param-r" value="${def.param1}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-g" value="${def.param2}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.label3}</span> <input type="number" class="param-b" value="${def.param3}" style="width:40px;" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
       } else if (def.type === 'select') {
         inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+      } else if (def.type === 'two_select') {
+        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <select class="param-select" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+      } else if (def.type === 'wait_cond') {
+        inner += ` ${buildBoolSlotHtml(def.select || DEFAULT_COND_OPTIONS)} <span>${def.unit || ''}</span>`;
+      } else if (def.type === 'bool_store_cond') {
+        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> ${buildBoolSlotHtml(DEFAULT_COND_OPTIONS)} <span>${def.unit || ''}</span>`;
       } else if (def.type === 'note') {
-        inner += ` <select class="param-note" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-beats" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <select class="param-note" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> ${buildValSlotHtml('param-beats', def.param)} <span>${def.unit}</span>`;
       } else if (def.type === 'line_sec') {
-        inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <select class="param-select" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> ${buildValSlotHtml('param-1', def.param)} <span>${def.unit}</span>`;
       } else if (def.type === 'calc_op') {
-        inner += ` <input type="number" class="param-op1" value="${def.param1}" style="width:44px;" step="any" onclick="event.stopPropagation()"> <select class="param-op" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-op2" value="${def.param2}" style="width:44px;" step="any" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+        inner += ` ${buildValSlotHtml('param-op1', def.param1, '', 'width:42px;')} <select class="param-op" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildValSlotHtml('param-op2', def.param2, '', 'width:42px;')} <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+      } else if (def.type === 'calc_mod' || def.type === 'calc_quotient') {
+        inner += ` ${buildValSlotHtml('param-1', def.param1, '', 'width:42px;')} <span>${def.label2}</span> ${buildValSlotHtml('param-2', def.param2, '', 'width:42px;')} <span>${def.label3}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+      } else if (def.type === 'calc_var_op') {
+        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> ${buildValSlotHtml('param-1', def.param, '', 'width:42px;')} <span>${def.label3}</span> <select class="param-op" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+      } else if (def.type === 'calc_round') {
+        inner += ` ${buildValSlotHtml('param-1', def.param, '', 'width:48px;')} <span>${def.label2}</span> <select class="param-round-type" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label3}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+      } else if (def.type === 'calc_min_max') {
+        inner += ` ${buildValSlotHtml('param-1', def.param1, '', 'width:42px;')} <span>${def.label2}</span> ${buildValSlotHtml('param-2', def.param2, '', 'width:42px;')} <span>${def.label3}</span> <select class="param-minmax-type" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label4}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+      } else if (def.type === 'calc_sensor_map') {
+        inner += ` <select class="param-src-val" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-in1" value="${def.param1}" style="width:38px;" step="any" onclick="event.stopPropagation()"> <span>${def.label3}</span> <input type="number" class="param-in2" value="${def.param2}" style="width:38px;" step="any" onclick="event.stopPropagation()"> <span>${def.label4}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
+      } else if (def.type === 'calc_compare_to_bool') {
+        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-comp" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> ${buildValSlotHtml('param-1', def.param, '', 'width:42px;')} <span>${def.label2}</span> <select class="param-bvar" onclick="event.stopPropagation()">${def.select3.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
       } else if (def.type === 'random_range') {
         inner += ` <input type="number" class="param-r1" value="${def.param1}" style="width:40px;" step="1" onclick="event.stopPropagation()"> <span>${def.label2}</span> <input type="number" class="param-r2" value="${def.param2}" style="width:40px;" step="1" onclick="event.stopPropagation()"> <span>${def.label3}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
-      } else if (def.type === 'compare_branch') {
-        inner += ` <select class="param-cvar" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-comp" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <input type="number" class="param-cval" value="${def.param}" style="width:40px;" step="any" onclick="event.stopPropagation()"> <span>${def.label2}</span> <select class="param-target-var" onclick="event.stopPropagation()">${def.select3.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit}</span>`;
-      } else if (def.type === 'logic_op') {
-        inner += ` <select class="param-l1" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-lop" onclick="event.stopPropagation()">${def.select2.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <select class="param-l2" onclick="event.stopPropagation()">${def.select3.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span>`;
       } else if (def.type === 'var_set' || def.type === 'var_add') {
-        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> <input type="number" class="param-1" value="${def.param}" step="any" onclick="event.stopPropagation()"> <span>${def.unit}</span>`;
+        inner += ` <select class="param-var" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.label2}</span> ${buildValSlotHtml('param-1', def.param)} <span>${def.unit}</span>`;
       }
 
       if (!isPalette) {
@@ -1646,7 +2041,7 @@
     }
 
     function deleteBlock(btn) {
-      const block = btn.closest('.block, .block-c-container');
+      const block = btn.closest('.block-val, .block-bool, .block, .block-c-container');
       if (!block) return;
       const stack = block.closest('.code-stack');
       block.remove();
@@ -1662,11 +2057,23 @@
              (el.dataset.cmd && el.dataset.cmd.startsWith('hat_'));
     }
 
+    function isBoolBlock(el) {
+      if (!el) return false;
+      return el.dataset.isBool === 'true' || el.classList.contains('block-bool');
+    }
+
+    function isValBlock(el) {
+      if (!el) return false;
+      return el.dataset.isVal === 'true' || el.classList.contains('block-val');
+    }
+
     // ── High-Precision Drag & Drop Snapping System ──
     let dragData = null;
     let ghostEl = null;
     let currentDropIndicator = null;
     let targetDropSlot = null;
+    let targetBoolSlot = null;
+    let targetValSlot = null;
 
     function isOverTrashcan(clientX, clientY) {
       const trashcan = document.getElementById('entryTrashcan');
@@ -1678,21 +2085,40 @@
 
     function isValidDropTarget(el) {
       if (!el || el === ghostEl) return false;
+      if (ghostEl && ghostEl.contains(el)) return false;
       if (dragData && dragData.blockEl) {
         if (el === dragData.blockEl || dragData.blockEl.contains(el)) return false;
       }
       return true;
     }
 
+    function isBlockOverPalette(clientX) {
+      const paletteDrawer = document.getElementById('paletteDrawer');
+      if (!paletteDrawer) return false;
+      const paletteRect = paletteDrawer.getBoundingClientRect();
+      const ghostLeft = dragData ? (clientX - (dragData.grabOffsetX || 20)) : clientX;
+      if (dragData && dragData.source === 'palette') {
+        return (clientX <= paletteRect.right + 10) || (ghostLeft < paletteRect.right - 45);
+      }
+      return (clientX <= paletteRect.right + 16) || (ghostLeft < paletteRect.right - 35);
+    }
+
     function attachPaletteDragEvents(el, def) {
       el.onpointerdown = (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        if (e.button !== undefined && e.button !== 0) return;
+        e.stopPropagation();
+        e.preventDefault();
+
+        if (dragData || ghostEl) {
+          cleanupDrag();
+        }
 
         const rect = el.getBoundingClientRect();
         const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
-        const grabOffsetY = Math.max(8, Math.min(40, e.clientY - rect.top));
+        const grabOffsetY = Math.max(8, Math.min(rect.height - 8, e.clientY - rect.top));
 
         dragData = {
+          pointerId: e.pointerId,
           source: 'palette',
           def: def,
           originEl: el,
@@ -1706,14 +2132,24 @@
 
         window.addEventListener('pointermove', onGlobalPointerMove);
         window.addEventListener('pointerup', onGlobalPointerUp);
+        window.addEventListener('pointercancel', onGlobalPointerCancel);
+        window.addEventListener('blur', onGlobalPointerCancel);
       };
-      // Note: el.onclick is intentionally omitted to prevent double block duplication!
     }
 
     function attachBlockDragEvents(el) {
       el.onpointerdown = (e) => {
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.classList.contains('block-btn-del')) return;
+        if (e.button !== undefined && e.button !== 0) return;
+        if (e.target.closest('input, select, .block-btn-del')) {
+          e.stopPropagation();
+          return;
+        }
         e.stopPropagation();
+        e.preventDefault();
+
+        if (dragData || ghostEl) {
+          cleanupDrag();
+        }
 
         if (isHatBlock(el) && el.parentElement && el.parentElement.classList.contains('code-stack')) {
           startStackDrag(el.parentElement, e);
@@ -1722,9 +2158,10 @@
 
         const rect = el.getBoundingClientRect();
         const grabOffsetX = Math.max(8, Math.min(rect.width - 8, e.clientX - rect.left));
-        const grabOffsetY = Math.max(8, Math.min(40, e.clientY - rect.top));
+        const grabOffsetY = Math.max(8, Math.min(rect.height - 8, e.clientY - rect.top));
 
         dragData = {
+          pointerId: e.pointerId,
           source: 'workspace',
           blockEl: el,
           originalParent: el.parentElement,
@@ -1739,27 +2176,39 @@
 
         window.addEventListener('pointermove', onGlobalPointerMove);
         window.addEventListener('pointerup', onGlobalPointerUp);
+        window.addEventListener('pointercancel', onGlobalPointerCancel);
+        window.addEventListener('blur', onGlobalPointerCancel);
       };
     }
 
     function createDragGhost(sourceEl, x, y) {
-      if (ghostEl) {
-        ghostEl.remove();
-        ghostEl = null;
-      }
+      document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
       ghostEl = sourceEl.cloneNode(true);
       ghostEl.classList.add('drag-ghost');
+      ghostEl.querySelectorAll('.drop-indicator').forEach(ind => ind.remove());
+      ghostEl.querySelectorAll('.slot-hover').forEach(s => s.classList.remove('slot-hover'));
       copyBlockControlValues(sourceEl, ghostEl);
+      ghostEl.style.opacity = '0.9';
       ghostEl.style.left = `${x}px`;
       ghostEl.style.top = `${y}px`;
       document.body.appendChild(ghostEl);
     }
 
+    function onGlobalPointerCancel(e) {
+      if (dragData && dragData.pointerId !== undefined && e && e.pointerId !== undefined && e.pointerId !== dragData.pointerId) return;
+      window.removeEventListener('pointermove', onGlobalPointerMove);
+      window.removeEventListener('pointerup', onGlobalPointerUp);
+      window.removeEventListener('pointercancel', onGlobalPointerCancel);
+      window.removeEventListener('blur', onGlobalPointerCancel);
+      cleanupDrag();
+    }
+
     function onGlobalPointerMove(e) {
       if (!dragData) return;
+      if (dragData.pointerId !== undefined && e.pointerId !== undefined && e.pointerId !== dragData.pointerId) return;
 
       const dist = Math.hypot(e.clientX - dragData.startX, e.clientY - dragData.startY);
-      if (dist > 8) {
+      if (dist > 6) {
         dragData.moved = true;
       }
 
@@ -1780,10 +2229,7 @@
         ghostEl.style.top = `${e.clientY - dragData.grabOffsetY}px`;
       }
 
-      // Check if pointer is hovering over palette drawer or trashcan
-      const paletteDrawer = document.getElementById('paletteDrawer');
-      const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
-      const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
+      const isInsidePalette = isBlockOverPalette(e.clientX);
       const overTrash = isOverTrashcan(e.clientX, e.clientY);
 
       const trashcan = document.getElementById('entryTrashcan');
@@ -1803,10 +2249,62 @@
 
       const isDraggingHat = (dragData && dragData.source === 'palette' && dragData.def && dragData.def.isHat) ||
                             (dragData && dragData.source === 'workspace' && isHatBlock(dragData.blockEl));
+      const isDraggingBool = (dragData && dragData.source === 'palette' && dragData.def && dragData.def.isBool) ||
+                             (dragData && dragData.source === 'workspace' && isBoolBlock(dragData.blockEl));
+      const isDraggingVal = (dragData && dragData.source === 'palette' && dragData.def && dragData.def.isVal) ||
+                            (dragData && dragData.source === 'workspace' && isValBlock(dragData.blockEl));
+
+      // -1. If dragging an Oval Value Block (.block-val), snap into .val-slot!
+      if (isDraggingVal) {
+        const allValSlots = Array.from(document.querySelectorAll('#workspaceBoard .val-slot'))
+          .filter(s => isValidDropTarget(s));
+        let matchedValSlot = null;
+        for (const s of allValSlots) {
+          const sr = s.getBoundingClientRect();
+          const hitCursor = (clientX >= sr.left - 18 && clientX <= sr.right + 18 &&
+                             clientY >= sr.top - 12 && clientY <= sr.bottom + 12);
+          const hitConn = (connX >= sr.left - 18 && connX <= sr.right + 18 &&
+                           connY >= sr.top - 12 && connY <= sr.bottom + 12);
+          if (hitCursor || hitConn) {
+            if (!matchedValSlot || matchedValSlot.contains(s)) {
+              matchedValSlot = s;
+            }
+          }
+        }
+        if (matchedValSlot) {
+          targetValSlot = matchedValSlot;
+          matchedValSlot.classList.add('val-slot-hover');
+        }
+        return;
+      }
 
       // Connector reference point (near top-left puzzle notch of dragged ghost)
       const connX = dragData ? (clientX - dragData.grabOffsetX + 26) : clientX;
       const connY = dragData ? (clientY - dragData.grabOffsetY + 12) : clientY;
+
+      // 0. If dragging a Hexagonal Boolean Block (.block-bool), snap into .bool-slot!
+      if (isDraggingBool) {
+        const allBoolSlots = Array.from(document.querySelectorAll('#workspaceBoard .bool-slot'))
+          .filter(s => isValidDropTarget(s));
+        let matchedBoolSlot = null;
+        for (const s of allBoolSlots) {
+          const sr = s.getBoundingClientRect();
+          const hitCursor = (clientX >= sr.left - 18 && clientX <= sr.right + 18 &&
+                             clientY >= sr.top - 12 && clientY <= sr.bottom + 12);
+          const hitConn = (connX >= sr.left - 18 && connX <= sr.right + 18 &&
+                           connY >= sr.top - 12 && connY <= sr.bottom + 12);
+          if (hitCursor || hitConn) {
+            if (!matchedBoolSlot || matchedBoolSlot.contains(s)) {
+              matchedBoolSlot = s;
+            }
+          }
+        }
+        if (matchedBoolSlot) {
+          targetBoolSlot = matchedBoolSlot;
+          matchedBoolSlot.classList.add('bool-slot-hover');
+        }
+        return;
+      }
 
       // 1. Check C-block slots first (unless dragging a Hat block)
       if (!isDraggingHat) {
@@ -1987,48 +2485,45 @@
         currentDropIndicator.remove();
         currentDropIndicator = null;
       }
+      document.querySelectorAll('.drop-indicator').forEach(ind => ind.remove());
       if (targetDropSlot) {
         targetDropSlot.classList.remove('slot-hover');
         targetDropSlot = null;
       }
+      document.querySelectorAll('.slot-hover').forEach(s => s.classList.remove('slot-hover'));
+      if (targetBoolSlot) {
+        targetBoolSlot.classList.remove('bool-slot-hover');
+        targetBoolSlot = null;
+      }
+      document.querySelectorAll('.bool-slot-hover').forEach(s => s.classList.remove('bool-slot-hover'));
+      if (targetValSlot) {
+        targetValSlot.classList.remove('val-slot-hover');
+        targetValSlot = null;
+      }
+      document.querySelectorAll('.val-slot-hover').forEach(s => s.classList.remove('val-slot-hover'));
     }
 
     function onGlobalPointerUp(e) {
+      if (dragData && dragData.pointerId !== undefined && e.pointerId !== undefined && e.pointerId !== dragData.pointerId) return;
+
       window.removeEventListener('pointermove', onGlobalPointerMove);
       window.removeEventListener('pointerup', onGlobalPointerUp);
+      window.removeEventListener('pointercancel', onGlobalPointerCancel);
+      window.removeEventListener('blur', onGlobalPointerCancel);
 
-      if (!dragData) return;
+      if (!dragData) {
+        cleanupDrag();
+        return;
+      }
 
       try {
-        const paletteDrawer = document.getElementById('paletteDrawer');
-        const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
-        const isInsidePalette = paletteRect && (e.clientX <= paletteRect.right);
+        const isInsidePalette = isBlockOverPalette(e.clientX);
         const overTrash = isOverTrashcan(e.clientX, e.clientY);
 
         // ── Scenario A: Dragged from Palette ──
         if (dragData.source === 'palette') {
-          // Tap without dragging: add cleanly ONCE to workspace
-          if (!dragData.dragging && !dragData.moved) {
-            const board = document.getElementById('workspaceBoard');
-            const firstStack = board.querySelector('.code-stack');
-            const newBlock = createBlockDOM(dragData.def, false);
-            copyBlockControlValues(dragData.originEl, newBlock);
-            if (dragData.def.isHat || !firstStack) {
-              const newStack = document.createElement('div');
-              newStack.className = 'code-stack';
-              newStack.style.left = (80 + Math.random() * 50) + 'px';
-              newStack.style.top = (60 + Math.random() * 50) + 'px';
-              newStack.appendChild(newBlock);
-              board.appendChild(newStack);
-              attachStackDrag(newStack);
-            } else {
-              firstStack.appendChild(newBlock);
-            }
-            return;
-          }
-
-          // Dragged but released inside palette drawer or trashcan -> CANCEL
-          if (isInsidePalette || overTrash) {
+          // Do NOT duplicate/spawn blocks on tap-without-drag or when released over palette/trashcan
+          if (!dragData.dragging || !dragData.moved || isInsidePalette || overTrash) {
             return;
           }
 
@@ -2045,7 +2540,7 @@
           dragData.blockEl.style.pointerEvents = '';
 
           // Dropped inside palette drawer or trashcan -> DELETE!
-          if (isInsidePalette || overTrash) {
+          if (dragData.dragging && (isInsidePalette || overTrash)) {
             const parentStack = dragData.originalParent;
             dragData.blockEl.remove();
             if (parentStack && parentStack.classList.contains('code-stack') && parentStack.children.length === 0) {
@@ -2066,28 +2561,69 @@
       }
     }
 
+    function cleanUpOrphanStacks() {
+      document.querySelectorAll('#workspaceBoard .code-stack').forEach(s => {
+        if (s.children.length === 0) s.remove();
+      });
+    }
+
     function placeDroppedBlock(targetEl, e) {
       const board = document.getElementById('workspaceBoard');
       const boardRect = board.getBoundingClientRect();
       const isTargetHat = isHatBlock(targetEl);
+      const isTargetBool = isBoolBlock(targetEl);
+
+      const isTargetVal = isValBlock(targetEl);
+
+      // -1. Snap Oval Value Block (.block-val) into .val-slot
+      if (isTargetVal && targetValSlot && !targetEl.contains(targetValSlot)) {
+        const slot = targetValSlot;
+        removeDropIndicator();
+        Array.from(slot.querySelectorAll(':scope > .block-val')).forEach(old => {
+          if (old !== targetEl) old.remove();
+        });
+        slot.insertBefore(targetEl, slot.firstChild);
+        cleanUpOrphanStacks();
+        return;
+      }
+
+      // 0. Snap Hexagonal Boolean Block (.block-bool) into .bool-slot
+      if (isTargetBool && targetBoolSlot && !targetEl.contains(targetBoolSlot)) {
+        const slot = targetBoolSlot;
+        removeDropIndicator();
+        Array.from(slot.querySelectorAll(':scope > .block-bool')).forEach(old => {
+          if (old !== targetEl) old.remove();
+        });
+        slot.insertBefore(targetEl, slot.firstChild);
+        cleanUpOrphanStacks();
+        return;
+      }
 
       // 1. Snap at Drop Indicator (including Hat block snapping onto top of a hatless stack)
       if (currentDropIndicator && currentDropIndicator.parentElement && !targetEl.contains(currentDropIndicator.parentElement)) {
         const parent = currentDropIndicator.parentElement;
         if (!isTargetHat || (parent.classList.contains('code-stack') && parent.firstElementChild === currentDropIndicator)) {
           parent.insertBefore(targetEl, currentDropIndicator);
+          removeDropIndicator();
           if (isTargetHat && parent.classList.contains('code-stack')) {
             attachStackDrag(parent);
           }
+          cleanUpOrphanStacks();
           return;
         }
       }
 
       // 2. Snap into C-Block Slot
       if (targetDropSlot && !isTargetHat && !targetEl.contains(targetDropSlot)) {
-        targetDropSlot.appendChild(targetEl);
+        const slot = targetDropSlot;
+        removeDropIndicator();
+        slot.appendChild(targetEl);
+        cleanUpOrphanStacks();
         return;
       }
+
+      // Remove any drop indicator before checking stack children length
+      removeDropIndicator();
 
       // 3. Place as free-standing stack on workspace board
       const dropX = Math.max(20, e.clientX - boardRect.left - (dragData.grabOffsetX || 20));
@@ -2105,6 +2641,7 @@
         board.appendChild(newStack);
         attachStackDrag(newStack);
       }
+      cleanUpOrphanStacks();
     }
 
     function cleanupDrag() {
@@ -2115,10 +2652,15 @@
         dragData.blockEl.style.opacity = '1.0';
         dragData.blockEl.style.pointerEvents = '';
       }
+      document.querySelectorAll('#workspaceBoard .block, #workspaceBoard .block-c-container, #workspaceBoard .block-bool, #workspaceBoard .block-val').forEach(b => {
+        b.style.opacity = '1.0';
+        b.style.pointerEvents = '';
+      });
       if (ghostEl) {
         ghostEl.remove();
         ghostEl = null;
       }
+      document.querySelectorAll('.drag-ghost').forEach(g => g.remove());
       document.querySelectorAll('.code-stack').forEach(s => {
         if (s.children.length === 0) s.remove();
       });
@@ -2133,7 +2675,8 @@
     }
 
     function startStackDrag(stack, e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.classList.contains('block-btn-del')) return;
+      if (e.button !== undefined && e.button !== 0) return;
+      if (e.target.closest('input, select, .block-btn-del')) return;
       e.preventDefault();
       e.stopPropagation();
 
@@ -2142,28 +2685,50 @@
       const initialLeft = parseFloat(stack.style.left) || 60;
       const initialTop = parseFloat(stack.style.top) || 40;
       const trashcan = document.getElementById('entryTrashcan');
+      const paletteDrawer = document.getElementById('paletteDrawer');
 
       function onMove(me) {
         const dx = me.clientX - startX;
         const dy = me.clientY - startY;
-        stack.style.left = `${Math.max(10, initialLeft + dx)}px`;
+        stack.style.left = `${initialLeft + dx}px`;
         stack.style.top = `${Math.max(10, initialTop + dy)}px`;
+        const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
+        const overPalette = paletteRect && (me.clientX <= paletteRect.right + 12);
+        const overTrash = isOverTrashcan(me.clientX, me.clientY);
+        stack.style.opacity = (overPalette || overTrash) ? '0.45' : '1.0';
         if (trashcan) {
-          trashcan.classList.toggle('drag-over', isOverTrashcan(me.clientX, me.clientY));
+          trashcan.classList.toggle('drag-over', Boolean(overTrash));
         }
       }
 
       function onUp(ue) {
         window.removeEventListener('pointermove', onMove);
         window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
         if (trashcan) trashcan.classList.remove('drag-over');
-        if (isOverTrashcan(ue.clientX, ue.clientY)) {
+        stack.style.opacity = '1.0';
+        const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
+        const overPalette = paletteRect && (ue.clientX <= paletteRect.right + 12);
+        if (overPalette || isOverTrashcan(ue.clientX, ue.clientY)) {
           stack.remove();
+        } else {
+          stack.style.left = `${Math.max(15, parseFloat(stack.style.left) || 60)}px`;
         }
+      }
+
+      function onCancel() {
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+        if (trashcan) trashcan.classList.remove('drag-over');
+        stack.style.opacity = '1.0';
+        stack.style.left = `${Math.max(15, initialLeft)}px`;
+        stack.style.top = `${Math.max(10, initialTop)}px`;
       }
 
       window.addEventListener('pointermove', onMove);
       window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onCancel);
     }
 
     function updateRunButtonState() {
@@ -2272,10 +2837,82 @@
     }
 
     function readNum(parent, selector, fallback = 0) {
-      const inp = parent ? parent.querySelector(selector) : null;
-      if (!inp) return fallback;
-      const val = parseFloat(inp.value);
+      if (!parent) return fallback;
+      const target = parent.querySelector(selector);
+      if (!target) return fallback;
+
+      // 1. If target is or is inside a .val-slot, check if an oval .block-val is plugged in
+      const slot = target.classList.contains('val-slot') ? target : target.closest('.val-slot');
+      if (slot) {
+        const valBlock = slot.querySelector(':scope > .block-val');
+        if (valBlock) {
+          return evaluateValBlock(valBlock);
+        }
+      }
+
+      // 2. If target itself is a .block-val
+      if (target.classList.contains('block-val')) {
+        return evaluateValBlock(target);
+      }
+
+      // 3. Otherwise read the input field numeric value
+      const val = parseFloat(target.value);
       return Number.isNaN(val) ? fallback : val;
+    }
+
+    function evaluateValBlock(blockEl) {
+      if (!blockEl) return 0;
+      const cmd = blockEl.dataset.cmd;
+      
+      if (cmd === 'val_math_op') {
+        const v1 = readNum(blockEl, '.param-op1', 10);
+        const op = blockEl.querySelector('.param-op')?.value || '+';
+        const v2 = readNum(blockEl, '.param-op2', 5);
+        if (op === '+') return v1 + v2;
+        if (op === '-') return v1 - v2;
+        if (op === '×' || op === '*') return v1 * v2;
+        if (op === '÷' || op === '/') return v2 !== 0 ? v1 / v2 : 0;
+        return 0;
+      } else if (cmd === 'val_mod') {
+        const v1 = readNum(blockEl, '.param-1', 10);
+        const v2 = readNum(blockEl, '.param-2', 3);
+        return v2 !== 0 ? (v1 % v2) : 0;
+      } else if (cmd === 'val_quotient') {
+        const v1 = readNum(blockEl, '.param-1', 10);
+        const v2 = readNum(blockEl, '.param-2', 3);
+        return v2 !== 0 ? Math.floor(v1 / v2) : 0;
+      } else if (cmd === 'val_random') {
+        const r1 = Math.round(readNum(blockEl, '.param-1', 1));
+        const r2 = Math.round(readNum(blockEl, '.param-2', 10));
+        const minVal = Math.min(r1, r2);
+        const maxVal = Math.max(r1, r2);
+        return Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
+      } else if (cmd === 'val_variable') {
+        const varName = blockEl.querySelector('.param-var')?.value || '점수';
+        return Number(userVariables[varName] ?? 0);
+      } else if (cmd === 'val_sensor') {
+        const sName = blockEl.querySelector('.param-sensor')?.value || '센서: 바닥 밝기';
+        if (sName === '센서: 바닥 밝기') return currentFloorBrightness;
+        if (sName === '센서: 왼쪽 바퀴 속도') return Math.abs(currentLeftWheel);
+        if (sName === '센서: 오른쪽 바퀴 속도') return Math.abs(currentRightWheel);
+        return 0;
+      } else if (cmd === 'val_round') {
+        const v = readNum(blockEl, '.param-1', 3.14);
+        const type = blockEl.querySelector('.param-round-type')?.value || '반올림';
+        if (type.includes('반올림')) return Math.round(v);
+        if (type.includes('올림')) return Math.ceil(v);
+        if (type.includes('버림')) return Math.floor(v);
+        return v;
+      } else if (cmd === 'val_min_max') {
+        const v1 = readNum(blockEl, '.param-1', 10);
+        const v2 = readNum(blockEl, '.param-2', 20);
+        const type = blockEl.querySelector('.param-minmax-type')?.value || '더 큰 값';
+        return (type.includes('더 큰 값') || type.includes('최댓값')) ? Math.max(v1, v2) : Math.min(v1, v2);
+      } else if (cmd === 'val_list_count') {
+        const lName = blockEl.querySelector('.param-list')?.value || '명령목록';
+        return userLists[lName] ? userLists[lName].length : 0;
+      }
+      return 0;
     }
 
     async function waitMs(ms, token) {
@@ -2317,25 +2954,40 @@
                 await executeElements(childBlocks, token);
                 await sleep(30);
               }
+            } else if (cmd === 'repeat_while') {
+              const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
+              const childBlocks = Array.from(slot ? slot.children : []);
+              while (!token.cancelled && isExecuting && evaluateHeaderCondition(headerEl)) {
+                await executeElements(childBlocks, token);
+                await sleep(30);
+              }
             } else if (cmd === 'if_then') {
-              const condSel = headerEl ? headerEl.querySelector('.c-param-cond') : el.querySelector('.c-param-cond');
-              const condStr = condSel ? condSel.value : '';
-              const isTrue = evaluateCondition(condStr);
+              const isTrue = evaluateHeaderCondition(headerEl);
               const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
               const childBlocks = Array.from(slot ? slot.children : []);
               if (isTrue) {
                 await executeElements(childBlocks, token);
               }
             } else if (cmd === 'if_else') {
-              const condSel = headerEl ? headerEl.querySelector('.c-param-cond') : el.querySelector('.c-param-cond');
-              const condStr = condSel ? condSel.value : '';
-              const isTrue = evaluateCondition(condStr);
+              const isTrue = evaluateHeaderCondition(headerEl);
               const slotIf = el.querySelector(':scope > .block-c-body > .slot-if');
               const slotElse = el.querySelector(':scope > .block-c-body > .slot-else');
               if (isTrue && slotIf) {
                 await executeElements(Array.from(slotIf.children), token);
               } else if (!isTrue && slotElse) {
                 await executeElements(Array.from(slotElse.children), token);
+              }
+            } else if (cmd === 'c_if_and_or') {
+              const boolSlots = headerEl ? headerEl.querySelectorAll(':scope > .bool-slot') : [];
+              const leftTrue = evaluateBoolSlot(boolSlots[0]);
+              const rightTrue = evaluateBoolSlot(boolSlots[1]);
+              const lopSel = headerEl ? headerEl.querySelector(':scope > .param-lop') : null;
+              const lop = lopSel ? lopSel.value : '그리고 (AND)';
+              const isTrue = (lop.includes('AND') || lop.includes('그리고')) ? (leftTrue && rightTrue) : (leftTrue || rightTrue);
+              const slot = el.querySelector(':scope > .block-c-body > .block-c-slot');
+              const childBlocks = Array.from(slot ? slot.children : []);
+              if (isTrue) {
+                await executeElements(childBlocks, token);
               }
             } else if (cmd === 'if_floor_color') {
               const condSel = headerEl ? headerEl.querySelector('.c-param-cond') : el.querySelector('.c-param-cond');
@@ -2353,6 +3005,14 @@
           continue;
         }
 
+        // If a standalone .block-bool or .block-val is in a stack, evaluate it non-destructively
+        if (isBoolBlock(el) || isValBlock(el)) {
+          el.classList.add('running-highlight');
+          await sleep(120);
+          el.classList.remove('running-highlight');
+          continue;
+        }
+
         // Standard Single Block Execution
         el.classList.add('running-highlight');
         try {
@@ -2365,11 +3025,105 @@
       }
     }
 
+    function evaluateHeaderCondition(headerEl) {
+      if (!headerEl) return false;
+      const bSlot = headerEl.querySelector(':scope > .bool-slot');
+      if (bSlot) return evaluateBoolSlot(bSlot);
+      const condSel = headerEl.querySelector('.c-param-cond');
+      return evaluateCondition(condSel ? condSel.value : '');
+    }
+
+    function evaluateBoolSlot(slotEl) {
+      if (!slotEl) return false;
+      const boolBlock = slotEl.querySelector(':scope > .block-bool');
+      if (boolBlock) {
+        return evaluateBoolBlock(boolBlock);
+      }
+      const sel = slotEl.querySelector(':scope > .bool-default-select, :scope > .c-param-cond');
+      return evaluateCondition(sel ? sel.value : '');
+    }
+
+    function evaluateBoolBlock(blockEl) {
+      if (!blockEl) return false;
+      const cmd = blockEl.dataset.cmd;
+      if (cmd === 'bool_const') {
+        const val = blockEl.querySelector(':scope > .param-select')?.value || '참(TRUE)';
+        return val.includes('참') || val === 'TRUE';
+      } else if (cmd === 'bool_var_get') {
+        const varName = blockEl.querySelector(':scope > .param-bvar')?.value || '상태1';
+        const expectedStr = blockEl.querySelector(':scope > .param-bval')?.value || '참(TRUE)';
+        const expected = expectedStr.includes('참');
+        return Boolean(userBooleans[varName]) === expected;
+      } else if (cmd === 'bool_color_match') {
+        const color = blockEl.querySelector(':scope > .param-bcolor')?.value || '빨간색';
+        const op = blockEl.querySelector(':scope > .param-bop')?.value || '인가? (==)';
+        const isMatch = (currentFloorColor === color);
+        return (op.includes('!=') || op.includes('아닌가')) ? !isMatch : isMatch;
+      } else if (cmd === 'bool_sensor_check') {
+        const cond = blockEl.querySelector(':scope > .param-select')?.value || '';
+        if (cond === '바닥 검은선이 감지되었는가?') return currentFloorColor === '검은색' || currentFloorBrightness < 45;
+        if (cond === '바닥이 흰색(밝은 면)인가?') return currentFloorColor === '흰색' || currentFloorBrightness >= 60;
+        if (cond === '바닥 밝기가 50 미만(어두움)인가?') return currentFloorBrightness < 50;
+        if (cond === '바닥 밝기가 50 이상(밝음)인가?') return currentFloorBrightness >= 50;
+        if (cond === '앞쪽에 장애물이 있는가?') return Boolean(currentFrontObstacle);
+        if (cond === '현재 바퀴가 움직이는 중인가?') return (currentLeftWheel !== 0 || currentRightWheel !== 0 || currentLineTracerMode !== 0);
+        if (cond === '현재 머리 LED가 켜져 있는가?') return (currentHeadLed[0] > 0 || currentHeadLed[1] > 0 || currentHeadLed[2] > 0);
+        if (cond === '50% 무작위 확률로 참(TRUE)') return Math.random() >= 0.5;
+        return false;
+      } else if (cmd === 'bool_compare') {
+        const lhsKey = blockEl.querySelector(':scope > .param-lhs')?.value || '변수: 점수';
+        const op = blockEl.querySelector(':scope > .param-comp')?.value || '>=';
+        const rhs = readNum(blockEl, ':scope > .param-rhs', 10);
+        let lhs = 0;
+        if (lhsKey === '센서: 바닥 밝기') lhs = currentFloorBrightness;
+        else if (lhsKey === '리스트: 명령목록 항목 수') lhs = (userLists['명령목록'] ? userLists['명령목록'].length : 0);
+        else {
+          const vName = lhsKey.replace('변수:', '').trim();
+          lhs = Number(userVariables[vName] ?? 0);
+        }
+        if (op === '==') return lhs == rhs;
+        if (op === '!=') return lhs != rhs;
+        if (op === '>') return lhs > rhs;
+        if (op === '<') return lhs < rhs;
+        if (op === '>=') return lhs >= rhs;
+        if (op === '<=') return lhs <= rhs;
+        return false;
+      } else if (cmd === 'bool_and_or') {
+        const slots = blockEl.querySelectorAll(':scope > .bool-slot');
+        const leftVal = evaluateBoolSlot(slots[0]);
+        const rightVal = evaluateBoolSlot(slots[1]);
+        const op = blockEl.querySelector(':scope > .param-lop')?.value || '그리고 (AND)';
+        if (op.includes('AND') || op.includes('그리고')) return Boolean(leftVal && rightVal);
+        return Boolean(leftVal || rightVal);
+      } else if (cmd === 'bool_not') {
+        const slot = blockEl.querySelector(':scope > .bool-slot');
+        return !evaluateBoolSlot(slot);} else if (cmd === 'bool_num_compare') {
+        const v1 = readNum(blockEl, '.param-op1', 0);
+        const comp = blockEl.querySelector('.param-comp')?.value || '==';
+        const v2 = readNum(blockEl, '.param-op2', 0);
+        if (comp === '==') return v1 == v2;
+        if (comp === '!=') return v1 != v2;
+        if (comp === '>') return v1 > v2;
+        if (comp === '<') return v1 < v2;
+        if (comp === '>=') return v1 >= v2;
+        if (comp === '<=') return v1 <= v2;
+        return false;
+      }
+      return false;
+    }
+
     function evaluateCondition(condStr) {
+      if (condStr === '참(TRUE) 이면' || condStr === '참(TRUE)') return true;
+      if (condStr === '거짓(FALSE) 이면' || condStr === '거짓(FALSE)') return false;
+      if (condStr === '불린 [상태1] 이 참(TRUE) 이면') return Boolean(userBooleans['상태1']) === true;
+      if (condStr === '불린 [상태1] 이 거짓(FALSE) 이면') return Boolean(userBooleans['상태1']) === false;
+      if (condStr === '불린 [상태2] 이 참(TRUE) 이면') return Boolean(userBooleans['상태2']) === true;
+      if (condStr === '불린 [출발가능] 이 참(TRUE) 이면') return Boolean(userBooleans['출발가능']) === true;
+      if (condStr === '불린 [위험감지] 가 참(TRUE) 이면') return Boolean(userBooleans['위험감지']) === true;
       if (condStr === '앞쪽에 장애물이 있으면') {
         return Boolean(currentFrontObstacle);
       } else if (condStr === '바닥 선이 감지되면' || condStr === '바닥 선(검은색)이 감지되면') {
-        return currentFloorColor === '검은색' || currentFloorBrightness < 30;
+        return currentFloorColor === '검은색' || currentFloorBrightness < 45;
       } else if (condStr === '바닥이 [검은색] 이면') {
         return currentFloorColor === '검은색';
       } else if (condStr === '바닥이 [빨간색] 이면') {
@@ -2545,32 +3299,51 @@
           break;
         }
 
-        // ── Sound & Music Blocks (Full Melodies, Zero Premature Cuts) ──
+        // ── Sound & Music Blocks (Play for Exact n Seconds) ──
         case 'play_clip': {
           const sel = el.querySelector('.param-select').value;
+          const sec = Math.max(0, readNum(el, '.param-1', 2));
+          const targetMs = Math.round(sec * 1000);
+          if (targetMs <= 0) break;
+
           const clips = {
             '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
             '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
           };
           const clipId = clips[sel] || 1;
-          const clipDurations = {
-            1: 450,    // 삐- 소리 (Single Beep)
-            16: 3200,  // 사이렌 (Siren 3.0s)
-            48: 1800,  // 로봇 소리 (Chirp)
-            64: 4900,  // 행진곡 (March fanfare: full resolution chord)
-            65: 8200,  // 생일축하곡 (Happy Birthday: all 4 lines complete)
-            66: 1700,  // 디비디비딥 (Dibidibidip)
-            67: 2100   // 잘했어요 (Good Job Fanfare)
+          const clipCycleMs = {
+            1: 500,    // 삐- 소리
+            16: 3000,  // 사이렌
+            48: 1100,  // 로봇 소리
+            64: 4400,  // 행진곡
+            65: 7600,  // 생일축하곡
+            66: 1500,  // 디비디비딥
+            67: 1700   // 잘했어요
           };
-          const dur = clipDurations[clipId] || 1500;
-          if (soundStopTimer) clearTimeout(soundStopTimer);
-          soundStopTimer = setTimeout(() => { currentSoundClip = 0; }, dur + 600);
+          const cycleMs = clipCycleMs[clipId] || 1500;
 
+          stopAudioPlayback();
           sendPacket(null, null, null, clipId);
           playWebAudioClip(clipId);
 
-          await waitMs(dur, token);
-          // Do NOT send soundClip=0 here! TurtleBot melody completes naturally without premature cutoff.
+          let elapsed = 0;
+          let nextCycleAt = cycleMs;
+          while (!token.cancelled && isExecuting && elapsed < targetMs) {
+            const step = Math.min(80, targetMs - elapsed);
+            if (!(await waitMs(step, token))) break;
+            elapsed += step;
+            if (elapsed >= nextCycleAt && (targetMs - elapsed) >= 220) {
+              sendPacket(null, null, null, clipId);
+              playWebAudioClip(clipId);
+              nextCycleAt += cycleMs;
+            }
+          }
+
+          stopAudioPlayback();
+          currentSoundClip = 0;
+          if (!token.cancelled && isExecuting) {
+            sendPacket(null, null, null, 0, 0, 0);
+          }
           break;
         }
         case 'play_note': {
@@ -2583,15 +3356,6 @@
           playWebAudioTone(freqs[noteCode] || 440, beats * 500);
           if (await waitMs(beats * 500, token)) {
             sendPacket(null, null, null, null, 0);
-          }
-          break;
-        }
-        case 'buzzer_hertz': {
-          const hz = Math.max(20, readNum(el, '.param-1', 440));
-          sendPacket(null, null, null, null, null, hz);
-          playWebAudioTone(hz, 500);
-          if (await waitMs(500, token)) {
-            sendPacket(null, null, null, null, null, 0);
           }
           break;
         }
@@ -2685,10 +3449,12 @@
           break;
         }
         case 'wait_until_cond': {
-          const condStr = el.querySelector('.param-select').value;
+          const bSlot = el.querySelector(':scope > .bool-slot');
+          const condSel = el.querySelector('.param-select, .c-param-cond');
           let elapsed = 0;
           while (!token.cancelled && isExecuting && elapsed < 120000) {
-            if (evaluateCondition(condStr)) break;
+            const ok = bSlot ? evaluateBoolSlot(bSlot) : evaluateCondition(condSel ? condSel.value : '');
+            if (ok) break;
             if (!(await waitMs(60, token))) break;
             elapsed += 60;
           }
@@ -2713,15 +3479,58 @@
         // ── Math & Calculation Blocks ──
         case 'calc_op': {
           const v1 = readNum(el, '.param-op1', 0);
-          const op = el.querySelector('.param-op').value;
+          const op = el.querySelector('.param-op')?.value || '+';
           const v2 = readNum(el, '.param-op2', 0);
-          const target = el.querySelector('.param-target-var').value;
+          const target = el.querySelector('.param-target-var')?.value || '점수';
           let res = 0;
           if (op === '+') res = v1 + v2;
           else if (op === '-') res = v1 - v2;
-          else if (op === '×') res = v1 * v2;
-          else if (op === '÷') res = (v2 !== 0) ? (v1 / v2) : 0;
-          userVariables[target] = Math.round(res * 100) / 100;
+          else if (op === '×' || op === '*') res = v1 * v2;
+          else if (op === '÷' || op === '/') res = (v2 !== 0) ? (v1 / v2) : 0;
+          else if (op.includes('나머지') || op.includes('%')) res = (v2 !== 0) ? (v1 % v2) : 0;
+          else if (op.includes('몫') || op.includes('//')) res = (v2 !== 0) ? Math.floor(v1 / v2) : 0;
+          userVariables[target] = Math.round(res * 1000) / 1000;
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_mod': {
+          const v1 = readNum(el, '.param-1', 10);
+          const v2 = readNum(el, '.param-2', 3);
+          const target = el.querySelector('.param-target-var')?.value || '점수';
+          userVariables[target] = (v2 !== 0) ? (v1 % v2) : 0;
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_quotient': {
+          const v1 = readNum(el, '.param-1', 10);
+          const v2 = readNum(el, '.param-2', 3);
+          const target = el.querySelector('.param-target-var')?.value || '점수';
+          userVariables[target] = (v2 !== 0) ? Math.floor(v1 / v2) : 0;
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_var_op': {
+          const varName = el.querySelector('.param-var')?.value || '점수';
+          const val = readNum(el, '.param-1', 2);
+          const op = el.querySelector('.param-op')?.value || '더하기 (+)';
+          let curr = Number(userVariables[varName] ?? 0);
+          if (op.includes('더하기') || op.includes('+')) curr += val;
+          else if (op.includes('빼기') || op.includes('-')) curr -= val;
+          else if (op.includes('곱하기') || op.includes('×') || op.includes('*')) curr *= val;
+          else if (op.includes('나누기') || op.includes('÷') || op.includes('/')) curr = (val !== 0 ? curr / val : 0);
+          else if (op.includes('나머지') || op.includes('%')) curr = (val !== 0 ? curr % val : 0);
+          userVariables[varName] = Math.round(curr * 1000) / 1000;
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_var_reset': {
+          const varName = el.querySelector('.param-select')?.value || el.querySelector('.param-var')?.value || '점수';
+          userVariables[varName] = 0;
+          document.getElementById('variableHud')?.classList.add('show');
           updateHud();
           break;
         }
@@ -2730,9 +3539,71 @@
           const r2 = Math.round(readNum(el, '.param-r2', 10));
           const minVal = Math.min(r1, r2);
           const maxVal = Math.max(r1, r2);
-          const target = el.querySelector('.param-target-var').value;
+          const target = el.querySelector('.param-target-var')?.value || '점수';
           const randVal = Math.floor(Math.random() * (maxVal - minVal + 1)) + minVal;
           userVariables[target] = randVal;
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_round': {
+          const val = readNum(el, '.param-1', 3.14);
+          const rType = el.querySelector('.param-round-type')?.value || '반올림';
+          const target = el.querySelector('.param-target-var')?.value || '점수';
+          let res = val;
+          if (rType.includes('반올림')) res = Math.round(val);
+          else if (rType.includes('올림')) res = Math.ceil(val);
+          else if (rType.includes('버림')) res = Math.floor(val);
+          userVariables[target] = res;
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_min_max': {
+          const v1 = readNum(el, '.param-1', 10);
+          const v2 = readNum(el, '.param-2', 20);
+          const mmType = el.querySelector('.param-minmax-type')?.value || '더 큰 값';
+          const target = el.querySelector('.param-target-var')?.value || '점수';
+          userVariables[target] = (mmType.includes('더 큰 값') || mmType.includes('최댓값')) ? Math.max(v1, v2) : Math.min(v1, v2);
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_sensor_map': {
+          const srcKey = el.querySelector('.param-src-val')?.value || '센서: 바닥 밝기';
+          let inVal = 0;
+          if (srcKey === '센서: 바닥 밝기') inVal = currentFloorBrightness;
+          else if (srcKey === '센서: 왼쪽 바퀴 속도') inVal = Math.abs(currentLeftWheel);
+          else if (srcKey === '센서: 오른쪽 바퀴 속도') inVal = Math.abs(currentRightWheel);
+          else {
+            const vn = srcKey.replace('변수:', '').trim();
+            inVal = Number(userVariables[vn] ?? 0);
+          }
+          const outMin = readNum(el, '.param-in1', 10);
+          const outMax = readNum(el, '.param-in2', 80);
+          const ratio = Math.max(0, Math.min(1, inVal / 100));
+          const mapped = outMin + ratio * (outMax - outMin);
+          const target = el.querySelector('.param-target-var')?.value || '속도';
+          userVariables[target] = Math.round(mapped);
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'calc_compare_to_bool': {
+          const vName = el.querySelector('.param-var')?.value || '점수';
+          const comp = el.querySelector('.param-comp')?.value || '==';
+          const rhs = readNum(el, '.param-1', 10);
+          const bName = el.querySelector('.param-bvar')?.value || '출발가능';
+          const curr = Number(userVariables[vName] ?? 0);
+          let matched = false;
+          if (comp === '==') matched = curr == rhs;
+          else if (comp === '!=') matched = curr != rhs;
+          else if (comp === '>') matched = curr > rhs;
+          else if (comp === '<') matched = curr < rhs;
+          else if (comp === '>=') matched = curr >= rhs;
+          else if (comp === '<=') matched = curr <= rhs;
+          userBooleans[bName] = matched;
+          document.getElementById('variableHud')?.classList.add('show');
           updateHud();
           break;
         }
@@ -2769,6 +3640,29 @@
         case 'logic_not': {
           const val = (el.querySelector('.param-select').value === '참(TRUE)');
           userVariables['임의값'] = (!val) ? 1 : 0;
+          updateHud();
+          break;
+        }
+        case 'bool_var_set': {
+          const varName = el.querySelector('.param-var')?.value || '상태1';
+          const valStr = el.querySelector('.param-select')?.value || '참(TRUE)';
+          userBooleans[varName] = valStr.includes('참');
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'bool_var_toggle': {
+          const varName = el.querySelector('.param-select')?.value || '상태1';
+          userBooleans[varName] = !Boolean(userBooleans[varName]);
+          document.getElementById('variableHud')?.classList.add('show');
+          updateHud();
+          break;
+        }
+        case 'bool_var_store_cond': {
+          const varName = el.querySelector('.param-var')?.value || '상태1';
+          const bSlot = el.querySelector(':scope > .bool-slot');
+          userBooleans[varName] = Boolean(evaluateBoolSlot(bSlot));
+          document.getElementById('variableHud')?.classList.add('show');
           updateHud();
           break;
         }
@@ -2873,9 +3767,17 @@
       return new Promise(res => setTimeout(res, ms));
     }
 
-    // ── Variables & Lists HUD UI ──
+    // ── Variables, Booleans & Lists HUD UI ──
+    function toggleUserBoolean(key) {
+      if (key in userBooleans) {
+        userBooleans[key] = !userBooleans[key];
+        updateHud();
+      }
+    }
+
     function updateHud() {
       const varsDiv = document.getElementById('hudVarsList');
+      const boolsDiv = document.getElementById('hudBoolsList');
       const listsDiv = document.getElementById('hudListsList');
       if (!varsDiv || !listsDiv) return;
 
@@ -2884,6 +3786,16 @@
         vHtml += `<div style="display:flex; justify-content:space-between; padding:2px 0;"><span>${k}:</span> <b style="color:#00cec9;">${v}</b></div>`;
       }
       varsDiv.innerHTML = vHtml;
+
+      if (boolsDiv) {
+        let bHtml = '';
+        for (const [k, v] of Object.entries(userBooleans)) {
+          const badgeColor = v ? '#10D35E' : '#64748b';
+          const badgeText = v ? '참(TRUE)' : '거짓(FALSE)';
+          bHtml += `<div onclick="toggleUserBoolean('${k}')" style="display:flex; justify-content:space-between; align-items:center; padding:3px 0; cursor:pointer;" title="터치하여 참/거짓 전환"><span>${k}:</span> <span style="background:${badgeColor}; color:#fff; font-weight:800; font-size:0.72rem; padding:1px 8px; border-radius:10px;">${badgeText}</span></div>`;
+        }
+        boolsDiv.innerHTML = bHtml;
+      }
 
       let lHtml = '';
       for (const [k, list] of Object.entries(userLists)) {
@@ -2944,6 +3856,10 @@
     function stopAudioPlayback() {
       activeAudioTimeouts.forEach(id => clearTimeout(id));
       activeAudioTimeouts = [];
+      activeOscillators.forEach(osc => {
+        try { osc.stop(); osc.disconnect(); } catch (e) {}
+      });
+      activeOscillators = [];
       if (soundStopTimer) {
         clearTimeout(soundStopTimer);
         soundStopTimer = null;
@@ -2961,6 +3877,10 @@
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durMs / 1000);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
+        activeOscillators.push(osc);
+        osc.onended = () => {
+          activeOscillators = activeOscillators.filter(o => o !== osc);
+        };
         osc.start();
         osc.stop(audioCtx.currentTime + durMs / 1000);
       } catch(e) {}
@@ -2991,6 +3911,10 @@
 
           osc.connect(gain);
           gain.connect(audioCtx.destination);
+          activeOscillators.push(osc);
+          osc.onended = () => {
+            activeOscillators = activeOscillators.filter(o => o !== osc);
+          };
           osc.start(now);
           osc.stop(now + 3.0);
         } else if (clipId === 48) { // 로봇 소리 (R2-D2 Sci-Fi Chirp Sequence 1.4s)
@@ -3080,7 +4004,7 @@
 
     async function connectTurtle() {
       if (!navigator.bluetooth) {
-        alert('Web Bluetooth를 지원하지 않는 브라우저입니다.\n아이패드의 [Bluefy] 브라우저로 접속해 주세요!');
+        showCustomAlert('Web Bluetooth를 지원하지 않는 브라우저입니다.\n아이패드의 [Bluefy] 브라우저로 접속해 주세요!');
         return;
       }
 
@@ -3168,20 +4092,21 @@
         const r = (dataView.getUint8(1) << 8) | dataView.getUint8(2);
         const g = (dataView.getUint8(3) << 8) | dataView.getUint8(4);
         const b = (dataView.getUint8(5) << 8) | dataView.getUint8(6);
+        const hwColor = dataView.getUint8(7);
         const floor = dataView.getUint8(9);
         currentFloorBrightness = floor;
 
-        // RGB to HSV Conversion
+        // Normalization (0.0 ~ 1.0)
         const rNorm = r / 1000.0, gNorm = g / 1000.0, bNorm = b / 1000.0;
         const cMax = Math.max(rNorm, gNorm, bNorm);
         const cMin = Math.min(rNorm, gNorm, bNorm);
         const delta = cMax - cMin;
 
         let hue = 0;
-        let sat = cMax !== 0 ? delta / cMax : 0;
+        let sat = cMax > 0.001 ? delta / cMax : 0;
         let val = cMax;
 
-        if (delta !== 0) {
+        if (delta > 0.001) {
           if (cMax === rNorm) hue = 60 * (((gNorm - bNorm) / delta) % 6);
           else if (cMax === gNorm) hue = 60 * (((bNorm - rNorm) / delta) + 2);
           else if (cMax === bNorm) hue = 60 * (((rNorm - gNorm) / delta) + 4);
@@ -3189,19 +4114,41 @@
         if (hue < 0) hue += 360;
 
         let detected = 'unknown';
-        if (floor < 25 || val < 0.15) {
+
+        // 1. 검은색 (A4용지에 싸인펜, 네임펜, 연필로 그린 선 감지)
+        // 손으로 그린 선은 종이 빛 반사로 floor가 25~45 수준이며 채도가 매우 낮음
+        if (floor < 38 || (val < 0.28 && sat < 0.22) || (floor < 48 && sat < 0.12)) {
           detected = '검은색';
-        } else if (sat > 0.2) {
-          if (val > 0.2) {
-            if (hue < 15 || hue >= 345) detected = '빨간색';
-            else if (hue >= 30 && hue < 70) detected = '노란색';
-            else if (hue >= 80 && hue < 160) detected = '초록색';
-            else if (hue >= 170 && hue < 200) detected = '하늘색';
-            else if (hue >= 210 && hue < 270) detected = '파란색';
-            else if (hue >= 290 && hue < 330) detected = '보라색';
+        }
+        // 2. 유채색 (싸인펜, 색연필, 형광펜, 크레파스 등 손그림 색상)
+        // 흰 종이 바탕이 비치는 색연필/싸인펜을 위해 채도 임계치를 0.20에서 0.08로 대폭 완화
+        else if (sat >= 0.08) {
+          // 사각지대(Dead zone) 없는 360도 연속 색상환 매핑
+          if (hue >= 330 || hue < 25) {
+            detected = '빨간색';     // 빨강, 다홍, 마젠타, 핑크
+          } else if (hue >= 25 && hue < 72) {
+            detected = '노란색';     // 노랑, 주황
+          } else if (hue >= 72 && hue < 160) {
+            detected = '초록색';     // 연두, 초록, 풀색
+          } else if (hue >= 160 && hue < 205) {
+            detected = '하늘색';     // 청록, 민트, 하늘색
+          } else if (hue >= 205 && hue < 270) {
+            detected = '파란색';     // 파랑, 군청, 남색
+          } else if (hue >= 270 && hue < 330) {
+            detected = '보라색';     // 보라, 자주
           }
-        } else if (val > 0.2) {
+        }
+        // 3. 흰색 (A4 용지 흰 바탕)
+        else if (sat < 0.08 && (val > 0.35 || floor > 55)) {
           detected = '흰색';
+        }
+        // 4. 로봇 펌웨어 내장 판별 보조 (HW Color code fallback)
+        else if (hwColor > 0) {
+          const HW_MAP = {
+            1: '검은색', 2: '빨간색', 3: '노란색', 4: '노란색', 5: '초록색',
+            6: '하늘색', 7: '파란색', 8: '보라색', 9: '보라색', 10: '흰색'
+          };
+          if (HW_MAP[hwColor]) detected = HW_MAP[hwColor];
         }
 
         if (detected !== 'unknown') {
@@ -3259,7 +4206,7 @@
     }
 
     function disconnectTurtle() {
-      if (confirm('현재 연결된 터틀봇과의 연결을 해제하시겠습니까?')) {
+      showCustomConfirm('현재 연결된 터틀봇과의 연결을 해제하시겠습니까?', () => {
         isManuallyDisconnected = true;
         if (autoReconnectTimer) clearInterval(autoReconnectTimer);
         if (bleDevice && bleDevice.gatt.connected) {
@@ -3269,7 +4216,7 @@
         updateStatus('로봇 미연결', false);
         resetConnectButton();
         setTimeout(() => { isManuallyDisconnected = false; }, 600);
-      }
+      });
     }
 
     function resetConnectButton() {
@@ -3282,7 +4229,7 @@
 
     function pingMyRobot() {
       if (!writeChar) {
-        alert('로봇이 연결되어 있지 않습니다.');
+        showCustomAlert('로봇이 연결되어 있지 않습니다.');
         return;
       }
       sendPacket(0, 0, [255, 0, 255], 1);
@@ -3389,7 +4336,9 @@
     function resetSim() {}
 
     function resetWorkspace() {
-      if (confirm('모든 블록을 초기화하시겠습니까?')) {
+      showCustomConfirm('모든 블록을 초기화하시겠습니까?', () => {
+        stopAllExecution();
+        cleanupDrag();
         const board = document.getElementById('workspaceBoard');
         board.innerHTML = `
           <div class="code-stack" id="defaultStack" style="left: 60px; top: 40px;">
@@ -3402,11 +4351,15 @@
         userVariables['속도'] = 50;
         userVariables['거리'] = 5;
         userVariables['임의값'] = 0;
+        userBooleans['상태1'] = false;
+        userBooleans['상태2'] = false;
+        userBooleans['출발가능'] = true;
+        userBooleans['위험감지'] = false;
         userLists['명령목록'] = ['앞으로', '오른쪽', '앞으로'];
         updateHud();
         document.getElementById('variableHud').classList.remove('show');
         attachStackDrag(document.getElementById('defaultStack'));
-      }
+      });
     }
 
         // ── Slidable Top Header Navigation Helpers ──
@@ -3516,6 +4469,71 @@
       }
     }
 
+    // ── Custom In-App Confirmation & Alert Dialog (Replaces native confirm/alert to fix Bluefy iOS "앱 소개" localization bug) ──
+    let customDialogConfirmCallback = null;
+
+    function showCustomConfirm(message, onConfirm, title = '확인') {
+      const overlay = document.getElementById('customDialogModal');
+      const titleEl = document.getElementById('customDialogTitle');
+      const msgEl = document.getElementById('customDialogMessage');
+      const cancelBtn = document.getElementById('customDialogCancelBtn');
+      const confirmBtn = document.getElementById('customDialogConfirmBtn');
+      if (!overlay || !msgEl) {
+        if (onConfirm) onConfirm();
+        return;
+      }
+      customDialogConfirmCallback = onConfirm || null;
+      if (titleEl) titleEl.innerHTML = `<span>✔</span> ${title}`;
+      msgEl.textContent = message;
+      if (cancelBtn) {
+        cancelBtn.style.display = 'inline-flex';
+        cancelBtn.querySelector('span').textContent = '취소';
+      }
+      if (confirmBtn) {
+        confirmBtn.querySelector('span').textContent = '확인';
+      }
+      overlay.classList.add('show');
+    }
+
+    function showCustomAlert(message, title = '알림') {
+      const overlay = document.getElementById('customDialogModal');
+      const titleEl = document.getElementById('customDialogTitle');
+      const msgEl = document.getElementById('customDialogMessage');
+      const cancelBtn = document.getElementById('customDialogCancelBtn');
+      const confirmBtn = document.getElementById('customDialogConfirmBtn');
+      if (!overlay || !msgEl) return;
+      customDialogConfirmCallback = null;
+      if (titleEl) titleEl.innerHTML = `<span>🔔</span> ${title}`;
+      msgEl.textContent = message;
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      if (confirmBtn) {
+        confirmBtn.querySelector('span').textContent = '확인';
+      }
+      overlay.classList.add('show');
+    }
+
+    function handleCustomDialogConfirm() {
+      const overlay = document.getElementById('customDialogModal');
+      if (overlay) overlay.classList.remove('show');
+      const cb = customDialogConfirmCallback;
+      customDialogConfirmCallback = null;
+      if (typeof cb === 'function') cb();
+    }
+
+    function handleCustomDialogCancel() {
+      const overlay = document.getElementById('customDialogModal');
+      if (overlay) overlay.classList.remove('show');
+      customDialogConfirmCallback = null;
+    }
+
+    function closeCustomDialogOnBackdrop(e) {
+      if (e.target && e.target.id === 'customDialogModal') {
+        handleCustomDialogCancel();
+      }
+    }
+
+    window.alert = (msg) => showCustomAlert(String(msg));
+
     function onToggleShowController(enabled) {
       isControllerEnabled = enabled;
       const dock = document.getElementById('keypadDock');
@@ -3528,7 +4546,8 @@
     }
 
     function loadKeypadCodingSample() {
-      if (confirm('작업 공간에 [기본 조종 코딩 예제 블록]을 배치하시겠습니까?')) {
+      showCustomConfirm('작업 공간에 [기본 조종 코딩 예제 블록]을 배치하시겠습니까?', () => {
+        cleanupDrag();
         const board = document.getElementById('workspaceBoard');
         board.innerHTML = '';
 
@@ -3570,7 +4589,7 @@
         if (chk) chk.checked = true;
 
         closeGuideModal();
-      }
+      });
     }
 
     function hasMatchingEventBlock(eventType, eventParam = null) {
@@ -3700,7 +4719,7 @@
             <div class="guide-block-row">
               <div class="g-hat">⌨ [스페이스] 키를 눌렀을 때</div>
               <div class="g-arrow">➔</div>
-              <div class="g-sound">효과음 [ 삐- 소리 ] 재생하기</div>
+              <div class="g-sound">소리 [ 삐- 소리 ] 을(를) [ 2 ] 초간 재생하기</div>
             </div>
           </div>
         </div>
@@ -3718,7 +4737,28 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="closeGuideModal()" style="background:#00b894; color:#fff; width:100%; justify-content:center;">
-          <span>확인 및 닫기</span>
+          <span>확인</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom In-App Confirmation & Alert Modal (Prevents Bluefy iOS "앱 소개" button mistranslation) -->
+  <div class="modal-overlay" id="customDialogModal" onclick="closeCustomDialogOnBackdrop(event)" style="z-index: 2500;">
+    <div class="modal-card" style="max-width: 400px; border-radius: 16px;">
+      <div class="modal-header" style="padding: 14px 18px;">
+        <h3 id="customDialogTitle" style="font-size: 1.02rem; color: #00cec9;"><span>✔</span> 확인</h3>
+        <button class="modal-close-btn" onclick="handleCustomDialogCancel()">✕</button>
+      </div>
+      <div class="modal-body" style="padding: 22px 20px; text-align: center; font-size: 0.96rem; font-weight: 700; color: #f8fafc; line-height: 1.55; white-space: pre-line;" id="customDialogMessage">
+        확인하시겠습니까?
+      </div>
+      <div class="modal-footer" style="display: flex; gap: 10px; justify-content: center; padding: 12px 18px;">
+        <button class="btn" id="customDialogCancelBtn" onclick="handleCustomDialogCancel()" style="flex: 1; background: #475569; color: #fff; justify-content: center; padding: 10px 16px; border-radius: 10px;">
+          <span>취소</span>
+        </button>
+        <button class="btn" id="customDialogConfirmBtn" onclick="handleCustomDialogConfirm()" style="flex: 1; background: #00b894; color: #fff; justify-content: center; padding: 10px 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0, 184, 148, 0.4);">
+          <span>확인</span>
         </button>
       </div>
     </div>
