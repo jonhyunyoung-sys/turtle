@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Bluefy 실행 중...</title>
+  <script>
+    window.onload = function() {
+      // Bluefy 앱으로 즉시 연결
+      window.location.href = "bluefy://https://jonhyunyoung-sys.github.io/turtle/";
+    };
+  </script>
+</head>
+<body style="text-align:center; padding-top: 50px; font-family: sans-serif;">
+  <p>Bluefy 브라우저로 이동하는 중입니다...</p>
+  <p><a href="bluefy://https://jonhyunyoung-sys.github.io/turtle/" style="font-size: 18px; color: blue;">자동으로 열리지 않으면 여기를 터치하세요</a></p>
+</body>
+</html>
