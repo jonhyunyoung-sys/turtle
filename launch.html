@@ -5,16 +5,16 @@
   <title>Bluefy 연결 중</title>
   <script>
     window.onload = function() {
-      // https:// 를 뺀 도메인 및 경로 전달
-      window.location.href = "bluefy://jonhyunyoung-sys.github.io/turtle/";
+      // 인코딩된 전체 URL 전달
+      window.location.href = "bluefy://open?url=" + encodeURIComponent("https://jonhyunyoung-sys.github.io/turtle/");
     };
   </script>
 </head>
 <body style="text-align:center; padding-top: 50px; font-family: sans-serif;">
-  <p>Bluefy 브라우저로 이동 중입니다...</p>
+  <p>Bluefy 브라우저로 이동 중...</p>
   <p>
-    <a href="bluefy://jonhyunyoung-sys.github.io/turtle/" style="font-size: 18px; color: blue;">
-      자동으로 이동하지 않으면 여기를 터치하세요
+    <a href="bluefy://https%3A%2F%2Fjonhyunyoung-sys.github.io%2Fturtle%2F" style="font-size: 18px; color: blue;">
+      수동으로 이동하기 (인코딩 링크)
     </a>
   </p>
 </body>
