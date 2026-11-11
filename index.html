@@ -1078,8 +1078,99 @@
     }
 
     /* ── Docked Virtual Keypad (Controller) ── */
-    .keypad-dock {
+    /* ── Workspace Zoom & Pan Navigation Controller ── */
+    .workspace-nav-ctrl {
       position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 35;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 7px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      backdrop-filter: blur(8px);
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+    }
+
+    .nav-dpad {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-dpad-middle {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-btn {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #e2e8f0;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.12s ease;
+      padding: 0;
+    }
+
+    .nav-btn:hover {
+      background: #edf2f7;
+      color: #0f172a;
+      border-color: #cbd5e1;
+      transform: scale(1.06);
+    }
+
+    .nav-btn:active {
+      background: #e2e8f0;
+      transform: scale(0.94);
+    }
+
+    .nav-btn.nav-reset {
+      font-size: 13px;
+      background: #f1f5f9;
+    }
+
+    .nav-zoom-bar {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 5px;
+      width: 100%;
+      justify-content: center;
+    }
+
+    .nav-zoom-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      min-width: 36px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .nav-zoom-text:hover {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+
+    .keypad-dock {
       bottom: 14px;
       right: 14px;
       background: #232738;
@@ -1179,6 +1270,116 @@
     }
 
     /* ── Modal Dialog (Guide & Settings) ── */
+    /* ── Touch & Long-Press Context Menu ── */
+    .block-context-menu {
+      position: fixed;
+      z-index: 2000;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      padding: 6px;
+      min-width: 170px;
+      display: none;
+      flex-direction: column;
+      gap: 2px;
+      animation: contextMenuPop 0.15s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    @keyframes contextMenuPop {
+      from {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .context-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+
+    .context-menu-item:hover,
+    .context-menu-item:active {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .context-menu-item.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
+    .context-menu-item.cmenu-delete {
+      color: #ef4444;
+    }
+
+    .context-menu-item.cmenu-delete:hover,
+    .context-menu-item.cmenu-delete:active {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .cmenu-icon {
+      font-size: 15px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+    }
+
+    .context-menu-divider {
+      height: 1px;
+      background: #e2e8f0;
+      margin: 4px 6px;
+    }
+
+    .long-pressing {
+      transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+      transform: scale(0.96) !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.45) !important;
+    }
+
+    .entry-toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(15, 23, 42, 0.92);
+      color: #ffffff;
+      padding: 9px 20px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+      z-index: 3000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .entry-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -1516,6 +1717,24 @@
         <div class="trashcan-label">휴지통</div>
       </div>
 
+      <!-- Workspace Zoom & Pan Navigation Controller -->
+      <div class="workspace-nav-ctrl" id="workspaceNavCtrl" title="코딩 보드 상하좌우 이동 및 확대/축소">
+        <div class="nav-dpad">
+          <button class="nav-btn nav-up" onclick="panWorkspace(0, 100)" title="위로 이동">▲</button>
+          <div class="nav-dpad-middle">
+            <button class="nav-btn nav-left" onclick="panWorkspace(100, 0)" title="왼쪽으로 이동">◀</button>
+            <button class="nav-btn nav-reset" onclick="resetWorkspaceView()" title="원래 위치 및 100%로 복귀">🎯</button>
+            <button class="nav-btn nav-right" onclick="panWorkspace(-100, 0)" title="오른쪽으로 이동">▶</button>
+          </div>
+          <button class="nav-btn nav-down" onclick="panWorkspace(0, -100)" title="아래로 이동">▼</button>
+        </div>
+        <div class="nav-zoom-bar">
+          <button class="nav-btn nav-zoom-in" onclick="zoomWorkspace(0.15)" title="확대">➕</button>
+          <span class="nav-zoom-text" id="workspaceZoomText" onclick="resetWorkspaceZoom()" title="클릭 시 100%로 리셋">100%</span>
+          <button class="nav-btn nav-zoom-out" onclick="zoomWorkspace(-0.15)" title="축소">➖</button>
+        </div>
+      </div>
+
       <div class="workspace-board" id="workspaceBoard">
         <!-- Initial Entry Default Hat Stack -->
         <div class="code-stack" id="defaultStack" style="left: 60px; top: 40px;">
@@ -1571,6 +1790,7 @@
     let currentSoundClip = 0;
     let currentNoteVal = 0;
     let currentBuzzerFreq = 0;
+    let currentVolume = 100; // Sound Volume 0 ~ 100 (%)
     let soundIdToggle = 0;
     let tracerIdToggle = 0;
     let soundStopTimer = null;
@@ -1706,11 +1926,16 @@
       },
       sound: {
         title: '소리 / 음악 블록 (Sound & Music)',
-        hint: '터틀봇 효과음 및 계이름 멜로디를 지정한 시간(초) 동안 재생합니다.',
+        hint: '터틀봇 효과음 및 계이름 멜로디를 재생하고 음량을 조절합니다.',
         blocks: [
-          { cmd: 'play_clip', cat: 'sound', label: '소리', select: ['삐- 소리', '사이렌', '로봇 소리', '행진곡', '생일축하곡', '디비디비딥', '잘했어요'], label2: '을(를)', param: 2, unit: '초간 재생하기', type: 'line_sec' },
+          { cmd: 'play_clip_until_done', cat: 'sound', label: '소리', select: ['행진곡', '생일축하곡', '삐- 소리', '사이렌', '로봇 소리', '디비디비딥', '잘했어요'], unit: '끝까지 재생하기', type: 'select' },
+          { cmd: 'play_clip', cat: 'sound', label: '소리', select: ['행진곡', '생일축하곡', '삐- 소리', '사이렌', '로봇 소리', '디비디비딥', '잘했어요'], unit: '재생하기', type: 'select' },
+          { cmd: 'play_clip_sec', cat: 'sound', label: '소리', select: ['행진곡', '생일축하곡', '삐- 소리', '사이렌', '로봇 소리', '디비디비딥', '잘했어요'], label2: '을(를)', param: 2, unit: '초간 재생하기', type: 'line_sec' },
           { cmd: 'play_note', cat: 'sound', label: '음계', select: ['4옥타브 도', '4옥타브 레', '4옥타브 미', '4옥타브 파', '4옥타브 솔', '4옥타브 라', '4옥타브 시', '5옥타브 도'], label2: '음을', param: 1, unit: '박자 연주하기', type: 'note' },
-          { cmd: 'stop_sound', cat: 'sound', label: '소리 끄기', type: 'none' }
+          { cmd: 'set_volume', cat: 'sound', label: '소리 크기를', param: 100, unit: '% 로 정하기', type: 'num' },
+          { cmd: 'change_volume', cat: 'sound', label: '소리 크기를', param: 10, unit: '% 만큼 바꾸기', type: 'num' },
+          { cmd: 'stop_sound', cat: 'sound', label: '모든 소리 끄기', type: 'none' },
+          { cmd: 'val_volume', cat: 'sound', isVal: true, label: '( 소리 크기 % )', type: 'val_none' }
         ]
       },
       judge: {
@@ -1859,6 +2084,8 @@
           inner += ` ${buildValSlotHtml('param-1', def.param, '', 'width:42px;')} <span>${def.label2 || ''}</span> <select class="param-round-type" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
         } else if (def.type === 'val_min_max') {
           inner += ` ${buildValSlotHtml('param-1', def.param1, '', 'width:38px;')} <span>${def.label2 || ''}</span> ${buildValSlotHtml('param-2', def.param2, '', 'width:38px;')} <span>${def.label3 || ''}</span> <select class="param-minmax-type" onclick="event.stopPropagation()">${def.select.map(s => `<option value="${s}">${s}</option>`).join('')}</select> <span>${def.unit || ''}</span>`;
+        } else if (def.type === 'val_none') {
+          inner = `<span>${def.label}</span>`;
         }
 
         if (!isPalette) {
@@ -2626,8 +2853,8 @@
       removeDropIndicator();
 
       // 3. Place as free-standing stack on workspace board
-      const dropX = Math.max(20, e.clientX - boardRect.left - (dragData.grabOffsetX || 20));
-      const dropY = Math.max(20, e.clientY - boardRect.top - (dragData.grabOffsetY || 20));
+      const dropX = Math.max(20, (e.clientX - boardRect.left - (dragData.grabOffsetX || 20)) / workspaceZoom);
+      const dropY = Math.max(20, (e.clientY - boardRect.top - (dragData.grabOffsetY || 20)) / workspaceZoom);
 
       if (targetEl.parentElement && targetEl.parentElement.classList.contains('code-stack') && targetEl.parentElement.children.length === 1) {
         targetEl.parentElement.style.left = `${dropX}px`;
@@ -2688,8 +2915,8 @@
       const paletteDrawer = document.getElementById('paletteDrawer');
 
       function onMove(me) {
-        const dx = me.clientX - startX;
-        const dy = me.clientY - startY;
+        const dx = (me.clientX - startX) / workspaceZoom;
+        const dy = (me.clientY - startY) / workspaceZoom;
         stack.style.left = `${initialLeft + dx}px`;
         stack.style.top = `${Math.max(10, initialTop + dy)}px`;
         const paletteRect = paletteDrawer ? paletteDrawer.getBoundingClientRect() : null;
@@ -2911,6 +3138,8 @@
       } else if (cmd === 'val_list_count') {
         const lName = blockEl.querySelector('.param-list')?.value || '명령목록';
         return userLists[lName] ? userLists[lName].length : 0;
+      } else if (cmd === 'val_volume') {
+        return currentVolume;
       }
       return 0;
     }
@@ -3300,45 +3529,102 @@
         }
 
         // ── Sound & Music Blocks (Play for Exact n Seconds) ──
-        case 'play_clip': {
+        case 'play_clip_until_done': {
           const sel = el.querySelector('.param-select').value;
-          const sec = Math.max(0, readNum(el, '.param-1', 2));
-          const targetMs = Math.round(sec * 1000);
-          if (targetMs <= 0) break;
-
           const clips = {
             '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
             '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
           };
-          const clipId = clips[sel] || 1;
+          const clipId = clips[sel] || 64;
           const clipCycleMs = {
             1: 500,    // 삐- 소리
             16: 3000,  // 사이렌
-            48: 1100,  // 로봇 소리
-            64: 4400,  // 행진곡
+            48: 1400,  // 로봇 소리
+            64: 4500,  // 행진곡 (전체 소절 완료)
+            65: 7600,  // 생일축하곡 (전체 4소절 완료)
+            66: 1500,  // 디비디비딥
+            67: 1700   // 잘했어요
+          };
+          const durMs = clipCycleMs[clipId] || 4500;
+
+          stopAudioPlayback();
+          if (currentVolume > 0) {
+            sendPacket(null, null, null, clipId);
+            playWebAudioClip(clipId);
+          }
+          // 소리가 끝까지 완전히 연주될 때까지 대기
+          await waitMs(durMs, token);
+          currentSoundClip = 0;
+          if (!token.cancelled && isExecuting) {
+            sendPacket(null, null, null, 0, 0, 0);
+          }
+          break;
+        }
+        case 'play_clip': {
+          const sel = el.querySelector('.param-select').value;
+          const clips = {
+            '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
+            '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
+          };
+          const clipId = clips[sel] || 64;
+          const clipCycleMs = {
+            1: 500,    // 삐- 소리
+            16: 3000,  // 사이렌
+            48: 1400,  // 로봇 소리
+            64: 4500,  // 행진곡
             65: 7600,  // 생일축하곡
             66: 1500,  // 디비디비딥
             67: 1700   // 잘했어요
           };
-          const cycleMs = clipCycleMs[clipId] || 1500;
+          const durMs = clipCycleMs[clipId] || 4500;
 
-          stopAudioPlayback();
-          sendPacket(null, null, null, clipId);
-          playWebAudioClip(clipId);
-
-          let elapsed = 0;
-          let nextCycleAt = cycleMs;
-          while (!token.cancelled && isExecuting && elapsed < targetMs) {
-            const step = Math.min(80, targetMs - elapsed);
-            if (!(await waitMs(step, token))) break;
-            elapsed += step;
-            if (elapsed >= nextCycleAt && (targetMs - elapsed) >= 220) {
+          // 이전 버전(초간 재생하기 파라미터가 DOM에 남아있는 경우) 호환
+          const paramEl = el.querySelector('.param-1');
+          if (paramEl) {
+            const sec = Math.max(0.1, readNum(el, '.param-1', 2));
+            const targetMs = Math.round(sec * 1000);
+            stopAudioPlayback();
+            if (currentVolume > 0) {
               sendPacket(null, null, null, clipId);
               playWebAudioClip(clipId);
-              nextCycleAt += cycleMs;
             }
+            await waitMs(targetMs, token);
+            stopAudioPlayback();
+            currentSoundClip = 0;
+            if (!token.cancelled && isExecuting) {
+              sendPacket(null, null, null, 0, 0, 0);
+            }
+          } else {
+            // 백그라운드에서 다음 블록(이동, LED 등)과 함께 소리가 끝까지 재생되도록 시작
+            stopAudioPlayback();
+            if (currentVolume > 0) {
+              sendPacket(null, null, null, clipId);
+              playWebAudioClip(clipId);
+            }
+            if (soundStopTimer) clearTimeout(soundStopTimer);
+            soundStopTimer = setTimeout(() => {
+              currentSoundClip = 0;
+              sendPacket(null, null, null, 0, 0, 0);
+            }, durMs + 100);
           }
+          break;
+        }
+        case 'play_clip_sec': {
+          const sel = el.querySelector('.param-select').value;
+          const sec = Math.max(0.1, readNum(el, '.param-1', 2));
+          const targetMs = Math.round(sec * 1000);
+          const clips = {
+            '삐- 소리': 1, '사이렌': 16, '로봇 소리': 48,
+            '행진곡': 64, '생일축하곡': 65, '디비디비딥': 66, '잘했어요': 67
+          };
+          const clipId = clips[sel] || 64;
 
+          stopAudioPlayback();
+          if (currentVolume > 0) {
+            sendPacket(null, null, null, clipId);
+            playWebAudioClip(clipId);
+          }
+          await waitMs(targetMs, token);
           stopAudioPlayback();
           currentSoundClip = 0;
           if (!token.cancelled && isExecuting) {
@@ -3352,11 +3638,23 @@
           const notes = { '4옥타브 도': 60, '4옥타브 레': 62, '4옥타브 미': 64, '4옥타브 파': 65, '4옥타브 솔': 67, '4옥타브 라': 69, '4옥타브 시': 71, '5옥타브 도': 72 };
           const freqs = { 60: 261.63, 62: 293.66, 64: 329.63, 65: 349.23, 67: 392.00, 69: 440.00, 71: 493.88, 72: 523.25 };
           const noteCode = notes[noteStr] || 60;
-          sendPacket(null, null, null, null, noteCode);
-          playWebAudioTone(freqs[noteCode] || 440, beats * 500);
+          if (currentVolume > 0) {
+            sendPacket(null, null, null, null, noteCode);
+            playWebAudioTone(freqs[noteCode] || 440, beats * 500);
+          }
           if (await waitMs(beats * 500, token)) {
             sendPacket(null, null, null, null, 0);
           }
+          break;
+        }
+        case 'set_volume': {
+          const v = Math.round(readNum(el, '.param-1', 100));
+          currentVolume = Math.max(0, Math.min(100, v));
+          break;
+        }
+        case 'change_volume': {
+          const delta = Math.round(readNum(el, '.param-1', 10));
+          currentVolume = Math.max(0, Math.min(100, currentVolume + delta));
           break;
         }
         case 'stop_sound': {
@@ -3868,12 +4166,14 @@
 
     function playWebAudioTone(freq, durMs, waveType = 'sine') {
       try {
+        if (currentVolume <= 0) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.type = waveType;
         osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+        const volRatio = Math.max(0, Math.min(100, currentVolume)) / 100.0;
+        gain.gain.setValueAtTime(0.25 * volRatio, audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + durMs / 1000);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -3888,8 +4188,10 @@
 
     function playWebAudioClip(clipId) {
       try {
+        if (currentVolume <= 0) return;
         if (audioCtx.state === 'suspended') audioCtx.resume();
         const now = audioCtx.currentTime;
+        const volRatio = Math.max(0, Math.min(100, currentVolume)) / 100.0;
 
         if (clipId === 1) { // 삐- 소리 (Single Beep)
           playWebAudioTone(880, 200);
@@ -3897,8 +4199,8 @@
           const osc = audioCtx.createOscillator();
           const gain = audioCtx.createGain();
           osc.type = 'sawtooth';
-          gain.gain.setValueAtTime(0.2, now);
-          gain.gain.linearRampToValueAtTime(0.2, now + 2.7);
+          gain.gain.setValueAtTime(0.2 * volRatio, now);
+          gain.gain.linearRampToValueAtTime(0.2 * volRatio, now + 2.7);
           gain.gain.exponentialRampToValueAtTime(0.001, now + 3.0);
 
           osc.frequency.setValueAtTime(550, now);
@@ -4257,28 +4559,34 @@
       }
 
       // Sound Subsystem Latching: preserve playing sound across wheel/LED packets!
-      if (soundClip !== null) {
-        if (soundClip > 0) {
-          currentSoundClip = soundClip;
-          currentNoteVal = 0;
-          currentBuzzerFreq = 0;
-          soundIdToggle = (soundIdToggle + 1) % 2;
-        } else {
-          currentSoundClip = 0;
+      if (currentVolume <= 0) {
+        currentSoundClip = 0;
+        currentNoteVal = 0;
+        currentBuzzerFreq = 0;
+      } else {
+        if (soundClip !== null) {
+          if (soundClip > 0) {
+            currentSoundClip = soundClip;
+            currentNoteVal = 0;
+            currentBuzzerFreq = 0;
+            soundIdToggle = (soundIdToggle + 1) % 2;
+          } else {
+            currentSoundClip = 0;
+          }
         }
-      }
-      if (noteVal !== null) {
-        currentNoteVal = noteVal;
-        if (noteVal > 0) {
-          currentSoundClip = 0;
-          currentBuzzerFreq = 0;
+        if (noteVal !== null) {
+          currentNoteVal = noteVal;
+          if (noteVal > 0) {
+            currentSoundClip = 0;
+            currentBuzzerFreq = 0;
+          }
         }
-      }
-      if (buzzerFreq !== null) {
-        currentBuzzerFreq = buzzerFreq;
-        if (buzzerFreq > 0) {
-          currentSoundClip = 0;
-          currentNoteVal = 0;
+        if (buzzerFreq !== null) {
+          currentBuzzerFreq = buzzerFreq;
+          if (buzzerFreq > 0) {
+            currentSoundClip = 0;
+            currentNoteVal = 0;
+          }
         }
       }
 
@@ -4356,13 +4664,480 @@
         userBooleans['출발가능'] = true;
         userBooleans['위험감지'] = false;
         userLists['명령목록'] = ['앞으로', '오른쪽', '앞으로'];
+        resetWorkspaceView();
         updateHud();
         document.getElementById('variableHud').classList.remove('show');
         attachStackDrag(document.getElementById('defaultStack'));
       });
     }
 
-        // ── Slidable Top Header Navigation Helpers ──
+        // ── Long-Press & Right-Click Context Menu Engine (Copy / Cut / Paste / Duplicate) ──
+    let blockClipboard = null;
+    let currentContextMenuTarget = null;
+    let lastContextClickPos = { x: 0, y: 0 };
+    let longPressTimer = null;
+    let longPressStartPos = { x: 0, y: 0 };
+    let currentLongPressEl = null;
+    let toastTimer = null;
+
+    function showToastNotification(msg) {
+      const toast = document.getElementById('entryToast');
+      if (!toast) return;
+      toast.innerText = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 1400);
+    }
+
+    function reattachEventsToClone(rootEl) {
+      if (!rootEl) return;
+      if (rootEl.classList.contains('code-stack')) {
+        attachStackDrag(rootEl);
+        rootEl.querySelectorAll('.block, .block-c-container, .block-bool, .block-val').forEach(b => {
+          attachBlockDragEvents(b);
+        });
+      } else {
+        attachBlockDragEvents(rootEl);
+        rootEl.querySelectorAll('.block, .block-c-container, .block-bool, .block-val').forEach(b => {
+          attachBlockDragEvents(b);
+        });
+      }
+    }
+
+    function copyTarget(targetEl) {
+      if (!targetEl) return;
+      if (targetEl.parentElement && targetEl.parentElement.classList.contains('code-stack')) {
+        const parent = targetEl.parentElement;
+        if (isHatBlock(targetEl)) {
+          const clone = parent.cloneNode(true);
+          copyBlockControlValues(parent, clone);
+          blockClipboard = { isStack: true, element: clone };
+          return;
+        }
+        const blocksToCopy = [];
+        let curr = targetEl;
+        while (curr) {
+          blocksToCopy.push(curr);
+          curr = curr.nextElementSibling;
+        }
+        const tempStack = document.createElement('div');
+        tempStack.className = 'code-stack';
+        blocksToCopy.forEach(b => {
+          const bClone = b.cloneNode(true);
+          copyBlockControlValues(b, bClone);
+          tempStack.appendChild(bClone);
+        });
+        blockClipboard = { isStack: true, element: tempStack };
+      } else if (targetEl.classList.contains('code-stack')) {
+        const clone = targetEl.cloneNode(true);
+        copyBlockControlValues(targetEl, clone);
+        blockClipboard = { isStack: true, element: clone };
+      } else {
+        const clone = targetEl.cloneNode(true);
+        copyBlockControlValues(targetEl, clone);
+        blockClipboard = { isStack: false, element: clone };
+      }
+    }
+
+    function deleteTarget(targetEl) {
+      if (!targetEl) return;
+      if (targetEl.classList.contains('code-stack')) {
+        targetEl.remove();
+        return;
+      }
+      if (targetEl.parentElement && targetEl.parentElement.classList.contains('code-stack')) {
+        const parent = targetEl.parentElement;
+        if (isHatBlock(targetEl)) {
+          parent.remove();
+          return;
+        }
+        let curr = targetEl;
+        const toRemove = [];
+        while (curr) {
+          toRemove.push(curr);
+          curr = curr.nextElementSibling;
+        }
+        toRemove.forEach(b => b.remove());
+        if (parent.children.length === 0) {
+          parent.remove();
+        }
+      } else {
+        const parentStack = targetEl.closest('.code-stack');
+        targetEl.remove();
+        if (parentStack && parentStack.children.length === 0) {
+          parentStack.remove();
+        }
+      }
+    }
+
+    function pasteClipboard(clientX, clientY) {
+      if (!blockClipboard || !blockClipboard.element) {
+        showToastNotification('붙여넣을 복사된 블록이 없습니다');
+        return;
+      }
+      const board = document.getElementById('workspaceBoard');
+      if (!board) return;
+      const boardRect = board.getBoundingClientRect();
+
+      const posX = Math.max(20, (clientX - boardRect.left) / workspaceZoom);
+      const posY = Math.max(20, (clientY - boardRect.top) / workspaceZoom);
+
+      if (blockClipboard.isStack) {
+        const newStack = blockClipboard.element.cloneNode(true);
+        copyBlockControlValues(blockClipboard.element, newStack);
+        newStack.style.left = `${posX}px`;
+        newStack.style.top = `${posY}px`;
+        board.appendChild(newStack);
+        reattachEventsToClone(newStack);
+      } else {
+        const newStack = document.createElement('div');
+        newStack.className = 'code-stack';
+        newStack.style.left = `${posX}px`;
+        newStack.style.top = `${posY}px`;
+        const newBlock = blockClipboard.element.cloneNode(true);
+        copyBlockControlValues(blockClipboard.element, newBlock);
+        newStack.appendChild(newBlock);
+        board.appendChild(newStack);
+        reattachEventsToClone(newStack);
+      }
+      showToastNotification('붙여넣기 완료');
+    }
+
+    function duplicateTarget(targetEl, clientX, clientY) {
+      copyTarget(targetEl);
+      pasteClipboard(clientX + 28, clientY + 28);
+    }
+
+    function cutTarget(targetEl) {
+      copyTarget(targetEl);
+      deleteTarget(targetEl);
+    }
+
+    function showBlockContextMenu(targetEl, clientX, clientY) {
+      const menu = document.getElementById('blockContextMenu');
+      if (!menu) return;
+
+      currentContextMenuTarget = targetEl;
+      lastContextClickPos = { x: clientX, y: clientY };
+
+      const isBackground = !targetEl || targetEl === document.getElementById('workspacePane') || targetEl === document.getElementById('workspaceBoard');
+      const dupBtn = document.getElementById('cmenuDuplicate');
+      const copyBtn = document.getElementById('cmenuCopy');
+      const cutBtn = document.getElementById('cmenuCut');
+      const delBtn = document.getElementById('cmenuDelete');
+      const pasteBtn = document.getElementById('cmenuPaste');
+      const divider = document.getElementById('cmenuDivider');
+
+      if (pasteBtn) {
+        if (blockClipboard) {
+          pasteBtn.classList.remove('disabled');
+        } else {
+          pasteBtn.classList.add('disabled');
+        }
+      }
+
+      if (isBackground) {
+        if (dupBtn) dupBtn.style.display = 'none';
+        if (copyBtn) copyBtn.style.display = 'none';
+        if (cutBtn) cutBtn.style.display = 'none';
+        if (delBtn) delBtn.style.display = 'none';
+        if (divider) divider.style.display = 'none';
+      } else {
+        if (dupBtn) dupBtn.style.display = 'flex';
+        if (copyBtn) copyBtn.style.display = 'flex';
+        if (cutBtn) cutBtn.style.display = 'flex';
+        if (delBtn) delBtn.style.display = 'flex';
+        if (divider) divider.style.display = 'block';
+      }
+
+      menu.style.display = 'flex';
+      const menuRect = menu.getBoundingClientRect();
+      let posX = clientX + 6;
+      let posY = clientY + 6;
+      if (posX + menuRect.width > window.innerWidth - 12) {
+        posX = clientX - menuRect.width - 6;
+      }
+      if (posY + menuRect.height > window.innerHeight - 12) {
+        posY = clientY - menuRect.height - 6;
+      }
+      menu.style.left = `${Math.max(12, posX)}px`;
+      menu.style.top = `${Math.max(12, posY)}px`;
+    }
+
+    function hideBlockContextMenu() {
+      const menu = document.getElementById('blockContextMenu');
+      if (menu) menu.style.display = 'none';
+      currentContextMenuTarget = null;
+    }
+
+    function handleContextMenuAction(action) {
+      const target = currentContextMenuTarget;
+      const pos = lastContextClickPos || { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+      hideBlockContextMenu();
+
+      if (action === 'duplicate') {
+        if (!target) return;
+        duplicateTarget(target, pos.x, pos.y);
+      } else if (action === 'copy') {
+        if (!target) return;
+        copyTarget(target);
+        showToastNotification('클립보드에 복사되었습니다');
+      } else if (action === 'cut') {
+        if (!target) return;
+        cutTarget(target);
+        showToastNotification('잘라내었습니다');
+      } else if (action === 'paste') {
+        pasteClipboard(pos.x, pos.y);
+      } else if (action === 'delete') {
+        if (!target) return;
+        deleteTarget(target);
+        showToastNotification('삭제되었습니다');
+      }
+    }
+
+    function cancelLongPressDetection() {
+      if (longPressTimer) {
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
+      if (currentLongPressEl) {
+        currentLongPressEl.classList.remove('long-pressing');
+        currentLongPressEl = null;
+      }
+    }
+
+    function setupContextMenuAndLongPress() {
+      const pane = document.getElementById('workspacePane');
+      if (!pane) return;
+
+      // Close context menu when clicking outside
+      window.addEventListener('pointerdown', (e) => {
+        if (!e.target.closest('#blockContextMenu')) {
+          hideBlockContextMenu();
+        }
+      });
+
+      // Right-Click Context Menu on PC
+      pane.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        cancelLongPressDetection();
+        const targetEl = e.target.closest('.block, .block-c-container, .block-bool, .block-val, .code-stack');
+        showBlockContextMenu(targetEl, e.clientX, e.clientY);
+      });
+
+      // Long Press Detection (Touch / iPad & Mouse Hold)
+      pane.addEventListener('pointerdown', (e) => {
+        if (e.button !== undefined && e.button !== 0) return;
+        if (e.target.closest('input, select, .block-btn-del, .workspace-nav-ctrl, .keypad-dock, .variable-hud, .entry-trashcan')) return;
+
+        cancelLongPressDetection();
+        const targetEl = e.target.closest('.block, .block-c-container, .block-bool, .block-val, .code-stack');
+        currentLongPressEl = targetEl;
+        longPressStartPos = { x: e.clientX, y: e.clientY };
+
+        if (targetEl) {
+          targetEl.classList.add('long-pressing');
+        }
+
+        longPressTimer = setTimeout(() => {
+          if (currentLongPressEl) {
+            currentLongPressEl.classList.remove('long-pressing');
+          }
+          cleanupDrag();
+          try {
+            if (navigator.vibrate) navigator.vibrate(28);
+          } catch (ve) {}
+          showBlockContextMenu(currentLongPressEl, longPressStartPos.x, longPressStartPos.y);
+          longPressTimer = null;
+          currentLongPressEl = null;
+        }, 480);
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!longPressTimer) return;
+        const dist = Math.hypot(e.clientX - longPressStartPos.x, e.clientY - longPressStartPos.y);
+        if (dist > 8) {
+          cancelLongPressDetection();
+        }
+      });
+
+      window.addEventListener('pointerup', cancelLongPressDetection);
+      window.addEventListener('pointercancel', cancelLongPressDetection);
+
+      // Keyboard Shortcuts (Ctrl/Cmd + C, X, V)
+      window.addEventListener('keydown', (e) => {
+        if (e.target.closest('input, textarea')) return;
+        const isCtrl = e.ctrlKey || e.metaKey;
+        if (isCtrl && e.key.toLowerCase() === 'v') {
+          e.preventDefault();
+          const paneRect = pane.getBoundingClientRect();
+          pasteClipboard(paneRect.left + paneRect.width / 2, paneRect.top + paneRect.height / 2);
+        }
+      });
+    }
+
+    // ── Workspace Zoom & Pan Navigation Engine ──
+    let workspaceZoom = 1.0;
+    let workspacePanX = 0;
+    let workspacePanY = 0;
+    const MIN_WORKSPACE_ZOOM = 0.4;
+    const MAX_WORKSPACE_ZOOM = 2.2;
+
+    function updateWorkspaceTransform() {
+      const board = document.getElementById('workspaceBoard');
+      const pane = document.getElementById('workspacePane');
+      if (board) {
+        board.style.transformOrigin = '0 0';
+        board.style.transform = `translate(${workspacePanX}px, ${workspacePanY}px) scale(${workspaceZoom})`;
+      }
+      if (pane) {
+        const gridSz = 24 * workspaceZoom;
+        const offX = ((workspacePanX % gridSz) + gridSz) % gridSz;
+        const offY = ((workspacePanY % gridSz) + gridSz) % gridSz;
+        pane.style.backgroundSize = `${gridSz}px ${gridSz}px`;
+        pane.style.backgroundPosition = `${offX}px ${offY}px, ${offX + gridSz / 2}px ${offY + gridSz / 2}px`;
+      }
+      const zoomText = document.getElementById('workspaceZoomText');
+      if (zoomText) {
+        zoomText.innerText = `${Math.round(workspaceZoom * 100)}%`;
+      }
+    }
+
+    function zoomWorkspace(delta, focalClientX = null, focalClientY = null) {
+      const oldZoom = workspaceZoom;
+      const targetZoom = Math.max(MIN_WORKSPACE_ZOOM, Math.min(MAX_WORKSPACE_ZOOM, Math.round((workspaceZoom + delta) * 100) / 100));
+      if (Math.abs(targetZoom - oldZoom) < 0.001) return;
+
+      const pane = document.getElementById('workspacePane');
+      const paneRect = pane ? pane.getBoundingClientRect() : { left: 0, top: 0, width: 800, height: 600 };
+
+      const cx = (focalClientX !== null ? focalClientX : (paneRect.left + paneRect.width / 2)) - paneRect.left;
+      const cy = (focalClientY !== null ? focalClientY : (paneRect.top + paneRect.height / 2)) - paneRect.top;
+
+      const ratio = targetZoom / oldZoom;
+      workspacePanX = cx - (cx - workspacePanX) * ratio;
+      workspacePanY = cy - (cy - workspacePanY) * ratio;
+      workspaceZoom = targetZoom;
+      updateWorkspaceTransform();
+    }
+
+    function panWorkspace(dx, dy) {
+      workspacePanX += dx;
+      workspacePanY += dy;
+      updateWorkspaceTransform();
+    }
+
+    function resetWorkspaceZoom() {
+      zoomWorkspace(1.0 - workspaceZoom);
+    }
+
+    function resetWorkspaceView() {
+      workspaceZoom = 1.0;
+      workspacePanX = 0;
+      workspacePanY = 0;
+      updateWorkspaceTransform();
+    }
+
+    function setupWorkspacePanZoomEvents() {
+      const pane = document.getElementById('workspacePane');
+      if (!pane) return;
+
+      const activeTouches = new Map();
+      let isPanning = false;
+      let panStartX = 0, panStartY = 0;
+      let initialPanX = 0, initialPanY = 0;
+      let initialPinchDist = 0;
+      let initialPinchZoom = 1.0;
+
+      pane.addEventListener('pointerdown', (e) => {
+        if (e.target.closest('.block, .code-stack, .keypad-dock, .variable-hud, .entry-trashcan, .workspace-nav-ctrl, button, input, select')) {
+          return;
+        }
+
+        activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (activeTouches.size === 1) {
+          isPanning = true;
+          panStartX = e.clientX;
+          panStartY = e.clientY;
+          initialPanX = workspacePanX;
+          initialPanY = workspacePanY;
+          pane.style.cursor = 'grabbing';
+        } else if (activeTouches.size === 2) {
+          isPanning = false;
+          const [t1, t2] = Array.from(activeTouches.values());
+          initialPinchDist = Math.hypot(t1.x - t2.x, t1.y - t2.y);
+          initialPinchZoom = workspaceZoom;
+        }
+      });
+
+      window.addEventListener('pointermove', (e) => {
+        if (!activeTouches.has(e.pointerId)) return;
+        activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (activeTouches.size === 1 && isPanning) {
+          const dx = e.clientX - panStartX;
+          const dy = e.clientY - panStartY;
+          workspacePanX = initialPanX + dx;
+          workspacePanY = initialPanY + dy;
+          updateWorkspaceTransform();
+        } else if (activeTouches.size === 2 && initialPinchDist > 5) {
+          const [t1, t2] = Array.from(activeTouches.values());
+          const curDist = Math.hypot(t1.x - t2.x, t1.y - t2.y);
+          const factor = curDist / initialPinchDist;
+          const newZoom = Math.max(MIN_WORKSPACE_ZOOM, Math.min(MAX_WORKSPACE_ZOOM, initialPinchZoom * factor));
+          const curCenter = { x: (t1.x + t2.x) / 2, y: (t1.y + t2.y) / 2 };
+
+          const oldZoom = workspaceZoom;
+          const paneRect = pane.getBoundingClientRect();
+          const cx = curCenter.x - paneRect.left;
+          const cy = curCenter.y - paneRect.top;
+
+          const ratio = newZoom / oldZoom;
+          workspacePanX = cx - (cx - workspacePanX) * ratio;
+          workspacePanY = cy - (cy - workspacePanY) * ratio;
+          workspaceZoom = newZoom;
+          updateWorkspaceTransform();
+        }
+      });
+
+      function onPointerEnd(e) {
+        if (activeTouches.has(e.pointerId)) {
+          activeTouches.delete(e.pointerId);
+        }
+        if (activeTouches.size === 0) {
+          isPanning = false;
+          pane.style.cursor = '';
+        } else if (activeTouches.size === 1) {
+          const remaining = Array.from(activeTouches.values())[0];
+          isPanning = true;
+          panStartX = remaining.x;
+          panStartY = remaining.y;
+          initialPanX = workspacePanX;
+          initialPanY = workspacePanY;
+        }
+      }
+
+      window.addEventListener('pointerup', onPointerEnd);
+      window.addEventListener('pointercancel', onPointerEnd);
+
+      // Mouse Wheel Zoom & Pan
+      pane.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        if (e.ctrlKey || e.metaKey) {
+          const zoomDelta = -e.deltaY * 0.002;
+          zoomWorkspace(zoomDelta, e.clientX, e.clientY);
+        } else {
+          workspacePanX -= e.deltaX;
+          workspacePanY -= e.deltaY;
+          updateWorkspaceTransform();
+        }
+      }, { passive: false });
+    }
+
+    // ── Slidable Top Header Navigation Helpers ──
     function scrollHeaderNav(offset) {
       const nav = document.getElementById('headerNavScroll');
       if (nav) {
@@ -4647,12 +5422,43 @@
     // ── Initialization ──
     window.addEventListener('DOMContentLoaded', () => {
       initHeaderNavSlide();
+      setupContextMenuAndLongPress();
+      setupWorkspacePanZoomEvents();
+      updateWorkspaceTransform();
       renderPalette('start');
       attachStackDrag(document.getElementById('defaultStack'));
       updateFloorSensorBadge('검은색');
       updateHud();
     });
   </script>
+
+  <!-- Touch Long-Press & Right-Click Context Menu -->
+  <div class="block-context-menu" id="blockContextMenu">
+    <div class="context-menu-item" id="cmenuDuplicate" onclick="handleContextMenuAction('duplicate')">
+      <span class="cmenu-icon">📑</span>
+      <span class="cmenu-label">코드 복제하기</span>
+    </div>
+    <div class="context-menu-item" id="cmenuCopy" onclick="handleContextMenuAction('copy')">
+      <span class="cmenu-icon">📋</span>
+      <span class="cmenu-label">복사하기</span>
+    </div>
+    <div class="context-menu-item" id="cmenuCut" onclick="handleContextMenuAction('cut')">
+      <span class="cmenu-icon">✂️</span>
+      <span class="cmenu-label">잘라내기</span>
+    </div>
+    <div class="context-menu-item" id="cmenuPaste" onclick="handleContextMenuAction('paste')">
+      <span class="cmenu-icon">📥</span>
+      <span class="cmenu-label">붙여넣기</span>
+    </div>
+    <div class="context-menu-divider" id="cmenuDivider"></div>
+    <div class="context-menu-item cmenu-delete" id="cmenuDelete" onclick="handleContextMenuAction('delete')">
+      <span class="cmenu-icon">🗑️</span>
+      <span class="cmenu-label">블록 삭제하기</span>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="entry-toast" id="entryToast"></div>
 
   <!-- Coding Guide & Controller Settings Modal -->
   <div class="modal-overlay" id="guideModal" onclick="closeGuideModalOnBackdrop(event)">
