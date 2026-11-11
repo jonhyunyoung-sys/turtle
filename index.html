@@ -649,13 +649,18 @@
       background-size: 24px 24px;
       background-position: 0 0, 12px 12px;
       overflow: hidden;
+      touch-action: none; /* Essential for iPad pinch-to-zoom & pan */
+      user-select: none;
+      -webkit-user-select: none;
     }
     .workspace-board {
-      width: 3000px;
-      height: 3000px;
+      width: 6000px;
+      height: 6000px;
       position: absolute;
       top: 0;
       left: 0;
+      touch-action: none; /* Essential for iPad pinch-to-zoom & pan */
+      transform-origin: 0 0;
     }
 
     /* ── Entry Code Stack Container ── */
@@ -969,10 +974,10 @@
     /* ── Entry Floating Trashcan (휴지통) ── */
     .entry-trashcan {
       position: absolute;
-      right: 194px;
-      bottom: 20px;
-      width: 66px;
-      height: 66px;
+      right: 154px;
+      bottom: 14px;
+      width: 50px;
+      height: 50px;
       background: #ffffff;
       border: 2px solid #cbd5e1;
       border-radius: 50%;
@@ -986,6 +991,16 @@
       transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       user-select: none;
       -webkit-user-select: none;
+    }
+    .trashcan-icon {
+      font-size: 19px;
+      line-height: 1;
+    }
+    .trashcan-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: #64748b;
+      margin-top: 1px;
     }
     .entry-trashcan.drag-over {
       background: #f7f2d1;
@@ -1078,99 +1093,10 @@
     }
 
     /* ── Docked Virtual Keypad (Controller) ── */
-    /* ── Workspace Zoom & Pan Navigation Controller ── */
-    .workspace-nav-ctrl {
-      position: absolute;
-      bottom: 20px;
-      left: 20px;
-      z-index: 35;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      background: rgba(255, 255, 255, 0.94);
-      border: 1px solid #cbd5e1;
-      border-radius: 14px;
-      padding: 7px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-      backdrop-filter: blur(8px);
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: none;
-    }
-
-    .nav-dpad {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .nav-dpad-middle {
-      display: flex;
-      align-items: center;
-      gap: 2px;
-    }
-
-    .nav-btn {
-      width: 28px;
-      height: 28px;
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-      color: #334155;
-      border-radius: 7px;
-      font-size: 11px;
-      font-weight: bold;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: all 0.12s ease;
-      padding: 0;
-    }
-
-    .nav-btn:hover {
-      background: #edf2f7;
-      color: #0f172a;
-      border-color: #cbd5e1;
-      transform: scale(1.06);
-    }
-
-    .nav-btn:active {
-      background: #e2e8f0;
-      transform: scale(0.94);
-    }
-
-    .nav-btn.nav-reset {
-      font-size: 13px;
-      background: #f1f5f9;
-    }
-
-    .nav-zoom-bar {
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      border-top: 1px solid #e2e8f0;
-      padding-top: 5px;
-      width: 100%;
-      justify-content: center;
-    }
-
-    .nav-zoom-text {
-      font-size: 11px;
-      font-weight: 700;
-      color: #475569;
-      min-width: 36px;
-      text-align: center;
-      cursor: pointer;
-    }
-
-    .nav-zoom-text:hover {
-      color: #2563eb;
-      text-decoration: underline;
-    }
+    
 
     .keypad-dock {
+      position: absolute;
       bottom: 14px;
       right: 14px;
       background: #232738;
@@ -1182,40 +1108,42 @@
       flex-direction: column;
       overflow: hidden;
       transition: max-height 0.3s ease;
+      user-select: none;
+      -webkit-user-select: none;
     }
     .keypad-dock.folded .keypad-dock-body {
       display: none;
     }
     .keypad-dock-head {
       background: #2b2f44;
-      padding: 8px 12px;
+      padding: 6px 10px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 0.82rem;
+      font-size: 0.74rem;
       font-weight: 700;
       color: #cbd5e0;
       cursor: pointer;
     }
     .keypad-dock-body {
-      padding: 12px 14px;
+      padding: 8px 10px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 6px;
     }
     .d-pad-box {
       display: grid;
-      grid-template-columns: repeat(3, 44px);
-      grid-template-rows: repeat(3, 44px);
-      gap: 4px;
+      grid-template-columns: repeat(3, 34px);
+      grid-template-rows: repeat(3, 34px);
+      gap: 3px;
     }
     .pad-btn {
       background: #33394f;
       border: 1px solid #485172;
-      border-radius: 8px;
+      border-radius: 7px;
       color: #fff;
-      font-size: 1.15rem;
+      font-size: 0.95rem;
       font-weight: 800;
       display: flex;
       align-items: center;
@@ -1226,7 +1154,7 @@
     }
     .pad-btn:active {
       background: #00cec9;
-      transform: scale(0.94);
+      transform: scale(0.92);
     }
     .pad-up { grid-column: 2; grid-row: 1; }
     .pad-left { grid-column: 1; grid-row: 2; }
@@ -1236,24 +1164,24 @@
 
     .keypad-action-row {
       display: flex;
-      gap: 8px;
+      gap: 5px;
       width: 100%;
     }
     .act-btn {
       flex: 1;
-      padding: 7px 10px;
+      padding: 5px 6px;
       background: #4a5568;
       border: 1px solid #718096;
-      border-radius: 8px;
+      border-radius: 6px;
       color: #fff;
       font-weight: 700;
-      font-size: 0.76rem;
+      font-size: 0.7rem;
       cursor: pointer;
       touch-action: none;
       text-align: center;
       white-space: nowrap;
     }
-    .act-btn:active { background: #00b894; transform: scale(0.95); }
+    .act-btn:active { background: #00b894; transform: scale(0.94); }
     .btn-space { background: #2d3748; }
     .btn-robot { background: #00b894; }
 
@@ -1717,23 +1645,7 @@
         <div class="trashcan-label">휴지통</div>
       </div>
 
-      <!-- Workspace Zoom & Pan Navigation Controller -->
-      <div class="workspace-nav-ctrl" id="workspaceNavCtrl" title="코딩 보드 상하좌우 이동 및 확대/축소">
-        <div class="nav-dpad">
-          <button class="nav-btn nav-up" onclick="panWorkspace(0, 100)" title="위로 이동">▲</button>
-          <div class="nav-dpad-middle">
-            <button class="nav-btn nav-left" onclick="panWorkspace(100, 0)" title="왼쪽으로 이동">◀</button>
-            <button class="nav-btn nav-reset" onclick="resetWorkspaceView()" title="원래 위치 및 100%로 복귀">🎯</button>
-            <button class="nav-btn nav-right" onclick="panWorkspace(-100, 0)" title="오른쪽으로 이동">▶</button>
-          </div>
-          <button class="nav-btn nav-down" onclick="panWorkspace(0, -100)" title="아래로 이동">▼</button>
-        </div>
-        <div class="nav-zoom-bar">
-          <button class="nav-btn nav-zoom-in" onclick="zoomWorkspace(0.15)" title="확대">➕</button>
-          <span class="nav-zoom-text" id="workspaceZoomText" onclick="resetWorkspaceZoom()" title="클릭 시 100%로 리셋">100%</span>
-          <button class="nav-btn nav-zoom-out" onclick="zoomWorkspace(-0.15)" title="축소">➖</button>
-        </div>
-      </div>
+
 
       <div class="workspace-board" id="workspaceBoard">
         <!-- Initial Entry Default Hat Stack -->
@@ -4934,12 +4846,11 @@
 
         cancelLongPressDetection();
         const targetEl = e.target.closest('.block, .block-c-container, .block-bool, .block-val, .code-stack');
+        if (!targetEl) return; // Only trigger long-press when holding an actual block/stack
+
         currentLongPressEl = targetEl;
         longPressStartPos = { x: e.clientX, y: e.clientY };
-
-        if (targetEl) {
-          targetEl.classList.add('long-pressing');
-        }
+        targetEl.classList.add('long-pressing');
 
         longPressTimer = setTimeout(() => {
           if (currentLongPressEl) {
@@ -5046,13 +4957,19 @@
 
       const activeTouches = new Map();
       let isPanning = false;
+      let isPinching = false;
       let panStartX = 0, panStartY = 0;
       let initialPanX = 0, initialPanY = 0;
-      let initialPinchDist = 0;
-      let initialPinchZoom = 1.0;
+
+      // Pinch reference state
+      let pinchDist0 = 0;
+      let pinchZoom0 = 1.0;
+      let pinchBoardPtX = 0;
+      let pinchBoardPtY = 0;
 
       pane.addEventListener('pointerdown', (e) => {
-        if (e.target.closest('.block, .code-stack, .keypad-dock, .variable-hud, .entry-trashcan, .workspace-nav-ctrl, button, input, select')) {
+        // Ignore if clicking on blocks, stacks, keypad, trashcan, or inputs
+        if (e.target.closest('.block, .code-stack, .keypad-dock, .variable-hud, .entry-trashcan, button, input, select')) {
           return;
         }
 
@@ -5060,6 +4977,7 @@
 
         if (activeTouches.size === 1) {
           isPanning = true;
+          isPinching = false;
           panStartX = e.clientX;
           panStartY = e.clientY;
           initialPanX = workspacePanX;
@@ -5067,9 +4985,21 @@
           pane.style.cursor = 'grabbing';
         } else if (activeTouches.size === 2) {
           isPanning = false;
+          isPinching = true;
+          cleanupDrag();
+          cancelLongPressDetection();
+
           const [t1, t2] = Array.from(activeTouches.values());
-          initialPinchDist = Math.hypot(t1.x - t2.x, t1.y - t2.y);
-          initialPinchZoom = workspaceZoom;
+          pinchDist0 = Math.max(10, Math.hypot(t1.x - t2.x, t1.y - t2.y));
+          pinchZoom0 = workspaceZoom;
+
+          const paneRect = pane.getBoundingClientRect();
+          const c0x = (t1.x + t2.x) / 2 - paneRect.left;
+          const c0y = (t1.y + t2.y) / 2 - paneRect.top;
+
+          // Board coordinate under the pinch center
+          pinchBoardPtX = (c0x - workspacePanX) / workspaceZoom;
+          pinchBoardPtY = (c0y - workspacePanY) / workspaceZoom;
         }
       });
 
@@ -5077,27 +5007,28 @@
         if (!activeTouches.has(e.pointerId)) return;
         activeTouches.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
+        // 1. Single Finger / Mouse Pan: 보드 빈칸 터치앤드래그
         if (activeTouches.size === 1 && isPanning) {
           const dx = e.clientX - panStartX;
           const dy = e.clientY - panStartY;
           workspacePanX = initialPanX + dx;
           workspacePanY = initialPanY + dy;
           updateWorkspaceTransform();
-        } else if (activeTouches.size === 2 && initialPinchDist > 5) {
+        }
+        // 2. Two-Finger Pinch & Pan: 두 손가락 벌리기(확대) 오므리기(축소)
+        else if (activeTouches.size >= 2 && isPinching) {
           const [t1, t2] = Array.from(activeTouches.values());
-          const curDist = Math.hypot(t1.x - t2.x, t1.y - t2.y);
-          const factor = curDist / initialPinchDist;
-          const newZoom = Math.max(MIN_WORKSPACE_ZOOM, Math.min(MAX_WORKSPACE_ZOOM, initialPinchZoom * factor));
-          const curCenter = { x: (t1.x + t2.x) / 2, y: (t1.y + t2.y) / 2 };
+          const curDist = Math.max(10, Math.hypot(t1.x - t2.x, t1.y - t2.y));
+          const factor = curDist / pinchDist0;
 
-          const oldZoom = workspaceZoom;
+          const newZoom = Math.max(MIN_WORKSPACE_ZOOM, Math.min(MAX_WORKSPACE_ZOOM, pinchZoom0 * factor));
           const paneRect = pane.getBoundingClientRect();
-          const cx = curCenter.x - paneRect.left;
-          const cy = curCenter.y - paneRect.top;
+          const curCenterX = (t1.x + t2.x) / 2 - paneRect.left;
+          const curCenterY = (t1.y + t2.y) / 2 - paneRect.top;
 
-          const ratio = newZoom / oldZoom;
-          workspacePanX = cx - (cx - workspacePanX) * ratio;
-          workspacePanY = cy - (cy - workspacePanY) * ratio;
+          // Keep pinchBoardPt stationary under the finger center
+          workspacePanX = curCenterX - pinchBoardPtX * newZoom;
+          workspacePanY = curCenterY - pinchBoardPtY * newZoom;
           workspaceZoom = newZoom;
           updateWorkspaceTransform();
         }
@@ -5109,12 +5040,14 @@
         }
         if (activeTouches.size === 0) {
           isPanning = false;
+          isPinching = false;
           pane.style.cursor = '';
         } else if (activeTouches.size === 1) {
-          const remaining = Array.from(activeTouches.values())[0];
+          isPinching = false;
           isPanning = true;
-          panStartX = remaining.x;
-          panStartY = remaining.y;
+          const rem = Array.from(activeTouches.values())[0];
+          panStartX = rem.x;
+          panStartY = rem.y;
           initialPanX = workspacePanX;
           initialPanY = workspacePanY;
         }
@@ -5123,7 +5056,7 @@
       window.addEventListener('pointerup', onPointerEnd);
       window.addEventListener('pointercancel', onPointerEnd);
 
-      // Mouse Wheel Zoom & Pan
+      // Desktop mouse wheel zoom & pan
       pane.addEventListener('wheel', (e) => {
         e.preventDefault();
         if (e.ctrlKey || e.metaKey) {
