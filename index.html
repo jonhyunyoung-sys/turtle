@@ -1567,6 +1567,13 @@
         <button class="btn btn-ctrl" id="btnHeaderCtrl" onclick="toggleKeypad()">
           <span>🎮 가상 키패드</span>
         </button>
+        <button class="btn btn-reset" onclick="saveProject()" title="블록과 입력값을 JSON 파일로 저장">
+          <span>💾 작업 저장</span>
+        </button>
+        <button class="btn btn-reset" onclick="document.getElementById('projectFileInput').click()" title="저장한 작업 파일 불러오기">
+          <span>📂 불러오기</span>
+        </button>
+        <input id="projectFileInput" type="file" accept=".json,application/json" hidden onchange="loadProjectFile(this)">
         <button class="btn btn-reset" onclick="resetWorkspace()">
           <span>↺ 초기화</span>
         </button>
@@ -3963,7 +3970,7 @@
       let lHtml = '';
       for (const [k, list] of Object.entries(userLists)) {
         lHtml += `<div style="font-weight:700; color:#cbd5e0; margin-bottom:2px;">${k} (${list.length}개):</div>`;
-        lHtml += `<div style="font-size:0.75rem; color:#a0aec0; max-height:65px; overflow-y:auto; padding:3px 6px; background:rgba(0,0,0,0.25); border-radius:4px; word-break:break-all;">${list.map((it, idx) => `[${idx+1}] ${it}`).join(', ') || '(비어있음)'}</div>`;
+        lHtml += `<div style="font-size:0.75rem; color:#a0aec0; max-height:65px; overflow-y:auto; padding:3px 6px; background:rgba(0,0,0,0.25); border-radius:4px; word-break:break-all;">${list.map((it, idx) => `[${idx+1}] ${escapeProjectText(it)}`).join(', ') || '(비어있음)'}</div>`;
       }
       listsDiv.innerHTML = lHtml;
     }
@@ -4598,6 +4605,191 @@
     function driveSim(dist, turnDeg) {}
     function setSimLed(rgb) {}
     function resetSim() {}
+
+    // Portable project files: reconstruct trusted block templates, never imported HTML.
+    const PROJECT_BLOCK_SELECTOR = '.block, .block-c-container, .block-bool, .block-val';
+    const PROJECT_SLOT_SELECTOR = '.val-slot, .bool-slot, .block-c-slot';
+    const PROJECT_MAX_BYTES = 5 * 1024 * 1024;
+
+    function projectOwnedElements(block, selector) {
+      return Array.from(block.querySelectorAll(selector)).filter(el => el.closest(PROJECT_BLOCK_SELECTOR) === block);
+    }
+
+    function serializeProjectBlock(block, budget, depth = 0) {
+      if (++budget.count > 5000 || depth > 50) throw new Error('블록이 너무 많거나 중첩이 너무 깊습니다.');
+      return {
+        cmd: block.dataset.cmd,
+        controls: projectOwnedElements(block, 'input, select').map(el => el.value),
+        slots: projectOwnedElements(block, PROJECT_SLOT_SELECTOR).map(slot =>
+          Array.from(slot.children).filter(el => el.matches(PROJECT_BLOCK_SELECTOR))
+            .map(el => serializeProjectBlock(el, budget, depth + 1)))
+      };
+    }
+
+    function captureProject() {
+      if (dragData) throw new Error('블록을 놓은 뒤 저장해 주세요.');
+      const budget = { count: 0 };
+      return {
+        format: 'turtle-block-project', version: 1,
+        savedAt: new Date().toISOString(),
+        stacks: Array.from(document.querySelectorAll('#workspaceBoard > .code-stack')).map(stack => ({
+          x: parseFloat(stack.style.left) || 0, y: parseFloat(stack.style.top) || 0,
+          blocks: Array.from(stack.children).filter(el => el.matches(PROJECT_BLOCK_SELECTOR))
+            .map(el => serializeProjectBlock(el, budget))
+        })),
+        variables: { ...userVariables }, booleans: { ...userBooleans },
+        lists: JSON.parse(JSON.stringify(userLists)),
+        view: { zoom: workspaceZoom, x: workspacePanX, y: workspacePanY },
+        controller: isControllerEnabled
+      };
+    }
+
+    function saveProject() {
+      try {
+        const json = JSON.stringify(captureProject(), null, 2);
+        const blob = new Blob([json], { type: 'application/json;charset=utf-8' });
+        if (blob.size > PROJECT_MAX_BYTES) throw new Error('저장 파일은 5MB 이하여야 합니다.');
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'turtle-project-' + new Date().toISOString().replace(/[:.]/g, '-') + '.json';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+        showToastNotification('저장 파일을 만들었습니다. 다운로드 또는 파일 앱에서 확인해 주세요.');
+      } catch (err) {
+        showCustomAlert('저장하지 못했습니다.\n' + err.message);
+      }
+    }
+
+    function buildProjectBlock(data, budget, depth = 0) {
+      if (++budget.count > 5000 || depth > 50) throw new Error('블록이 너무 많거나 중첩이 너무 깊습니다.');
+      if (!data || typeof data.cmd !== 'string') throw new Error('블록 정보가 올바르지 않습니다.');
+      const def = Object.values(CATEGORIES).flatMap(cat => cat.blocks).find(block => block.cmd === data.cmd);
+      if (!def) throw new Error('지원하지 않는 블록: ' + data.cmd);
+      const block = createBlockDOM(def, false);
+      const controls = projectOwnedElements(block, 'input, select');
+      const slots = projectOwnedElements(block, PROJECT_SLOT_SELECTOR);
+      if (!Array.isArray(data.controls) || data.controls.length !== controls.length ||
+          !Array.isArray(data.slots) || data.slots.length !== slots.length) {
+        throw new Error('블록의 입력값 또는 연결 구조가 올바르지 않습니다.');
+      }
+      controls.forEach((el, i) => {
+        const value = data.controls[i];
+        if (typeof value !== 'string' || value.length > 10000) throw new Error('입력값이 올바르지 않습니다.');
+        if (el.tagName === 'SELECT' && !Array.from(el.options).some(opt => opt.value === value)) {
+          throw new Error('선택값이 올바르지 않습니다.');
+        }
+        el.value = value;
+        if (el.value !== value) throw new Error('입력값을 복원할 수 없습니다.');
+      });
+      slots.forEach((slot, i) => {
+        const children = data.slots[i];
+        if (!Array.isArray(children) || children.length > 5000 ||
+            (!slot.classList.contains('block-c-slot') && children.length > 1)) {
+          throw new Error('블록 연결 구조가 올바르지 않습니다.');
+        }
+        children.forEach(child => {
+          const nested = buildProjectBlock(child, budget, depth + 1);
+          if (slot.classList.contains('val-slot') && !isValBlock(nested) ||
+              slot.classList.contains('bool-slot') && !isBoolBlock(nested) ||
+              slot.classList.contains('block-c-slot') && isHatBlock(nested)) {
+            throw new Error('잘못된 위치에 연결된 블록입니다.');
+          }
+          if (slot.classList.contains('block-c-slot')) slot.appendChild(nested);
+          else {
+            slot.prepend(nested);
+            Array.from(slot.children).filter(el => el !== nested).forEach(el => el.style.display = 'none');
+          }
+        });
+      });
+      return block;
+    }
+
+    function prepareProject(data) {
+      if (!data || data.format !== 'turtle-block-project' || data.version !== 1) {
+        throw new Error('지원하는 터틀 작업 파일(JSON)이 아닙니다.');
+      }
+      if (!Array.isArray(data.stacks) || data.stacks.length > 5000) throw new Error('작업 공간 정보가 올바르지 않습니다.');
+      const finite = value => typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= 10000000;
+      const view = data.view;
+      if (!view || !finite(view.x) || !finite(view.y) || !finite(view.zoom) ||
+          view.zoom < MIN_WORKSPACE_ZOOM || view.zoom > MAX_WORKSPACE_ZOOM || typeof data.controller !== 'boolean') {
+        throw new Error('화면 설정이 올바르지 않습니다.');
+      }
+      const checkStore = (source, current, check) => {
+        if (!source || typeof source !== 'object' || Array.isArray(source) ||
+            Object.keys(source).length !== Object.keys(current).length ||
+            !Object.keys(current).every(key => Object.prototype.hasOwnProperty.call(source, key) && check(source[key]))) {
+          throw new Error('변수 또는 리스트 정보가 올바르지 않습니다.');
+        }
+      };
+      checkStore(data.variables, userVariables, value => typeof value === 'number' && Number.isFinite(value));
+      checkStore(data.booleans, userBooleans, value => typeof value === 'boolean');
+      checkStore(data.lists, userLists, list => Array.isArray(list) && list.length <= 10000 && list.every(value =>
+        typeof value === 'string' && value.length <= 10000 || typeof value === 'number' && Number.isFinite(value) || typeof value === 'boolean'));
+      const fragment = document.createDocumentFragment();
+      const budget = { count: 0 };
+      data.stacks.forEach(saved => {
+        if (!saved || !finite(saved.x) || !finite(saved.y) || !Array.isArray(saved.blocks) || saved.blocks.length > 5000) {
+          throw new Error('블록 배치 정보가 올바르지 않습니다.');
+        }
+        const stack = document.createElement('div');
+        stack.className = 'code-stack';
+        stack.style.left = saved.x + 'px';
+        stack.style.top = saved.y + 'px';
+        saved.blocks.forEach(block => stack.appendChild(buildProjectBlock(block, budget)));
+        attachStackDrag(stack);
+        fragment.appendChild(stack);
+      });
+      return { data, fragment };
+    }
+
+    function applyProject(prepared) {
+      stopAllExecution();
+      cleanupDrag();
+      hideBlockContextMenu();
+      const { data, fragment } = prepared;
+      document.getElementById('workspaceBoard').replaceChildren(fragment);
+      Object.keys(userVariables).forEach(key => userVariables[key] = data.variables[key]);
+      Object.keys(userBooleans).forEach(key => userBooleans[key] = data.booleans[key]);
+      Object.keys(userLists).forEach(key => userLists[key] = data.lists[key].slice());
+      workspaceZoom = data.view.zoom;
+      workspacePanX = data.view.x;
+      workspacePanY = data.view.y;
+      updateWorkspaceTransform();
+      onToggleShowController(data.controller);
+      document.getElementById('toggleShowController').checked = data.controller;
+      updateHud();
+      showToastNotification('작업을 불러왔습니다. 시작하기 또는 가상 키패드로 실행해 주세요.');
+    }
+
+    function loadProjectFile(input) {
+      const file = input.files && input.files[0];
+      input.value = '';
+      if (!file) return;
+      if (file.size > PROJECT_MAX_BYTES) {
+        showCustomAlert('5MB 이하의 작업 파일을 선택해 주세요.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onerror = () => showCustomAlert('파일을 읽지 못했습니다. 다시 선택해 주세요.');
+      reader.onload = () => {
+        try {
+          const prepared = prepareProject(JSON.parse(String(reader.result).replace(/^\uFEFF/, '')));
+          showCustomConfirm('현재 작업을 선택한 파일의 내용으로 바꿀까요?\n저장하지 않은 작업은 사라집니다. 실행 중인 로봇은 정지합니다.',
+            () => applyProject(prepared), '작업 불러오기');
+        } catch (err) {
+          showCustomAlert('불러오지 못했습니다. 현재 작업은 유지됩니다.\n' + err.message);
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function escapeProjectText(value) {
+      return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+    }
 
     function resetWorkspace() {
       showCustomConfirm('모든 블록을 초기화하시겠습니까?', () => {
